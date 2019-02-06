@@ -18,10 +18,10 @@ public abstract class Action {
     }
 
     public Action(Context context, List<FeedbackEffect> list) {
-        this.mContext = context;
-        this.mHandler = new Handler(context.getMainLooper());
+        mContext = context;
+        mHandler = new Handler(context.getMainLooper());
         if (list != null) {
-            this.mFeedbackEffects.addAll(list);
+            mFeedbackEffects.addAll(list);
         }
     }
 
@@ -32,17 +32,17 @@ public abstract class Action {
     }
 
     protected Context getContext() {
-        return this.mContext;
+        return mContext;
     }
 
     public abstract boolean isAvailable();
 
     protected void notifyListener() {
-        if (this.mListener != null) {
-            this.mHandler.post(new _$$Lambda$Action$j2J8_IgWsMdJmJbAPdwLJPf2ZWA(this));
+        if (mListener != null) {
+            mHandler.post(new _$$Lambda$Action$j2J8_IgWsMdJmJbAPdwLJPf2ZWA(this));
         }
         if (!isAvailable()) {
-            this.mHandler.post(new _$$Lambda$Action$065n3tshnSDLPbdPQiUaqEYgAYY(this));
+            mHandler.post(new _$$Lambda$Action$065n3tshnSDLPbdPQiUaqEYgAYY(this));
         }
     }
 
@@ -52,10 +52,11 @@ public abstract class Action {
     public abstract void onTrigger(DetectionProperties detectionProperties);
 
     public void setListener(Listener listener) {
-        this.mListener = listener;
+        mListener = listener;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return getClass().getSimpleName();
     }
 
@@ -64,8 +65,8 @@ public abstract class Action {
             int i = 0;
             while (true) {
                 int i2 = i;
-                if (i2 < this.mFeedbackEffects.size()) {
-                    ((FeedbackEffect) this.mFeedbackEffects.get(i2)).onResolve(detectionProperties);
+                if (i2 < mFeedbackEffects.size()) {
+                    mFeedbackEffects.get(i2).onResolve(detectionProperties);
                     i = i2 + 1;
                 } else {
                     return;
@@ -80,8 +81,8 @@ public abstract class Action {
         if (f == 0.0f || i == 0) {
             while (true) {
                 i3 = i2;
-                if (i3 < this.mFeedbackEffects.size()) {
-                    ((FeedbackEffect) this.mFeedbackEffects.get(i3)).onRelease();
+                if (i3 < mFeedbackEffects.size()) {
+                    mFeedbackEffects.get(i3).onRelease();
                     i2 = i3 + 1;
                 } else {
                     return;
@@ -90,8 +91,8 @@ public abstract class Action {
         } else if (isAvailable()) {
             while (true) {
                 i3 = i2;
-                if (i3 < this.mFeedbackEffects.size()) {
-                    ((FeedbackEffect) this.mFeedbackEffects.get(i3)).onProgress(f, i);
+                if (i3 < mFeedbackEffects.size()) {
+                    mFeedbackEffects.get(i3).onProgress(f, i);
                     i2 = i3 + 1;
                 } else {
                     return;

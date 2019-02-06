@@ -6,10 +6,11 @@ public final /* synthetic */ class _$$Lambda$SilenceCall$P91IyaoSIoRZpeDIyPp8173
     private final /* synthetic */ SilenceCall f$0;
 
     public /* synthetic */ _$$Lambda$SilenceCall$P91IyaoSIoRZpeDIyPp8173JrBg(SilenceCall silenceCall) {
-        this.f$0 = silenceCall;
+        f$0 = silenceCall;
     }
 
-    public final void accept(Object obj) {
-        this.f$0.updatePhoneStateListener();
+    @Override
+	public final void accept(Object obj) {
+        f$0.updatePhoneStateListener();
     }
 }

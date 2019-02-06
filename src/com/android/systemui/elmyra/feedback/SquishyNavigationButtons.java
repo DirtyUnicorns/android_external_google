@@ -14,29 +14,31 @@ public class SquishyNavigationButtons extends NavigationBarEffect {
 
     public SquishyNavigationButtons(Context context) {
         super(context);
-        this.mViewController = new SquishyViewController(context);
-        this.mKeyguardViewMediator = (KeyguardViewMediator) SysUiServiceProvider.getComponent(context, KeyguardViewMediator.class);
+        mViewController = new SquishyViewController(context);
+        mKeyguardViewMediator = (KeyguardViewMediator) SysUiServiceProvider.getComponent(context, KeyguardViewMediator.class);
     }
 
     protected List<FeedbackEffect> findFeedbackEffects(NavigationBarView navigationBarView) {
         int i;
-        this.mViewController.clearViews();
+        mViewController.clearViews();
         List views = navigationBarView.getBackButton().getViews();
         for (i = 0; i < views.size(); i++) {
-            this.mViewController.addLeftView((View) views.get(i));
+            mViewController.addLeftView((View) views.get(i));
         }
         views = navigationBarView.getRecentsButton().getViews();
         for (i = 0; i < views.size(); i++) {
-            this.mViewController.addRightView((View) views.get(i));
+            mViewController.addRightView((View) views.get(i));
         }
-        return Arrays.asList(new FeedbackEffect[]{this.mViewController});
+        return Arrays.asList(new FeedbackEffect[]{mViewController});
     }
 
-    protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
-        return !this.mKeyguardViewMediator.isShowingAndNotOccluded();
+    @Override
+	protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
+        return !mKeyguardViewMediator.isShowingAndNotOccluded();
     }
 
-    protected boolean validateFeedbackEffects(List<FeedbackEffect> list) {
-        return this.mViewController.isAttachedToWindow();
+    @Override
+	protected boolean validateFeedbackEffects(List<FeedbackEffect> list) {
+        return mViewController.isAttachedToWindow();
     }
 }

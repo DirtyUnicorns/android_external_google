@@ -9,24 +9,26 @@ public class NavUndimEffect implements FeedbackEffect {
     private final StatusBar mStatusBar;
 
     public NavUndimEffect(Context context) {
-        this.mStatusBar = (StatusBar) SysUiServiceProvider.getComponent(context, StatusBar.class);
+        mStatusBar = (StatusBar) SysUiServiceProvider.getComponent(context, StatusBar.class);
     }
 
-    public void onProgress(float f, int i) {
-        if (this.mStatusBar != null) {
-            this.mStatusBar.touchAutoDim();
+    @Override
+	public void onProgress(float f, int i) {
+        if (mStatusBar != null) {
+            mStatusBar.touchAutoDim();
         }
     }
 
-    public void onRelease() {
-        if (this.mStatusBar != null) {
-            this.mStatusBar.touchAutoDim();
+    @Override
+	public void onRelease() {
+        if (mStatusBar != null) {
+            mStatusBar.touchAutoDim();
         }
     }
 
     public void onResolve(DetectionProperties detectionProperties) {
-        if (this.mStatusBar != null) {
-            this.mStatusBar.touchAutoDim();
+        if (mStatusBar != null) {
+            mStatusBar.touchAutoDim();
         }
     }
 }

@@ -15,22 +15,24 @@ public class HapticClick implements FeedbackEffect {
     private final Vibrator mVibrator;
 
     public HapticClick(Context context) {
-        this.mVibrator = (Vibrator) context.getSystemService("vibrator");
+        mVibrator = (Vibrator) context.getSystemService("vibrator");
     }
 
-    public void onProgress(float f, int i) {
-        if (!(this.mLastGestureStage == 2 || i != 2 || this.mVibrator == null)) {
-            this.mVibrator.vibrate(this.mProgressVibrationEffect, SONIFICATION_AUDIO_ATTRIBUTES);
+    @Override
+	public void onProgress(float f, int i) {
+        if (!(mLastGestureStage == 2 || i != 2 || mVibrator == null)) {
+            mVibrator.vibrate(mProgressVibrationEffect, SONIFICATION_AUDIO_ATTRIBUTES);
         }
-        this.mLastGestureStage = i;
+        mLastGestureStage = i;
     }
 
-    public void onRelease() {
+    @Override
+	public void onRelease() {
     }
 
     public void onResolve(DetectionProperties detectionProperties) {
-        if ((detectionProperties == null || !detectionProperties.isHapticConsumed()) && this.mVibrator != null) {
-            this.mVibrator.vibrate(this.mResolveVibrationEffect, SONIFICATION_AUDIO_ATTRIBUTES);
+        if ((detectionProperties == null || !detectionProperties.isHapticConsumed()) && mVibrator != null) {
+            mVibrator.vibrate(mResolveVibrationEffect, SONIFICATION_AUDIO_ATTRIBUTES);
         }
     }
 }

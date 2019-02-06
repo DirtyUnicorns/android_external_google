@@ -16,7 +16,8 @@ public class CustomActions extends Action {
         super(context, null);
     }
 
-    public boolean isAvailable() {
+    @Override
+	public boolean isAvailable() {
         return true;
     }
 
@@ -45,7 +46,8 @@ public class CustomActions extends Action {
         }
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(super.toString());
         stringBuilder.append(" [CustomAction Enabled -> ");

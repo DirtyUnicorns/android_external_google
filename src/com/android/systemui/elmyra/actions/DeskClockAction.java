@@ -24,27 +24,27 @@ abstract class DeskClockAction extends Action {
         }
 
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(DeskClockAction.this.getAlertAction())) {
-                DeskClockAction.this.mAlertFiring = true;
-            } else if (intent.getAction().equals(DeskClockAction.this.getDoneAction())) {
-                DeskClockAction.this.mAlertFiring = false;
+            if (intent.getAction().equals(getAlertAction())) {
+                mAlertFiring = true;
+            } else if (intent.getAction().equals(getDoneAction())) {
+                mAlertFiring = false;
             }
-            DeskClockAction.this.notifyListener();
+            notifyListener();
         }
     }
 
     DeskClockAction(Context context) {
         super(context, null);
         updateBroadcastReceiver();
-        this.mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$DeskClockAction$dyH9jy2GURTsOoYs4WoZlKMC29A(this));
+        mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$DeskClockAction$dyH9jy2GURTsOoYs4WoZlKMC29A(this));
     }
 
     protected void updateBroadcastReceiver() {
         boolean z = false;
-        this.mAlertFiring = false;
-        if (this.mReceiverRegistered) {
-            getContext().unregisterReceiver(this.mAlertReceiver);
-            this.mReceiverRegistered = false;
+        mAlertFiring = false;
+        if (mReceiverRegistered) {
+            getContext().unregisterReceiver(mAlertReceiver);
+            mReceiverRegistered = false;
         }
         //if (Secure.getIntForUser(getContext().getContentResolver(), "assist_gesture_silence_alerts_enabled", 1, -2) != 0) {
             z = true;
@@ -53,8 +53,8 @@ abstract class DeskClockAction extends Action {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(getAlertAction());
             intentFilter.addAction(getDoneAction());
-            getContext().registerReceiverAsUser(this.mAlertReceiver, UserHandle.CURRENT, intentFilter, "com.android.systemui.permission.SEND_ALERT_BROADCASTS", null);
-            this.mReceiverRegistered = true;
+            getContext().registerReceiverAsUser(mAlertReceiver, UserHandle.CURRENT, intentFilter, "com.android.systemui.permission.SEND_ALERT_BROADCASTS", null);
+            mReceiverRegistered = true;
         }
         notifyListener();
     }
@@ -65,8 +65,9 @@ abstract class DeskClockAction extends Action {
 
     protected abstract String getDoneAction();
 
-    public boolean isAvailable() {
-        return this.mAlertFiring;
+    @Override
+	public boolean isAvailable() {
+        return mAlertFiring;
     }
 
     public void onTrigger(DetectionProperties detectionProperties) {
@@ -83,15 +84,16 @@ abstract class DeskClockAction extends Action {
         } catch (Throwable e) {
             Log.e("Elmyra/DeskClockAction", "Failed to dismiss alert", e);
         }
-        this.mAlertFiring = false;
+        mAlertFiring = false;
         notifyListener();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(super.toString());
         stringBuilder.append(" [mReceiverRegistered -> ");
-        stringBuilder.append(this.mReceiverRegistered);
+        stringBuilder.append(mReceiverRegistered);
         stringBuilder.append("]");
         return stringBuilder.toString();
     }

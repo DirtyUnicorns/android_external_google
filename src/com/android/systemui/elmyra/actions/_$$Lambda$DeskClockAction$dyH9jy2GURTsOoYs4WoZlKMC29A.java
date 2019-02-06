@@ -6,10 +6,11 @@ public final /* synthetic */ class _$$Lambda$DeskClockAction$dyH9jy2GURTsOoYs4Wo
     private final /* synthetic */ DeskClockAction f$0;
 
     public /* synthetic */ _$$Lambda$DeskClockAction$dyH9jy2GURTsOoYs4WoZlKMC29A(DeskClockAction deskClockAction) {
-        this.f$0 = deskClockAction;
+        f$0 = deskClockAction;
     }
 
-    public final void accept(Object obj) {
-        this.f$0.updateBroadcastReceiver();
+    @Override
+	public final void accept(Object obj) {
+        f$0.updateBroadcastReceiver();
     }
 }

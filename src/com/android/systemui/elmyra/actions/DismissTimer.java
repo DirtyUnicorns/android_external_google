@@ -8,15 +8,18 @@ public class DismissTimer extends DeskClockAction {
         super(context);
     }
 
-    protected Intent createDismissIntent() {
+    @Override
+	protected Intent createDismissIntent() {
         return new Intent("android.intent.action.DISMISS_TIMER");
     }
 
-    protected String getAlertAction() {
+    @Override
+	protected String getAlertAction() {
         return "com.google.android.deskclock.action.TIMER_ALERT";
     }
 
-    protected String getDoneAction() {
+    @Override
+	protected String getDoneAction() {
         return "com.google.android.deskclock.action.TIMER_DONE";
     }
 }

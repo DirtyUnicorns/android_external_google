@@ -31,9 +31,9 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
         }
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            ServiceAction.this.mElmyraService = Stub.asInterface(iBinder);
+            mElmyraService = Stub.asInterface(iBinder);
             try {
-                ServiceAction.this.mElmyraService.registerServiceListener(ServiceAction.this.mToken, ServiceAction.this.mElmyraServiceListener);
+                mElmyraService.registerServiceListener(mToken, mElmyraServiceListener);
             } catch (Throwable e) {
                 Log.e("Elmyra/ServiceAction", "Error registering listener", e);
             }
@@ -41,7 +41,7 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
-            ServiceAction.this.mElmyraService = null;
+            mElmyraService = null;
             ServiceAction.this.onServiceDisconnected();
         }
     }
@@ -54,11 +54,11 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
             if (!ServiceAction.this.checkSupportedCaller()) {
                 return;
             }
-            if (iBinder2 != null || ServiceAction.this.mElmyraServiceGestureListener != null) {
+            if (iBinder2 != null || mElmyraServiceGestureListener != null) {
                 IElmyraServiceGestureListener asInterface = IElmyraServiceGestureListener.Stub.asInterface(iBinder2);
-                if (asInterface != ServiceAction.this.mElmyraServiceGestureListener) {
-                    ServiceAction.this.mElmyraServiceGestureListener = asInterface;
-                    ServiceAction.this.notifyListener();
+                if (asInterface != mElmyraServiceGestureListener) {
+                    mElmyraServiceGestureListener = asInterface;
+                    notifyListener();
                 }
                 if (iBinder == null) {
                     return;
@@ -90,7 +90,7 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
         try {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(getContext(), ElmyraServiceProxy.class));
-            getContext().bindService(intent, this.mElmyraServiceConnection, 1);
+            getContext().bindService(intent, mElmyraServiceConnection, 1);
         } catch (Throwable e) {
             Log.e("Elmyra/ServiceAction", "Unable to bind to ElmyraServiceProxy", e);
         }
@@ -98,7 +98,7 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
 
     public void binderDied() {
         Log.w("Elmyra/ServiceAction", "Binder died");
-        this.mElmyraServiceGestureListener = null;
+        mElmyraServiceGestureListener = null;
         notifyListener();
     }
 
@@ -109,18 +109,20 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
         return packagesForUid == null ? false : Arrays.asList(packagesForUid).contains(str);
     }
 
-    public boolean isAvailable() {
-        return this.mElmyraServiceGestureListener != null;
+    @Override
+	public boolean isAvailable() {
+        return mElmyraServiceGestureListener != null;
     }
 
-    public void onProgress(float f, int i) {
-        if (this.mElmyraServiceGestureListener != null) {
+    @Override
+	public void onProgress(float f, int i) {
+        if (mElmyraServiceGestureListener != null) {
             updateFeedbackEffects(f, i);
             try {
-                this.mElmyraServiceGestureListener.onGestureProgress(f, i);
+                mElmyraServiceGestureListener.onGestureProgress(f, i);
             } catch (Throwable e) {
                 Log.e("Elmyra/ServiceAction", "Listener crashed or closed without unregistering", e);
-                this.mElmyraServiceGestureListener = null;
+                mElmyraServiceGestureListener = null;
                 notifyListener();
             } /*catch (Throwable e2) {
                 Log.e("Elmyra/ServiceAction", "Unable to send progress, setting listener to null", e2);
@@ -137,13 +139,13 @@ public abstract class ServiceAction extends Action implements DeathRecipient {
     }
 
     public void onTrigger(DetectionProperties detectionProperties) {
-        if (this.mElmyraServiceGestureListener != null) {
+        if (mElmyraServiceGestureListener != null) {
             triggerFeedbackEffects(detectionProperties);
             try {
-                this.mElmyraServiceGestureListener.onGestureDetected();
+                mElmyraServiceGestureListener.onGestureDetected();
             } catch (Throwable e) {
                 Log.e("Elmyra/ServiceAction", "Listener crashed or closed without unregistering", e);
-                this.mElmyraServiceGestureListener = null;
+                mElmyraServiceGestureListener = null;
                 notifyListener();
             } /*catch (Throwable e2) {
                 Log.e("Elmyra/ServiceAction", "Unable to send onGestureDetected; removing listener", e2);

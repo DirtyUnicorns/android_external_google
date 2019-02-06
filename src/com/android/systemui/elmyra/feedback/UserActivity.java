@@ -14,29 +14,32 @@ public class UserActivity implements FeedbackEffect {
     private int mTriggerCount = 0;
 
     public UserActivity(Context context) {
-        this.mPowerManager = (PowerManager) context.getSystemService(PowerManager.class);
+        mPowerManager = (PowerManager) context.getSystemService(PowerManager.class);
     }
 
-    public void onProgress(float f, int i) {
-        if (!(i == this.mLastStage || i != 2 || this.mKeyguardMonitor.isShowing() || this.mPowerManager == null)) {
-            this.mPowerManager.userActivity(SystemClock.uptimeMillis(), 0, 0);
-            this.mTriggerCount++;
+    @Override
+	public void onProgress(float f, int i) {
+        if (!(i == mLastStage || i != 2 || mKeyguardMonitor.isShowing() || mPowerManager == null)) {
+            mPowerManager.userActivity(SystemClock.uptimeMillis(), 0, 0);
+            mTriggerCount++;
         }
-        this.mLastStage = i;
+        mLastStage = i;
     }
 
-    public void onRelease() {
+    @Override
+	public void onRelease() {
     }
 
     public void onResolve(DetectionProperties detectionProperties) {
-        this.mTriggerCount--;
+        mTriggerCount--;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(super.toString());
         stringBuilder.append(" [mTriggerCount -> ");
-        stringBuilder.append(this.mTriggerCount);
+        stringBuilder.append(mTriggerCount);
         stringBuilder.append("]");
         return stringBuilder.toString();
     }

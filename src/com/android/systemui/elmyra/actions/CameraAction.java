@@ -13,11 +13,12 @@ public class CameraAction extends ServiceAction {
 
     public CameraAction(Context context, List<FeedbackEffect> list) {
         super(context, list);
-        this.mCameraPackageName = context.getResources().getString(R.string.google_camera_app_package_name);
+        mCameraPackageName = context.getResources().getString(R.string.google_camera_app_package_name);
     }
 
-    protected boolean checkSupportedCaller() {
-        return checkSupportedCaller(this.mCameraPackageName);
+    @Override
+	protected boolean checkSupportedCaller() {
+        return checkSupportedCaller(mCameraPackageName);
     }
 
     public void onTrigger(DetectionProperties detectionProperties) {

@@ -20,10 +20,10 @@ public class SilenceCall extends Action {
         }
 
         public void onCallStateChanged(int i, String str) {
-            boolean access$000 = SilenceCall.this.isPhoneRinging(i);
-            if (SilenceCall.this.mIsPhoneRinging != access$000) {
-                SilenceCall.this.mIsPhoneRinging = access$000;
-                SilenceCall.this.notifyListener();
+            boolean access$000 = isPhoneRinging(i);
+            if (mIsPhoneRinging != access$000) {
+                mIsPhoneRinging = access$000;
+                notifyListener();
             }
         }
     }
@@ -31,7 +31,7 @@ public class SilenceCall extends Action {
     public SilenceCall(Context context) {
         super(context, null);
         updatePhoneStateListener();
-        this.mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$SilenceCall$P91IyaoSIoRZpeDIyPp8173JrBg(this));
+        mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$SilenceCall$P91IyaoSIoRZpeDIyPp8173JrBg(this));
     }
 
     private boolean isPhoneRinging(int i) {
@@ -44,30 +44,32 @@ public class SilenceCall extends Action {
         if (Secure.getIntForUser(getContext().getContentResolver(), "assist_gesture_silence_alerts_enabled", 1, -2) == 0) {
             z = false;
         }
-        if (z != this.mSilenceSettingEnabled) {
-            this.mSilenceSettingEnabled = z;
-            if (this.mSilenceSettingEnabled) {
+        if (z != mSilenceSettingEnabled) {
+            mSilenceSettingEnabled = z;
+            if (mSilenceSettingEnabled) {
                 i = 32;
             }
-            this.mTelephonyManager.listen(this.mPhoneStateListener, i);
-            this.mIsPhoneRinging = isPhoneRinging(this.mTelephonyManager.getCallState());
+            mTelephonyManager.listen(mPhoneStateListener, i);
+            mIsPhoneRinging = isPhoneRinging(mTelephonyManager.getCallState());
             notifyListener();
         }
     }
 
-    public boolean isAvailable() {
-        return this.mSilenceSettingEnabled ? this.mIsPhoneRinging : false;
+    @Override
+	public boolean isAvailable() {
+        return mSilenceSettingEnabled ? mIsPhoneRinging : false;
     }
 
     public void onTrigger(DetectionProperties detectionProperties) {
-        this.mTelephonyManager.silenceRinger();
+        mTelephonyManager.silenceRinger();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(super.toString());
         stringBuilder.append(" [mSilenceSettingEnabled -> ");
-        stringBuilder.append(this.mSilenceSettingEnabled);
+        stringBuilder.append(mSilenceSettingEnabled);
         stringBuilder.append("]");
         return stringBuilder.toString();
     }

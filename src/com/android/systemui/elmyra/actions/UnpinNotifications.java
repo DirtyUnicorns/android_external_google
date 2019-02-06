@@ -22,22 +22,22 @@ public class UnpinNotifications extends Action {
         }
 
         public void onHeadsUpPinnedModeChanged(boolean z) {
-            if (UnpinNotifications.this.mHasPinnedHeadsUp != z) {
-                UnpinNotifications.this.mHasPinnedHeadsUp = z;
-                UnpinNotifications.this.notifyListener();
+            if (mHasPinnedHeadsUp != z) {
+                mHasPinnedHeadsUp = z;
+                notifyListener();
             }
         }
     }
 
     public UnpinNotifications(Context context) {
         super(context, null);
-        this.mHeadsUpManager = (HeadsUpManager) SysUiServiceProvider.getComponent(context, HeadsUpManager.class);
-        if (this.mHeadsUpManager != null) {
+        mHeadsUpManager = (HeadsUpManager) SysUiServiceProvider.getComponent(context, HeadsUpManager.class);
+        if (mHeadsUpManager != null) {
             updateHeadsUpListener();
-            this.mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$UnpinNotifications$Coju1I9MwFJHZmrlRAr_VaZtdE4(this));
+            mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_silence_alerts_enabled"), new _$$Lambda$UnpinNotifications$Coju1I9MwFJHZmrlRAr_VaZtdE4(this));
             return;
         }
-        this.mSettingsObserver = null;
+        mSettingsObserver = null;
         Log.w("Elmyra/UnpinNotifications", "No HeadsUpManager");
     }
 
@@ -46,30 +46,32 @@ public class UnpinNotifications extends Action {
         if (Secure.getIntForUser(getContext().getContentResolver(), "assist_gesture_silence_alerts_enabled", 1, -2) == 0) {
             z = false;
         }
-        if (this.mSilenceSettingEnabled != z) {
-            this.mSilenceSettingEnabled = z;
-            if (this.mSilenceSettingEnabled) {
-                this.mHasPinnedHeadsUp = this.mHeadsUpManager.hasPinnedHeadsUp();
-                this.mHeadsUpManager.addListener(this.mHeadsUpChangedListener);
+        if (mSilenceSettingEnabled != z) {
+            mSilenceSettingEnabled = z;
+            if (mSilenceSettingEnabled) {
+                mHasPinnedHeadsUp = mHeadsUpManager.hasPinnedHeadsUp();
+                mHeadsUpManager.addListener(mHeadsUpChangedListener);
             } else {
-                this.mHasPinnedHeadsUp = false;
-                this.mHeadsUpManager.removeListener(this.mHeadsUpChangedListener);
+                mHasPinnedHeadsUp = false;
+                mHeadsUpManager.removeListener(mHeadsUpChangedListener);
             }
             notifyListener();
         }
     }
 
-    public boolean isAvailable() {
-        return this.mSilenceSettingEnabled ? this.mHasPinnedHeadsUp : false;
+    @Override
+	public boolean isAvailable() {
+        return mSilenceSettingEnabled ? mHasPinnedHeadsUp : false;
     }
 
     public void onTrigger(DetectionProperties detectionProperties) {
-        if (this.mHeadsUpManager != null) {
-            this.mHeadsUpManager.unpinAll();
+        if (mHeadsUpManager != null) {
+            mHeadsUpManager.unpinAll();
         }
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return super.toString();
     }
 }

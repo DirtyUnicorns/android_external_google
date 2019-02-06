@@ -35,7 +35,7 @@ class SquishyViewController implements FeedbackEffect {
         }
 
         public void onRotationChanged(int i) {
-            SquishyViewController.this.mScreenRotation = i;
+            mScreenRotation = i;
         }
     }
 
@@ -44,24 +44,24 @@ class SquishyViewController implements FeedbackEffect {
         private float mMass;
 
         SpringInterpolator(float f, float f2) {
-            this.mMass = f;
-            this.mBounce = f2;
+            mMass = f;
+            mBounce = f2;
         }
 
         public float getInterpolation(float f) {
-            return (float) ((-(Math.exp((double) (-(f / this.mMass))) * Math.cos((double) (this.mBounce * f)))) + 1.0d);
+            return (float) ((-(Math.exp((-(f / mMass))) * Math.cos(mBounce * f))) + 1.0d);
         }
     }
 
     public SquishyViewController(Context context) {
-        this.mContext = context;
-        this.mSquishTranslationMax = m11px(8.0f);
-        this.mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+        mContext = context;
+        mSquishTranslationMax = m11px(8.0f);
+        mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         try {
-            this.mScreenRotation = this.mWindowManager.watchRotation(this.mRotationWatcher, this.mContext.getDisplay().getDisplayId());
+            mScreenRotation = mWindowManager.watchRotation(mRotationWatcher, mContext.getDisplay().getDisplayId());
         } catch (Throwable e) {
             Log.e("SquishyViewController", "Couldn't get screen rotation or set watcher", e);
-            this.mScreenRotation = 0;
+            mScreenRotation = 0;
         }
     }
 
@@ -82,11 +82,11 @@ class SquishyViewController implements FeedbackEffect {
     private AnimatorSet createSpringbackAnimatorSets() {
         int i = 0;
         AnimatorSet animatorSet = new AnimatorSet();
-        for (int i2 = 0; i2 < this.mLeftViews.size(); i2++) {
-            animatorSet.play(createSpringbackAnimatorSet((View) this.mLeftViews.get(i2)));
+        for (int i2 = 0; i2 < mLeftViews.size(); i2++) {
+            animatorSet.play(createSpringbackAnimatorSet((View) mLeftViews.get(i2)));
         }
-        while (i < this.mRightViews.size()) {
-            animatorSet.play(createSpringbackAnimatorSet((View) this.mRightViews.get(i)));
+        while (i < mRightViews.size()) {
+            animatorSet.play(createSpringbackAnimatorSet((View) mRightViews.get(i)));
             i++;
         }
         return animatorSet;
@@ -94,7 +94,7 @@ class SquishyViewController implements FeedbackEffect {
 
     /* renamed from: px */
     private float m11px(float f) {
-        return TypedValue.applyDimension(1, f, this.mContext.getResources().getDisplayMetrics());
+        return TypedValue.applyDimension(1, f, mContext.getResources().getDisplayMetrics());
     }
 
     private void setViewTranslation(View view, float f) {
@@ -102,7 +102,7 @@ class SquishyViewController implements FeedbackEffect {
             if (view.getLayoutDirection() == 1) {
                 f *= -1.0f;
             }
-            switch (this.mScreenRotation) {
+            switch (mScreenRotation) {
                 case 0:
                 case 2:
                     view.setTranslationX(f);
@@ -124,63 +124,65 @@ class SquishyViewController implements FeedbackEffect {
 
     private void translateViews(float f) {
         int i = 0;
-        for (int i2 = 0; i2 < this.mLeftViews.size(); i2++) {
-            setViewTranslation((View) this.mLeftViews.get(i2), f);
+        for (int i2 = 0; i2 < mLeftViews.size(); i2++) {
+            setViewTranslation((View) mLeftViews.get(i2), f);
         }
-        while (i < this.mRightViews.size()) {
-            setViewTranslation((View) this.mRightViews.get(i), -f);
+        while (i < mRightViews.size()) {
+            setViewTranslation((View) mRightViews.get(i), -f);
             i++;
         }
     }
 
     public void addLeftView(View view) {
-        this.mLeftViews.add(view);
+        mLeftViews.add(view);
     }
 
     public void addRightView(View view) {
-        this.mRightViews.add(view);
+        mRightViews.add(view);
     }
 
     public void clearViews() {
         translateViews(0.0f);
-        this.mLeftViews.clear();
-        this.mRightViews.clear();
+        mLeftViews.clear();
+        mRightViews.clear();
     }
 
     public boolean isAttachedToWindow() {
         int i;
-        for (i = 0; i < this.mLeftViews.size(); i++) {
-            if (!((View) this.mLeftViews.get(i)).isAttachedToWindow()) {
+        for (i = 0; i < mLeftViews.size(); i++) {
+            if (!((View) mLeftViews.get(i)).isAttachedToWindow()) {
                 return false;
             }
         }
-        for (i = 0; i < this.mRightViews.size(); i++) {
-            if (!((View) this.mRightViews.get(i)).isAttachedToWindow()) {
+        for (i = 0; i < mRightViews.size(); i++) {
+            if (!((View) mRightViews.get(i)).isAttachedToWindow()) {
                 return false;
             }
         }
         return true;
     }
 
-    public void onProgress(float f, int i) {
+    @Override
+	public void onProgress(float f, int i) {
         float min = Math.min(f, 1.0f) / 1.0f;
         if (min != 0.0f) {
-            this.mPressure = (1.0f * min) + (this.mLastPressure * 0.0f);
+            mPressure = (1.0f * min) + (mLastPressure * 0.0f);
         } else {
-            this.mPressure = min;
+            mPressure = min;
         }
-        if (this.mAnimatorSet == null || !this.mAnimatorSet.isRunning()) {
-            if (min - this.mLastPressure < -0.1f) {
-                this.mAnimatorSet = createSpringbackAnimatorSets();
-                this.mAnimatorSet.start();
+        if (mAnimatorSet == null || !mAnimatorSet.isRunning()) {
+            if (min - mLastPressure < -0.1f) {
+                mAnimatorSet = createSpringbackAnimatorSets();
+                mAnimatorSet.start();
             } else {
-                translateViews(this.mSquishTranslationMax * SQUISH_TRANSLATION_MAP.getInterpolation(this.mPressure));
+                translateViews(mSquishTranslationMax * SQUISH_TRANSLATION_MAP.getInterpolation(mPressure));
             }
         }
-        this.mLastPressure = this.mPressure;
+        mLastPressure = mPressure;
     }
 
-    public void onRelease() {
+    @Override
+	public void onRelease() {
         onProgress(0.0f, 0);
     }
 

@@ -9,7 +9,6 @@ import android.os.Binder;
 import android.os.SystemClock;
 import android.util.Slog;
 import android.util.TypedValue;
-import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.google.android.systemui.elmyra.SnapshotConfiguration;
 import com.google.android.systemui.elmyra.SnapshotController;
@@ -26,7 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-class AssistGestureController implements Dumpable {
+class AssistGestureController {
     private Chassis mChassis;
     private SnapshotLogger mCompleteGestures;
     private final long mFalsePrimeWindow;
@@ -80,41 +79,6 @@ class AssistGestureController implements Dumpable {
         this.mSnapshotController = new SnapshotController(snapshotConfiguration);
     }
 
-    private void dumpProto(FileDescriptor fileDescriptor) {
-        int i = 0;
-        List snapshots = this.mIncompleteGestures.getSnapshots();
-        List snapshots2 = this.mCompleteGestures.getSnapshots();
-        if (snapshots.size() + snapshots2.size() != 0) {
-            final Snapshots snapshots3 = new Snapshots();
-            snapshots3.snapshots = new Snapshot[(snapshots.size() + snapshots2.size())];
-            int i2 = 0;
-            while (i2 < snapshots.size()) {
-                snapshots3.snapshots[i2] = ((SnapshotLogger.Snapshot) snapshots.get(i2)).getSnapshot();
-                i2++;
-            }
-            while (i < snapshots2.size()) {
-                snapshots3.snapshots[i2 + i] = ((SnapshotLogger.Snapshot) snapshots2.get(i)).getSnapshot();
-                i++;
-            }
-            byte[] toByteArray = MessageNano.toByteArray(snapshots3);
-            FileOutputStream fileOutputStream = new FileOutputStream(fileDescriptor);
-            long clearCallingIdentity = Binder.clearCallingIdentity();
-            try {
-                fileOutputStream.write(toByteArray);
-                fileOutputStream.flush();
-            } catch (IOException e) {
-                Slog.e("Elmyra/AssistGestureController", "Error writing to output stream");
-            } catch (Throwable th) {
-                this.mCompleteGestures.getSnapshots().clear();
-                this.mIncompleteGestures.getSnapshots().clear();
-                Binder.restoreCallingIdentity(clearCallingIdentity);
-            }
-            this.mCompleteGestures.getSnapshots().clear();
-            this.mIncompleteGestures.getSnapshots().clear();
-            Binder.restoreCallingIdentity(clearCallingIdentity);
-        }
-    }
-
     private void sendGestureProgress(GestureSensor gestureSensor, float f, int i) {
         if (this.mGestureListener != null) {
             this.mGestureListener.onGestureProgress(gestureSensor, f, i);
@@ -122,33 +86,6 @@ class AssistGestureController implements Dumpable {
         this.mSnapshotController.onGestureProgress(gestureSensor, f, i);
     }
 
-    public void dump(FileDescriptor fileDescriptor, PrintWriter printWriter, String[] strArr) {
-        if (this.mChassis != null) {
-            for (int i = 0; i < this.mChassis.sensors.length; i++) {
-                printWriter.print("sensors {");
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("  source: ");
-                stringBuilder.append(this.mChassis.sensors[i].source);
-                printWriter.print(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-                stringBuilder.append("  gain: ");
-                stringBuilder.append(this.mChassis.sensors[i].gain);
-                printWriter.print(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-                stringBuilder.append("  sensitivity: ");
-                stringBuilder.append(this.mChassis.sensors[i].sensitivity);
-                printWriter.print(stringBuilder.toString());
-                printWriter.print("}");
-            }
-            printWriter.println();
-        }
-        if (strArr.length == 2 && "proto".equals(strArr[1])) {
-            dumpProto(fileDescriptor);
-            return;
-        }
-        this.mCompleteGestures.dump(fileDescriptor, printWriter, strArr);
-        this.mIncompleteGestures.dump(fileDescriptor, printWriter, strArr);
-    }
 
     public Chassis getChassisConfiguration() {
         return this.mChassis;

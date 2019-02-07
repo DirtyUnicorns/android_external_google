@@ -1,6 +1,5 @@
 package com.google.android.systemui;
 
-import com.android.systemui.Dumpable;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.VendorServices;
 import com.android.systemui.R;
@@ -21,21 +20,6 @@ public class GoogleServices extends VendorServices {
     private void addService(Object obj) {
         if (obj != null) {
             this.mServices.add(obj);
-        }
-    }
-
-    public void dump(FileDescriptor fileDescriptor, PrintWriter printWriter, String[] strArr) {
-        int i = 0;
-        while (true) {
-            int i2 = i;
-            if (i2 < this.mServices.size()) {
-                if (this.mServices.get(i2) instanceof Dumpable) {
-                    ((Dumpable) this.mServices.get(i2)).dump(fileDescriptor, printWriter, strArr);
-                }
-                i = i2 + 1;
-            } else {
-                return;
-            }
         }
     }
 

@@ -8,7 +8,6 @@ import android.hardware.location.ContextHubMessage;
 import android.hardware.location.NanoAppFilter;
 import android.util.Log;
 import android.util.TypedValue;
-import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.google.android.systemui.elmyra.SnapshotConfiguration;
 import com.google.android.systemui.elmyra.SnapshotController;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class CHREGestureSensor implements Dumpable, GestureSensor {
+public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
     private final Context mContext;
     private Callback mContextHubCallback = new C16121();
     private int mContextHubHandle;
@@ -207,30 +206,6 @@ public class CHREGestureSensor implements Dumpable, GestureSensor {
         } catch (Throwable e) {
             Log.e("Elmyra/CHREGestureSensor", "Unable to update sensitivity", e);
         }
-    }
-
-    public void dump(FileDescriptor fileDescriptor, PrintWriter printWriter, String[] strArr) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(CHREGestureSensor.class.getSimpleName());
-        stringBuilder.append(" state:");
-        printWriter.println(stringBuilder.toString());
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  mIsListening: ");
-        stringBuilder.append(this.mIsListening);
-        printWriter.println(stringBuilder.toString());
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  mNanoAppFound: ");
-        stringBuilder.append(this.mNanoAppFound);
-        printWriter.println(stringBuilder.toString());
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  mNanoAppFoundOnBoot: ");
-        stringBuilder.append(this.mNanoAppFoundOnBoot);
-        printWriter.println(stringBuilder.toString());
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  mFindNanoAppRetries: ");
-        stringBuilder.append(this.mFindNanoAppRetries);
-        printWriter.println(stringBuilder.toString());
-        this.mController.dump(fileDescriptor, printWriter, strArr);
     }
 
     public boolean isListening() {

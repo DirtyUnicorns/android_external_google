@@ -2,7 +2,6 @@ package com.google.android.systemui.elmyra;
 
 import android.content.Context;
 import com.google.android.systemui.elmyra.actions.Action;
-import com.google.android.systemui.elmyra.actions.CameraAction;
 import com.google.android.systemui.elmyra.actions.CustomActions;
 import com.google.android.systemui.elmyra.actions.DismissTimer;
 // import com.google.android.systemui.elmyra.actions.LaunchOpa;
@@ -18,7 +17,6 @@ import com.google.android.systemui.elmyra.feedback.NavUndimEffect;
 // import com.google.android.systemui.elmyra.feedback.OpaLockscreen;
 import com.google.android.systemui.elmyra.feedback.SquishyNavigationButtons;
 import com.google.android.systemui.elmyra.feedback.UserActivity;
-import com.google.android.systemui.elmyra.gates.CameraVisibility;
 import com.google.android.systemui.elmyra.gates.ChargingState;
 import com.google.android.systemui.elmyra.gates.Gate;
 import com.google.android.systemui.elmyra.gates.KeyguardDeferredSetup;
@@ -52,10 +50,9 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
         // OpaHomeButton opaHomeButton = new OpaHomeButton(context);
         // LaunchOpa launchOpa = new LaunchOpa(context, Arrays.asList(new FeedbackEffect[]{opaHomeButton, new OpaLockscreen(context)}));
         List asList = Arrays.asList(new Action[]{new CustomActions(context), new DismissTimer(context), new SnoozeAlarm(context), new SilenceCall(context), /*new SettingsAction(context, launchOpa)*/});
-        // CameraAction cameraAction = new CameraAction(context, Arrays.asList(new FeedbackEffect[]{opaHomeButton}));
+        
         this.mActions.addAll(asList);
         this.mActions.add(new UnpinNotifications(context));
-        // this.mActions.add(cameraAction);
         // this.mActions.add(new SetupWizardAction(context, r2, launchOpa));
         // this.mActions.add(launchOpa);
         this.mFeedbackEffects = new ArrayList();
@@ -74,7 +71,6 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
         this.mGates.add(new TelephonyActivity(context));
         this.mGates.add(new VrMode(context));
         this.mGates.add(new KeyguardDeferredSetup(context, asList));
-        // this.mGates.add(new CameraVisibility(context, cameraAction));
         this.mGates.add(new PowerSaveState(context));
         List arrayList = new ArrayList();
         arrayList.add(new ScreenStateAdjustment(context));

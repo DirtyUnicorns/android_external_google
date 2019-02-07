@@ -16,14 +16,13 @@ public class UserContentObserver extends ContentObserver {
     private final Uri mSettingsUri;
     private final SynchronousUserSwitchObserver mUserSwitchCallback;
 
-    /* renamed from: com.google.android.systemui.elmyra.UserContentObserver$1 */
-    class C15861 extends SynchronousUserSwitchObserver {
-        C15861() {
+    class UserSwitchCallback extends SynchronousUserSwitchObserver {
+        UserSwitchCallback() {
         }
 
         public void onUserSwitching(int i) throws RemoteException {
-            UserContentObserver.this.updateContentObserver();
-            UserContentObserver.this.mCallback.accept(UserContentObserver.this.mSettingsUri);
+            updateContentObserver();
+            mCallback.accept(mSettingsUri);
         }
     }
 
@@ -31,26 +30,26 @@ public class UserContentObserver extends ContentObserver {
         this(context, uri, consumer, true);
     }
 
-    public UserContentObserver(Context context, Uri uri, Consumer<Uri> consumer, boolean z) {
+    public UserContentObserver(Context context, Uri uri, Consumer<Uri> consumer, boolean enabled) {
         super(new Handler(context.getMainLooper()));
-        this.mUserSwitchCallback = new C15861();
-        this.mContext = context;
-        this.mSettingsUri = uri;
-        this.mCallback = consumer;
-        if (z) {
+        mUserSwitchCallback = new UserSwitchCallback();
+        mContext = context;
+        mSettingsUri = uri;
+        mCallback = consumer;
+        if (enabled) {
             activate();
         }
     }
 
     private void updateContentObserver() {
-        this.mContext.getContentResolver().unregisterContentObserver(this);
-        this.mContext.getContentResolver().registerContentObserver(this.mSettingsUri, false, this, -2);
+        mContext.getContentResolver().unregisterContentObserver(this);
+        mContext.getContentResolver().registerContentObserver(mSettingsUri, false, this, -2);
     }
 
     public void activate() {
         updateContentObserver();
         try {
-            ActivityManager.getService().registerUserSwitchObserver(this.mUserSwitchCallback, "Elmyra/UserContentObserver");
+            ActivityManager.getService().registerUserSwitchObserver(mUserSwitchCallback, "Elmyra/UserContentObserver");
         } catch (Throwable e) {
             Log.e("Elmyra/UserContentObserver", "Failed to register user switch observer", e);
         }
@@ -59,13 +58,13 @@ public class UserContentObserver extends ContentObserver {
     public void deactivate() {
         this.mContext.getContentResolver().unregisterContentObserver(this);
         try {
-            ActivityManager.getService().unregisterUserSwitchObserver(this.mUserSwitchCallback);
+            ActivityManager.getService().unregisterUserSwitchObserver(mUserSwitchCallback);
         } catch (Throwable e) {
             Log.e("Elmyra/UserContentObserver", "Failed to unregister user switch observer", e);
         }
     }
 
-    public void onChange(boolean z, Uri uri) {
-        this.mCallback.accept(uri);
+    public void onChange(boolean selfChange, Uri uri) {
+        mCallback.accept(uri);
     }
 }

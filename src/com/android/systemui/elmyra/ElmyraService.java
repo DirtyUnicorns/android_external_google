@@ -7,7 +7,6 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.util.Log;
 import com.android.internal.logging.MetricsLogger;
-import com.android.systemui.Dumpable;
 import com.google.android.systemui.elmyra.actions.Action;
 import com.google.android.systemui.elmyra.actions.Action.Listener;
 import com.google.android.systemui.elmyra.feedback.FeedbackEffect;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ElmyraService implements Dumpable {
+public class ElmyraService {
     protected final Listener mActionListener = new C15821();
     private final List<Action> mActions;
     private final Context mContext;
@@ -240,49 +239,6 @@ public class ElmyraService implements Dumpable {
         }
         mLastActiveAction = firstAvailableAction;
         return firstAvailableAction;
-    }
-
-    public void dump(FileDescriptor fileDescriptor, PrintWriter printWriter, String[] strArr) {
-        int i;
-        int i2 = 0;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(ElmyraService.class.getSimpleName());
-        stringBuilder.append(" state:");
-        printWriter.println(stringBuilder.toString());
-        printWriter.println("  Gates:");
-        for (i = 0; i < mGates.size(); i++) {
-            printWriter.print("    ");
-            if (mGates.get(i).isActive()) {
-                printWriter.print(mGates.get(i).isBlocking() ? "X " : "O ");
-            } else {
-                printWriter.print("- ");
-            }
-            printWriter.println(mGates.get(i).toString());
-        }
-        printWriter.println("  Actions:");
-        for (i = 0; i < mActions.size(); i++) {
-            printWriter.print("    ");
-            printWriter.print(mActions.get(i).isAvailable() ? "O " : "X ");
-            printWriter.println(mActions.get(i).toString());
-        }
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  Active: ");
-        stringBuilder.append(mLastActiveAction);
-        printWriter.println(stringBuilder.toString());
-        printWriter.println("  Feedback Effects:");
-        while (i2 < mFeedbackEffects.size()) {
-            printWriter.print("    ");
-            printWriter.println(mFeedbackEffects.get(i2).toString());
-            i2++;
-        }
-        stringBuilder = new StringBuilder();
-        stringBuilder.append("  Gesture Sensor: ");
-        stringBuilder.append(mGestureSensor.toString());
-        printWriter.println(stringBuilder.toString());
-        if (mGestureSensor instanceof Dumpable) {
-            ((Dumpable) mGestureSensor).dump(fileDescriptor, printWriter, strArr);
-
-        }
     }
 
     protected void updateSensorListener() {

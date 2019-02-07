@@ -29,24 +29,35 @@ public class CustomActions extends Action {
                 Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT);
 
         switch (mActionSelection) {
-            case 0:
+            case 0: // No action
             default:
                 break;
-            case 1:
-                getContext().startActivity(new Intent(Intent.ACTION_VOICE_COMMAND).setFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK));
+            case 1: // Assistant
+                launchIntent(Intent.ACTION_VOICE_COMMAND, getContext());
                 break;
-            case 2:
-                ActionUtils.switchScreenOff(getContext());
+            case 2: // Voice search
+                launchIntent(Intent.ACTION_SEARCH_LONG_PRESS, getContext());
                 break;
-            case 3:
+            case 3: // Flashlight
                 ActionUtils.toggleCameraFlash();
                 break;
-            case 4:
+            case 4: // Clear notifications
+                ActionUtils.clearAllNotifications();
+                break;
+            case 5: // Volume panel
                 ActionUtils.toggleVolumePanel(getContext());
                 break;
-            case 5:
-                ActionUtils.clearAllNotifications();
+            case 6: // Screen off
+                ActionUtils.switchScreenOff(getContext());
+                break;
+            case 7: // Notification panel
+                ActionUtils.toggleNotifications();
+                break;
+            case 8: // Screenshot
+                ActionUtils.takeScreenshot(true);
+                break;
+            case 9: // QS panel
+                ActionUtils.toggleQsPanel();
                 break;
         }
     }
@@ -59,5 +70,11 @@ public class CustomActions extends Action {
         stringBuilder.append(true);
         stringBuilder.append("]");
         return stringBuilder.toString();
+    }
+
+    private void launchIntent(String customIntent, Context context) {
+        Intent intent = new Intent(customIntent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }

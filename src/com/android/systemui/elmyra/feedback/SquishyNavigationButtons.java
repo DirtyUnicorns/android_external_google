@@ -1,6 +1,8 @@
 package com.google.android.systemui.elmyra.feedback;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.provider.Settings;
 import android.view.View;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -11,9 +13,11 @@ import java.util.List;
 public class SquishyNavigationButtons extends NavigationBarEffect {
     private final KeyguardViewMediator mKeyguardViewMediator;
     private final SquishyViewController mViewController;
+    private ContentResolver resolver;
 
     public SquishyNavigationButtons(Context context) {
         super(context);
+        resolver = context.getContentResolver();
         mViewController = new SquishyViewController(context);
         mKeyguardViewMediator = (KeyguardViewMediator) SysUiServiceProvider.getComponent(context, KeyguardViewMediator.class);
     }
@@ -33,12 +37,14 @@ public class SquishyNavigationButtons extends NavigationBarEffect {
     }
 
     @Override
-	protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
-        return !mKeyguardViewMediator.isShowingAndNotOccluded();
+    protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
+        boolean squeezeSelection = Settings.System.getInt(resolver,
+                Settings.System.SQUEEZE_SELECTION, 0) == 0;
+        return !squeezeSelection && !mKeyguardViewMediator.isShowingAndNotOccluded();
     }
 
     @Override
-	protected boolean validateFeedbackEffects(List<FeedbackEffect> list) {
+    protected boolean validateFeedbackEffects(List<FeedbackEffect> list) {
         return mViewController.isAttachedToWindow();
     }
 }

@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GestureConfiguration {
-    private static final Range<Float> SENSITIVITY_RANGE = Range.create(Float.valueOf(0.0f), Float.valueOf(1.0f));
-    protected final Consumer<Adjustment> mAdjustmentCallback = new _$$Lambda$GestureConfiguration$3mm6FunisrpGZpM7qxO1no0tVbU(this);
+    private static final Range<Float> SENSITIVITY_RANGE = Range.create(0.0f, 1.0f);
+    protected final Consumer<Adjustment> mAdjustmentCallback = new
+                _$$Lambda$GestureConfiguration$3mm6FunisrpGZpM7qxO1no0tVbU(this);
     private final List<Adjustment> mAdjustments;
     private final Context mContext;
     private Listener mListener;
     private int[] mLowerThreshold;
-    private float mSensitivity = 0.5f;
-    private final UserContentObserver mSettingsObserver;
+    private float mSensitivity;
     private int[] mSlopeSensitivity;
     private int[] mTimeWindow;
     private int[] mUpperThreshold;
@@ -32,7 +32,9 @@ public class GestureConfiguration {
         this.mAdjustments = new ArrayList(list);
         this.mAdjustments.forEach(new _$$Lambda$GestureConfiguration$F1rbWa9DGNKbISCQL2RDoKSl7Sw(this));
         Resources resources = context.getResources();
-        this.mSettingsObserver = new UserContentObserver(this.mContext, Secure.getUriFor("assist_gesture_sensitivity"), new _$$Lambda$GestureConfiguration$qyMZ0LytUPraF62LfdN_eAAd2vo(this));
+        new UserContentObserver(this.mContext, Secure.getUriFor(
+                "assist_gesture_sensitivity"),
+                new _$$Lambda$GestureConfiguration$qyMZ0LytUPraF62LfdN_eAAd2vo(this));
         this.mUpperThreshold = resources.getIntArray(R.array.elmyra_upper_threshold);
         this.mSlopeSensitivity = resources.getIntArray(R.array.elmyra_slope_sensitivity);
         this.mLowerThreshold = resources.getIntArray(R.array.elmyra_lower_threshold);
@@ -49,8 +51,9 @@ public class GestureConfiguration {
     }
 
     private float getUserSensitivity() {
-        float floatForUser = Secure.getFloatForUser(this.mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
-        return !SENSITIVITY_RANGE.contains(Float.valueOf(floatForUser)) ? 0.5f : floatForUser;
+        float floatForUser = Secure.getFloatForUser(
+                this.mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
+        return !SENSITIVITY_RANGE.contains(floatForUser) ? 0.5f : floatForUser;
     }
 
     public float getLowerThreshold() {
@@ -65,7 +68,8 @@ public class GestureConfiguration {
             if (i2 >= this.mAdjustments.size()) {
                 return f;
             }
-            f = ((Float) SENSITIVITY_RANGE.clamp(Float.valueOf(((Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f)))).floatValue();
+            f = SENSITIVITY_RANGE.clamp(Float.valueOf(((
+                    Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f)));
             i = i2 + 1;
         }
     }

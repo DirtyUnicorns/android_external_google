@@ -21,7 +21,6 @@ import com.google.android.systemui.elmyra.gates.VrMode;
 import com.google.android.systemui.elmyra.gates.WakeMode;
 import com.google.android.systemui.elmyra.sensors.CHREGestureSensor;
 import com.google.android.systemui.elmyra.sensors.GestureSensor;
-import com.google.android.systemui.elmyra.sensors.JNIGestureSensor;
 import com.google.android.systemui.elmyra.sensors.config.GestureConfiguration;
 import com.google.android.systemui.elmyra.sensors.config.ScreenStateAdjustment;
 import java.util.ArrayList;
@@ -57,11 +56,7 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
         List arrayList = new ArrayList();
         arrayList.add(new ScreenStateAdjustment(context));
         GestureConfiguration gestureConfiguration = new GestureConfiguration(context, arrayList);
-        if (JNIGestureSensor.isAvailable(context)) {
-            mGestureSensor = new JNIGestureSensor(context, gestureConfiguration);
-        } else {
-            mGestureSensor = new CHREGestureSensor(context, gestureConfiguration, new SnapshotConfiguration(context));
-        }
+        mGestureSensor = new CHREGestureSensor(context, gestureConfiguration, new SnapshotConfiguration(context));
     }
 
     @Override

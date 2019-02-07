@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioAttributes.Builder;
+import android.os.UserHandle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -25,8 +26,8 @@ public class HapticClick implements FeedbackEffect {
 
     @Override
     public void onProgress(float f, int i) {
-        boolean squeezeSelection = Settings.System.getInt(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0) == 0;
+        boolean squeezeSelection = Settings.System.getIntForUser(resolver,
+                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
         if (squeezeSelection) {
             return;
@@ -42,8 +43,8 @@ public class HapticClick implements FeedbackEffect {
     }
 
     public void onResolve(DetectionProperties detectionProperties) {
-        boolean squeezeSelection = Settings.System.getInt(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0) == 0;
+        boolean squeezeSelection = Settings.System.getIntForUser(resolver,
+                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
         if (squeezeSelection) {
             return;

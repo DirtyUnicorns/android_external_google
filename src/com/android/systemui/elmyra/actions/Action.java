@@ -25,12 +25,6 @@ public abstract class Action {
         }
     }
 
-    public static /* synthetic */ void lambda$notifyListener$0(Action action) {
-        if (action.mListener != null) {
-            action.mListener.onActionAvailabilityChanged(action);
-        }
-    }
-
     protected Context getContext() {
         return mContext;
     }
@@ -39,10 +33,10 @@ public abstract class Action {
 
     protected void notifyListener() {
         if (mListener != null) {
-            mHandler.post(new _$$Lambda$Action$j2J8_IgWsMdJmJbAPdwLJPf2ZWA(this));
+            mHandler.post(new LambdaActionNotify(this));
         }
         if (!isAvailable()) {
-            mHandler.post(new _$$Lambda$Action$065n3tshnSDLPbdPQiUaqEYgAYY(this));
+            mHandler.post(new LambdaActionFeedback(this));
         }
     }
 
@@ -98,6 +92,40 @@ public abstract class Action {
                     return;
                 }
             }
+        }
+    }
+
+    // Small lambdas for Action class only, let's make them private.
+    private class LambdaActionNotify implements Runnable {
+        private Action action;
+
+        public LambdaActionNotify(Action act) {
+            action = act;
+        }
+
+        public void lambdaNotifyListener(Action act) {
+            if (action.mListener != null) {
+                action.mListener.onActionAvailabilityChanged(act);
+            }
+        }
+
+        @Override
+        public final void run() {
+            lambdaNotifyListener(action);
+        }
+    }
+
+
+    private class LambdaActionFeedback implements Runnable {
+        private Action action;
+
+        public LambdaActionFeedback(Action act) {
+           action = act;
+        }
+
+        @Override
+        public final void run() {
+            action.updateFeedbackEffects(0.0f, 0);
         }
     }
 }

@@ -3,18 +3,25 @@ package com.google.android.systemui.elmyra.actions;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.UserHandle;
 import android.provider.Settings;
 
 import com.android.internal.util.du.ActionUtils;
+import com.android.systemui.Dependency;
+import com.android.systemui.assist.AssistManager;
+
 import com.google.android.systemui.elmyra.sensors.GestureSensor.DetectionProperties;
 
 public class CustomActions extends Action {
 
     private int mActionSelection;
 
+    protected AssistManager mAssistManager;
+
     public CustomActions(Context context) {
         super(context, null);
+        mAssistManager = Dependency.get(AssistManager.class);
     }
 
     @Override
@@ -33,7 +40,7 @@ public class CustomActions extends Action {
             default:
                 break;
             case 1: // Assistant
-                launchIntent(Intent.ACTION_VOICE_COMMAND, getContext());
+                mAssistManager.startAssist(new Bundle() /* args */);
                 break;
             case 2: // Voice search
                 launchIntent(Intent.ACTION_SEARCH_LONG_PRESS, getContext());

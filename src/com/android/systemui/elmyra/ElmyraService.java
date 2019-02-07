@@ -18,6 +18,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ElmyraService implements Dumpable {
     protected final Listener mActionListener = new C15821();
@@ -122,11 +123,27 @@ public class ElmyraService implements Dumpable {
         this.mLogger = new MetricsLogger();
         this.mPowerManager = (PowerManager) this.mContext.getSystemService("power");
         this.mWakeLock = this.mPowerManager.newWakeLock(1, "Elmyra/ElmyraService");
+
+        // Anonymous Consumer class for Actions
+        Consumer<Action> setActionListener = new Consumer<Action>() {
+            public void accept(Action action) {
+                action.setListener(mActionListener);
+            }
+        };
+
         this.mActions = new ArrayList(serviceConfiguration.getActions());
-        this.mActions.forEach(new _$$Lambda$ElmyraService$AV8onMO5IkvT88F5MAxNGAFWl18(this));
+        this.mActions.forEach(setActionListener);
         this.mFeedbackEffects = new ArrayList(serviceConfiguration.getFeedbackEffects());
+
+        // Anonymous Consumer class for Gates
+        Consumer<Gate> setGateListener = new Consumer<Gate>() {
+            public void accept(Gate gate) {
+                gate.setListener(mGateListener);
+            }
+        };
+
         this.mGates = new ArrayList(serviceConfiguration.getGates());
-        this.mGates.forEach(new _$$Lambda$ElmyraService$BALyMaTEhjk9LjmmSMkHO_yFKc4(this));
+        this.mGates.forEach(setGateListener);
         this.mGestureSensor = serviceConfiguration.getGestureSensor();
         if (this.mGestureSensor != null) {
             this.mGestureSensor.setGestureListener(this.mGestureListener);

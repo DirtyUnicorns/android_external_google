@@ -32,8 +32,8 @@ public class CustomActions extends Action {
     public void onTrigger(DetectionProperties detectionProperties) {
         final ContentResolver resolver = getContext().getContentResolver();
 
-        mActionSelection = Settings.System.getIntForUser(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT);
+        mActionSelection = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT);
 
         switch (mActionSelection) {
             case 0: // No action

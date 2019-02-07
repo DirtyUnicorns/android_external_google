@@ -26,8 +26,8 @@ public class HapticClick implements FeedbackEffect {
 
     @Override
     public void onProgress(float f, int i) {
-        boolean squeezeSelection = Settings.System.getIntForUser(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        boolean squeezeSelection = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
         if (squeezeSelection) {
             return;
@@ -43,8 +43,8 @@ public class HapticClick implements FeedbackEffect {
     }
 
     public void onResolve(DetectionProperties detectionProperties) {
-        boolean squeezeSelection = Settings.System.getIntForUser(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        boolean squeezeSelection = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
         if (squeezeSelection) {
             return;

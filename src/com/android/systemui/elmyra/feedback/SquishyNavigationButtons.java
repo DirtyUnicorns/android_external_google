@@ -44,8 +44,8 @@ public class SquishyNavigationButtons extends NavigationBarEffect {
 
     @Override
     protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
-        boolean squeezeSelection = Settings.System.getIntForUser(resolver,
-                Settings.System.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        boolean squeezeSelection = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
         return !squeezeSelection && !mKeyguardViewMediator.isShowingAndNotOccluded();
     }
 

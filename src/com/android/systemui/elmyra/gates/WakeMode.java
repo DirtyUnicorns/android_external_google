@@ -3,9 +3,11 @@ package com.google.android.systemui.elmyra.gates;
 import android.content.Context;
 import android.provider.Settings.Secure;
 import com.google.android.systemui.elmyra.UserContentObserver;
+import java.util.function.Consumer;
 
 public class WakeMode extends PowerState {
-    private final UserContentObserver mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_wake_enabled"), new _$$Lambda$WakeMode$lV6uvTzrddoc5zkk3T9UO9wzYhA(this), false);
+    private final UserContentObserver mSettingsObserver = new UserContentObserver(getContext(), Secure.getUriFor("assist_gesture_wake_enabled"),
+     new LambdaWakeMode(this), false);
     private boolean mWakeSettingEnabled;
 
     public WakeMode(Context context) {
@@ -44,5 +46,17 @@ public class WakeMode extends PowerState {
         stringBuilder.append(this.mWakeSettingEnabled);
         stringBuilder.append("]");
         return stringBuilder.toString();
+    }
+
+    private class LambdaWakeMode implements Consumer {
+        private WakeMode wakeMode;
+
+        public LambdaWakeMode(WakeMode wM) {
+            wakeMode = wakeMode;
+        }
+
+        public final void accept(Object wM) {
+            wakeMode.updateWakeSetting();
+        }
     }
 }

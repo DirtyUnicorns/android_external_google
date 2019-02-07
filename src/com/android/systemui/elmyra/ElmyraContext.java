@@ -2,14 +2,14 @@ package com.google.android.systemui.elmyra;
 
 import android.content.Context;
 
-public final class ElmyraContext {
+public class ElmyraContext {
     private Context mContext;
 
     public ElmyraContext(Context context) {
-        this.mContext = context;
+        mContext = context;
     }
 
     public boolean isAvailable() {
-        return this.mContext.getPackageManager().hasSystemFeature("android.hardware.sensor.assist");
+        return mContext.getPackageManager().hasSystemFeature("android.hardware.sensor.assist");
     }
 }

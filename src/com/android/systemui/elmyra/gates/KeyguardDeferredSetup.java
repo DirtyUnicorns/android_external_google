@@ -7,6 +7,7 @@ import com.google.android.systemui.elmyra.actions.Action;
 import com.google.android.systemui.elmyra.gates.Gate.Listener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class KeyguardDeferredSetup extends Gate {
     private boolean mDeferredSetupComplete;
@@ -30,11 +31,13 @@ public class KeyguardDeferredSetup extends Gate {
         this.mExceptions = new ArrayList(list);
         this.mKeyguardGate = new KeyguardVisibility(context);
         this.mKeyguardGate.setListener(this.mKeyguardGateListener);
-        this.mSettingsObserver = new UserContentObserver(context, Secure.getUriFor("assist_gesture_setup_complete"), new _$$Lambda$KeyguardDeferredSetup$XgzT2zBsBCjxQnRb5RrgDqiHavM(this), false);
+        this.mSettingsObserver = new UserContentObserver(context, Secure.getUriFor("assist_gesture_setup_complete"), 
+            new LambdaKeyguardDeferredSetup(this), false);
     }
 
     private boolean isDeferredSetupComplete() {
-        return Secure.getIntForUser(getContext().getContentResolver(), "assist_gesture_setup_complete", 0, -2) != 0;
+        return Secure.getIntForUser(getContext().getContentResolver(),
+         "assist_gesture_setup_complete", 0, -2) != 0;
     }
 
     protected void updateSetupComplete() {
@@ -76,5 +79,18 @@ public class KeyguardDeferredSetup extends Gate {
         stringBuilder.append(this.mDeferredSetupComplete);
         stringBuilder.append("]");
         return stringBuilder.toString();
+    }
+
+
+    private class LambdaKeyguardDeferredSetup implements Consumer {
+        private KeyguardDeferredSetup keyguardDeferredSetup;
+
+        public LambdaKeyguardDeferredSetup(KeyguardDeferredSetup keyDefSetup) {
+            keyguardDeferredSetup = keyDefSetup;
+        }
+
+        public final void accept(Object keygDefSetup) {
+            keyguardDeferredSetup.updateSetupComplete();
+        }
     }
 }

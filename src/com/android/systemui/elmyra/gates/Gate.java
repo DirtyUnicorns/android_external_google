@@ -18,12 +18,6 @@ public abstract class Gate {
         this.mNotifyHandler = new Handler(context.getMainLooper());
     }
 
-    public static /* synthetic */ void lambda$notifyListener$0(Gate gate) {
-        if (gate.mListener != null) {
-            gate.mListener.onGateChanged(gate);
-        }
-    }
-
     public void activate() {
         if (!isActive()) {
             this.mActive = true;
@@ -54,7 +48,7 @@ public abstract class Gate {
 
     protected void notifyListener() {
         if (isActive() && this.mListener != null) {
-            this.mNotifyHandler.post(new _$$Lambda$Gate$Zso7JKgyGOlwxNCrlJqPhKj2Wp4(this));
+            this.mNotifyHandler.post(new LambdaGateNotify(this));
         }
     }
 
@@ -68,5 +62,23 @@ public abstract class Gate {
 
     public String toString() {
         return getClass().getSimpleName();
+    }
+
+    private class LambdaGateNotify implements Runnable {
+        private Gate gate;
+
+        public LambdaGateNotify(Gate gateParam) {
+            gate = gateParam;
+        }
+
+        public void lambdaNotifyListener(Gate gateParam) {
+            if (gateParam.mListener != null) {
+                gateParam.mListener.onGateChanged(gate);
+            }
+        }
+
+        public final void run() {
+            lambdaNotifyListener(gate);
+        }
     }
 }

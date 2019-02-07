@@ -36,51 +36,51 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
     private final GestureSensor mGestureSensor;
 
     public ServiceConfigurationGoogle(Context context) {
-        this.mContext = context;
-        this.mActions.add(new CustomActions(context));
-        this.mFeedbackEffects = new ArrayList();
-        this.mFeedbackEffects.add(new HapticClick(context));
-        this.mFeedbackEffects.add(new SquishyNavigationButtons(context));
-        this.mFeedbackEffects.add(new NavUndimEffect(context));
-        this.mFeedbackEffects.add(new UserActivity(context));
-        this.mGates = new ArrayList();
-        this.mGates.add(new WakeMode(context));
-        this.mGates.add(new ChargingState(context));
-        this.mGates.add(new UsbState(context));
-        this.mGates.add(new KeyguardProximity(context));
-        this.mGates.add(new NavigationBarVisibility(context, mActions));
-        this.mGates.add(new SystemKeyPress(context));
-        this.mGates.add(new TelephonyActivity(context));
-        this.mGates.add(new VrMode(context));
-        this.mGates.add(new KeyguardDeferredSetup(context, mActions));
-        this.mGates.add(new PowerSaveState(context));
+        mContext = context;
+        mActions.add(new CustomActions(context));
+        mFeedbackEffects = new ArrayList();
+        mFeedbackEffects.add(new HapticClick(context));
+        mFeedbackEffects.add(new SquishyNavigationButtons(context));
+        mFeedbackEffects.add(new NavUndimEffect(context));
+        mFeedbackEffects.add(new UserActivity(context));
+        mGates = new ArrayList();
+        mGates.add(new WakeMode(context));
+        mGates.add(new ChargingState(context));
+        mGates.add(new UsbState(context));
+        mGates.add(new KeyguardProximity(context));
+        mGates.add(new NavigationBarVisibility(context, mActions));
+        mGates.add(new SystemKeyPress(context));
+        mGates.add(new TelephonyActivity(context));
+        mGates.add(new VrMode(context));
+        mGates.add(new KeyguardDeferredSetup(context, mActions));
+        mGates.add(new PowerSaveState(context));
         List arrayList = new ArrayList();
         arrayList.add(new ScreenStateAdjustment(context));
         GestureConfiguration gestureConfiguration = new GestureConfiguration(context, arrayList);
         if (JNIGestureSensor.isAvailable(context)) {
-            this.mGestureSensor = new JNIGestureSensor(context, gestureConfiguration);
+            mGestureSensor = new JNIGestureSensor(context, gestureConfiguration);
         } else {
-            this.mGestureSensor = new CHREGestureSensor(context, gestureConfiguration, new SnapshotConfiguration(context));
+            mGestureSensor = new CHREGestureSensor(context, gestureConfiguration, new SnapshotConfiguration(context));
         }
     }
 
     @Override
     public List<Action> getActions() {
-        return this.mActions;
+        return mActions;
     }
 
     @Override
     public List<FeedbackEffect> getFeedbackEffects() {
-        return this.mFeedbackEffects;
+        return mFeedbackEffects;
     }
 
     @Override
     public List<Gate> getGates() {
-        return this.mGates;
+        return mGates;
     }
 
     @Override
     public GestureSensor getGestureSensor() {
-        return this.mGestureSensor;
+        return mGestureSensor;
     }
 }

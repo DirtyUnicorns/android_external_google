@@ -6,7 +6,6 @@ import com.google.android.systemui.elmyra.actions.CustomActions;
 import com.google.android.systemui.elmyra.actions.DismissTimer;
 // import com.google.android.systemui.elmyra.actions.LaunchOpa;
 // import com.google.android.systemui.elmyra.actions.SettingsAction;
-// import com.google.android.systemui.elmyra.actions.SetupWizardAction;
 import com.google.android.systemui.elmyra.actions.SilenceCall;
 import com.google.android.systemui.elmyra.actions.SnoozeAlarm;
 import com.google.android.systemui.elmyra.actions.UnpinNotifications;
@@ -23,7 +22,6 @@ import com.google.android.systemui.elmyra.gates.KeyguardDeferredSetup;
 import com.google.android.systemui.elmyra.gates.KeyguardProximity;
 import com.google.android.systemui.elmyra.gates.NavigationBarVisibility;
 import com.google.android.systemui.elmyra.gates.PowerSaveState;
-import com.google.android.systemui.elmyra.gates.SetupWizard;
 import com.google.android.systemui.elmyra.gates.SystemKeyPress;
 import com.google.android.systemui.elmyra.gates.TelephonyActivity;
 import com.google.android.systemui.elmyra.gates.UsbState;
@@ -50,10 +48,8 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
         // OpaHomeButton opaHomeButton = new OpaHomeButton(context);
         // LaunchOpa launchOpa = new LaunchOpa(context, Arrays.asList(new FeedbackEffect[]{opaHomeButton, new OpaLockscreen(context)}));
         List asList = Arrays.asList(new Action[]{new CustomActions(context), new DismissTimer(context), new SnoozeAlarm(context), new SilenceCall(context), /*new SettingsAction(context, launchOpa)*/});
-        
         this.mActions.addAll(asList);
         this.mActions.add(new UnpinNotifications(context));
-        // this.mActions.add(new SetupWizardAction(context, r2, launchOpa));
         // this.mActions.add(launchOpa);
         this.mFeedbackEffects = new ArrayList();
         this.mFeedbackEffects.add(new HapticClick(context));
@@ -65,7 +61,6 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
         this.mGates.add(new ChargingState(context));
         this.mGates.add(new UsbState(context));
         this.mGates.add(new KeyguardProximity(context));
-        //this.mGates.add(new SetupWizard(context, Arrays.asList(new Action[]{r2})));
         this.mGates.add(new NavigationBarVisibility(context, asList));
         this.mGates.add(new SystemKeyPress(context));
         this.mGates.add(new TelephonyActivity(context));

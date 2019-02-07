@@ -4,7 +4,6 @@ import android.content.Context;
 import com.google.android.systemui.elmyra.actions.Action;
 import com.google.android.systemui.elmyra.actions.CustomActions;
 import com.google.android.systemui.elmyra.actions.DismissTimer;
-// import com.google.android.systemui.elmyra.actions.LaunchOpa;
 // import com.google.android.systemui.elmyra.actions.SettingsAction;
 import com.google.android.systemui.elmyra.actions.SilenceCall;
 import com.google.android.systemui.elmyra.actions.SnoozeAlarm;
@@ -45,12 +44,9 @@ public class ServiceConfigurationGoogle implements ServiceConfiguration {
 
     public ServiceConfigurationGoogle(Context context) {
         this.mContext = context;
-        // OpaHomeButton opaHomeButton = new OpaHomeButton(context);
-        // LaunchOpa launchOpa = new LaunchOpa(context, Arrays.asList(new FeedbackEffect[]{opaHomeButton, new OpaLockscreen(context)}));
-        List asList = Arrays.asList(new Action[]{new CustomActions(context), new DismissTimer(context), new SnoozeAlarm(context), new SilenceCall(context), /*new SettingsAction(context, launchOpa)*/});
+        List asList = Arrays.asList(new Action[]{new CustomActions(context), new DismissTimer(context), new SnoozeAlarm(context), new SilenceCall(context)});
         this.mActions.addAll(asList);
         this.mActions.add(new UnpinNotifications(context));
-        // this.mActions.add(launchOpa);
         this.mFeedbackEffects = new ArrayList();
         this.mFeedbackEffects.add(new HapticClick(context));
         this.mFeedbackEffects.add(new SquishyNavigationButtons(context));

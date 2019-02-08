@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class GestureConfiguration {
     private static final Range<Float> SENSITIVITY_RANGE = Range.create(0.0f, 1.0f);
     protected final Consumer<Adjustment> mAdjustmentCallback = new
-                _$$Lambda$GestureConfiguration$3mm6FunisrpGZpM7qxO1no0tVbU(this);
+            _$$Lambda$GestureConfiguration$3mm6FunisrpGZpM7qxO1no0tVbU(this);
     private final List<Adjustment> mAdjustments;
     private final Context mContext;
     private Listener mListener;
@@ -30,7 +30,8 @@ public class GestureConfiguration {
     public GestureConfiguration(Context context, List<Adjustment> list) {
         this.mContext = context;
         this.mAdjustments = new ArrayList(list);
-        this.mAdjustments.forEach(new _$$Lambda$GestureConfiguration$F1rbWa9DGNKbISCQL2RDoKSl7Sw(this));
+        this.mAdjustments.forEach(
+                new _$$Lambda$GestureConfiguration$F1rbWa9DGNKbISCQL2RDoKSl7Sw(this));
         Resources resources = context.getResources();
         new UserContentObserver(this.mContext, Secure.getUriFor(
                 "assist_gesture_sensitivity"),
@@ -53,7 +54,7 @@ public class GestureConfiguration {
     private float getUserSensitivity() {
         float floatForUser = Secure.getFloatForUser(
                 this.mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
-        return !SENSITIVITY_RANGE.contains(floatForUser) ? 0.5f : floatForUser;
+        return floatForUser / 10f;
     }
 
     public float getLowerThreshold() {
@@ -69,7 +70,7 @@ public class GestureConfiguration {
                 return f;
             }
             f = SENSITIVITY_RANGE.clamp(Float.valueOf(((
-                    Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f)));
+                    Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f))).floatValue();
             i = i2 + 1;
         }
     }

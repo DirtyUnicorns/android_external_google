@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
+public class CHREGestureSensor implements GestureSensor {
     private final Context mContext;
-    private Callback mContextHubCallback = new C16121();
+    private Callback mContextHubCallback = new ContextHubCallback();
     private int mContextHubHandle;
     private final ContextHubManager mContextHubManager;
     private final AssistGestureController mController;
@@ -40,68 +40,61 @@ public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
     private final float mProgressDetectThreshold;
     private final SnapshotController.Listener mSnapshotListener = new _$$Lambda$CHREGestureSensor$9PliWiPLg_s_9_ha1Cbnsvp3HuA(this);
 
-    /* renamed from: com.google.android.systemui.elmyra.sensors.CHREGestureSensor$1 */
-    class C16121 extends Callback {
-        C16121() {
+    class ContextHubCallback extends Callback {
+        ContextHubCallback() {
         }
 
         public void onMessageReceipt(int i, int i2, ContextHubMessage contextHubMessage) {
-            if (i2 == CHREGestureSensor.this.mNanoAppHandle) {
-                if (CHREGestureSensor.this.mNanoAppFound) {
+            if (i2 == mNanoAppHandle) {
+                if (mNanoAppFound) {
                     try {
                         if (contextHubMessage.getMsgType() == 1) {
                             MessageV1 parseFrom = MessageV1.parseFrom(contextHubMessage.getData());
                             if (parseFrom.hasGestureDetected()) {
-                                CHREGestureSensor.this.mController.onGestureDetected(new DetectionProperties(parseFrom.getGestureDetected().hapticConsumed, parseFrom.getGestureDetected().hostSuspended));
+                                mController.onGestureDetected(new DetectionProperties(parseFrom.getGestureDetected().hapticConsumed, parseFrom.getGestureDetected().hostSuspended));
                                 return;
                             } else if (parseFrom.hasGestureProgress()) {
-                                CHREGestureSensor.this.mController.onGestureProgress(parseFrom.getGestureProgress());
+                                mController.onGestureProgress(parseFrom.getGestureProgress());
                                 return;
                             } else if (parseFrom.hasSnapshot()) {
-                                CHREGestureSensor.this.mController.onSnapshotReceived(parseFrom.getSnapshot());
+                                mController.onSnapshotReceived(parseFrom.getSnapshot());
                                 return;
                             } else if (parseFrom.hasChassis()) {
-                                CHREGestureSensor.this.mController.storeChassisConfiguration(parseFrom.getChassis());
+                                mController.storeChassisConfiguration(parseFrom.getChassis());
                                 return;
                             } else {
                                 return;
                             }
                         }
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append("Unknown message type: ");
-                        stringBuilder.append(contextHubMessage.getMsgType());
-                        Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
                         return;
                     } catch (Throwable e) {
-                        Log.e("Elmyra/CHREGestureSensor", "Invalid protocol buffer", e);
                         return;
                     }
                 }
-                Log.wtf("Elmyra/CHREGestureSensor", "onMessageReceipt(): nanoapp not found");
             }
         }
     }
 
     public CHREGestureSensor(Context context, GestureConfiguration gestureConfiguration, SnapshotConfiguration snapshotConfiguration) {
-        this.mContext = context;
+        mContext = context;
         TypedValue typedValue = new TypedValue();
         context.getResources().getValue(R.dimen.elmyra_progress_detect_threshold, typedValue, true);
-        this.mProgressDetectThreshold = typedValue.getFloat();
-        this.mController = new AssistGestureController(context, this, snapshotConfiguration);
-        this.mController.setSnapshotListener(this.mSnapshotListener);
-        this.mGestureConfiguration = gestureConfiguration;
-        this.mGestureConfiguration.setListener(new _$$Lambda$CHREGestureSensor$GZmCEPt8kQ_zIdv2oTQazqe1swY(this));
-        this.mContextHubManager = (ContextHubManager) this.mContext.getSystemService("contexthub");
-        this.mNanoAppFoundOnBoot = findNanoApp();
+        mProgressDetectThreshold = typedValue.getFloat();
+        mController = new AssistGestureController(context, this, snapshotConfiguration);
+        mController.setSnapshotListener(mSnapshotListener);
+        mGestureConfiguration = gestureConfiguration;
+        mGestureConfiguration.setListener(new _$$Lambda$CHREGestureSensor$GZmCEPt8kQ_zIdv2oTQazqe1swY(this));
+        mContextHubManager = (ContextHubManager) mContext.getSystemService(Context.CONTEXTHUB_SERVICE);
+        mNanoAppFoundOnBoot = findNanoApp();
     }
 
     private byte[] buildGestureDetectorMessage() throws IOException {
         SlopeDetector slopeDetector = new SlopeDetector();
-        slopeDetector.sensitivity = this.mGestureConfiguration.getSlopeSensitivity();
-        slopeDetector.upperThreshold = this.mGestureConfiguration.getUpperThreshold();
-        slopeDetector.lowerThreshold = this.mGestureConfiguration.getLowerThreshold();
+        slopeDetector.sensitivity = mGestureConfiguration.getSlopeSensitivity();
+        slopeDetector.upperThreshold = mGestureConfiguration.getUpperThreshold();
+        slopeDetector.lowerThreshold = mGestureConfiguration.getLowerThreshold();
         slopeDetector.releaseThreshold = slopeDetector.upperThreshold * 0.1f;
-        slopeDetector.timeThreshold = (long) this.mGestureConfiguration.getTimeWindow();
+        slopeDetector.timeThreshold = (long) mGestureConfiguration.getTimeWindow();
         AggregateDetector aggregateDetector = new AggregateDetector();
         aggregateDetector.count = 6;
         aggregateDetector.detector = slopeDetector;
@@ -112,7 +105,7 @@ public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
 
     private byte[] buildProgressReportThresholdMessage() throws IOException {
         MessageV1 messageV1 = new MessageV1();
-        messageV1.setProgressReportThreshold(this.mProgressDetectThreshold);
+        messageV1.setProgressReportThreshold(mProgressDetectThreshold);
         return serializeProtobuf(messageV1);
     }
 
@@ -135,34 +128,27 @@ public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
     }
 
     private boolean findNanoApp() {
-        if (this.mNanoAppFound) {
+        if (mNanoAppFound) {
             return true;
         }
-        this.mFindNanoAppRetries++;
-        List contextHubs = this.mContextHubManager.getContextHubs();
+        mFindNanoAppRetries++;
+        List contextHubs = mContextHubManager.getContextHubs();
         if (contextHubs.size() == 0) {
-            Log.e("Elmyra/CHREGestureSensor", "No context hubs found");
             return false;
         }
-        this.mContextHubHandle = ((ContextHubInfo) contextHubs.get(0)).getId();
+        mContextHubHandle = ((ContextHubInfo) contextHubs.get(0)).getId();
         try {
-            this.mContextHubManager.queryNanoApps((ContextHubInfo) contextHubs.get(0)).waitForResponse(5, TimeUnit.SECONDS);
-            int[] findNanoAppOnHub = this.mContextHubManager.findNanoAppOnHub(-1, new NanoAppFilter(5147455389092024334L, 1, 0, 306812249964L));
+            mContextHubManager.queryNanoApps((ContextHubInfo) contextHubs.get(0)).waitForResponse(5, TimeUnit.SECONDS);
+            int[] findNanoAppOnHub = mContextHubManager.findNanoAppOnHub(-1, new NanoAppFilter(5147455389092024334L, 1, 0, 306812249964L));
             if (findNanoAppOnHub.length != 1) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Invalid number of handles: ");
-                stringBuilder.append(findNanoAppOnHub.length);
-                Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
                 return false;
             }
-            this.mNanoAppFound = true;
-            this.mNanoAppHandle = findNanoAppOnHub[0];
+            mNanoAppFound = true;
+            mNanoAppHandle = findNanoAppOnHub[0];
             return true;
         } catch (InterruptedException e) {
-            Log.e("Elmyra/CHREGestureSensor", "Interrupted while looking for nanoapp");
             return false;
         } catch (TimeoutException e2) {
-            Log.e("Elmyra/CHREGestureSensor", "Timed out looking for nanoapp");
             return false;
         }
     }
@@ -170,17 +156,13 @@ public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
     private void requestCalibration() {
         try {
             sendMessageToNanoApp(new ContextHubMessage(1, -1, buildRequestCalibrationMessage()));
-        } catch (Throwable e) {
-            Log.e("Elmyra/CHREGestureSensor", "Unable to serialize calibration request message", e);
-        }
+        } catch (Throwable suppress) { /* do nothing */ }
     }
 
     protected void requestSnapshot(SnapshotHeader snapshotHeader) {
         try {
             sendMessageToNanoApp(new ContextHubMessage(1, -1, buildRequestSnapshotMessage(snapshotHeader)));
-        } catch (Throwable e) {
-            Log.e("Elmyra/CHREGestureSensor", "Unable to serialize snapshot request proto", e);
-        }
+        } catch (Throwable e) { /* do nothing */ }
     }
 
     private byte[] serializeProtobuf(MessageV1 messageV1) throws IOException {
@@ -190,88 +172,54 @@ public class CHREGestureSensor implements /*Dumpable,*/ GestureSensor {
     }
 
     protected void updateSensorConfiguration() {
-        if (!this.mNanoAppFound) {
-            boolean findNanoApp = findNanoApp();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Error: updateSensorConfiguration(): nanoapp not found, refind = ");
-            stringBuilder.append(findNanoApp);
-            Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
-            if (!findNanoApp) {
-                return;
-            }
+        if (!mNanoAppFound && !findNanoApp()) {
+            return;
         }
         try {
             sendMessageToNanoApp(new ContextHubMessage(1, -1, buildGestureDetectorMessage()));
             sendMessageToNanoApp(new ContextHubMessage(1, -1, buildProgressReportThresholdMessage()));
-        } catch (Throwable e) {
-            Log.e("Elmyra/CHREGestureSensor", "Unable to update sensitivity", e);
-        }
+        } catch (Throwable suppressed) { /* do nothing */ }
     }
 
     public boolean isListening() {
-        return this.mIsListening;
+        return mIsListening;
     }
 
     void sendMessageToNanoApp(ContextHubMessage contextHubMessage) {
-        if (this.mContextHubManager.sendMessage(this.mContextHubHandle, this.mNanoAppHandle, contextHubMessage) != 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Unable to send message (");
-            stringBuilder.append(contextHubMessage.getMsgType());
-            stringBuilder.append(") to mNanoAppHandle: ");
-            stringBuilder.append(this.mNanoAppHandle);
-            Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
-        }
+        mContextHubManager.sendMessage(mContextHubHandle, mNanoAppHandle, contextHubMessage);
     }
 
     public void setGestureListener(GestureSensor.Listener listener) {
-        this.mController.setGestureListener(listener);
+        mController.setGestureListener(listener);
     }
 
     public void startListening() {
-        if (!this.mNanoAppFound) {
-            boolean findNanoApp = findNanoApp();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("startListening(): nanoapp not found, refind = ");
-            stringBuilder.append(findNanoApp);
-            Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
-            if (!findNanoApp) {
-                return;
-            }
+        if (!mNanoAppFound || !findNanoApp()) {
+            return;
         }
-        if (!this.mIsListening) {
+        if (!mIsListening) {
             updateSensorConfiguration();
             try {
                 sendMessageToNanoApp(new ContextHubMessage(1, -1, buildRecognizerStartMessage(true)));
-                this.mIsListening = true;
-                this.mContextHubManager.registerCallback(this.mContextHubCallback);
-            } catch (Throwable e) {
-                Log.e("Elmyra/CHREGestureSensor", "Unable to serialize start proto", e);
-            }
-            if (this.mController.getChassisConfiguration() == null) {
+                mIsListening = true;
+                mContextHubManager.registerCallback(mContextHubCallback);
+            } catch (Throwable suppress) { /* do nothing */ }
+            if (mController.getChassisConfiguration() == null) {
                 requestCalibration();
             }
         }
     }
 
     public void stopListening() {
-        if (!this.mNanoAppFound) {
-            boolean findNanoApp = findNanoApp();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("stopListening(): nanoapp not found, refind = ");
-            stringBuilder.append(findNanoApp);
-            Log.e("Elmyra/CHREGestureSensor", stringBuilder.toString());
-            if (!findNanoApp) {
-                return;
-            }
+        if (!mNanoAppFound || !findNanoApp()) {
+            return;
         }
-        if (this.mIsListening) {
+        if (mIsListening) {
             try {
                 sendMessageToNanoApp(new ContextHubMessage(1, -1, buildRecognizerStartMessage(false)));
-                this.mContextHubManager.unregisterCallback(this.mContextHubCallback);
-                this.mIsListening = false;
-            } catch (Throwable e) {
-                Log.e("Elmyra/CHREGestureSensor", "Unable to serialize stop proto", e);
-            }
+                mContextHubManager.unregisterCallback(mContextHubCallback);
+                mIsListening = false;
+            } catch (Throwable suppress) { /* do nothing */ }
         }
     }
 }

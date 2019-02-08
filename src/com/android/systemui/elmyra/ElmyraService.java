@@ -125,26 +125,13 @@ public class ElmyraService {
         mPowerManager = (PowerManager) mContext.getSystemService("power");
         mWakeLock = mPowerManager.newWakeLock(1, "Elmyra/ElmyraService");
 
-        // Anonymous Consumer class for Actions
-        Consumer<Action> setActionListener = new Consumer<Action>() {
-            public void accept(Action action) {
-                action.setListener(mActionListener);
-            }
-        };
-
         mActions = new ArrayList(serviceConfiguration.getActions());
-        mActions.forEach(setActionListener);
+        mActions.forEach(action -> action.setListener(mActionListener));
+
         mFeedbackEffects = new ArrayList(serviceConfiguration.getFeedbackEffects());
 
-        // Anonymous Consumer class for Gates
-        Consumer<Gate> setGateListener = new Consumer<Gate>() {
-            public void accept(Gate gate) {
-                gate.setListener(mGateListener);
-            }
-        };
-
         mGates = new ArrayList(serviceConfiguration.getGates());
-        mGates.forEach(setGateListener);
+        mGates.forEach(gate -> gate.setListener(mGateListener));
         mGestureSensor = serviceConfiguration.getGestureSensor();
         if (mGestureSensor != null) {
             mGestureSensor.setGestureListener(mGestureListener);
@@ -152,58 +139,18 @@ public class ElmyraService {
         updateSensorListener();
     }
 
-    private void activateGates() {
-        int i = 0;
-        while (true) {
-            int i2 = i;
-            if (i2 < mGates.size()) {
-                mGates.get(i2).activate();
-                i = i2 + 1;
-            } else {
-                return;
+    private Gate getBlockingGate() {
+        for (Gate gate : mGates) {
+            if (gate.isBlocking()) {
+                return gate;
             }
         }
-    }
-
-    private Gate blockingGate() {
-        int i = 0;
-        while (true) {
-            int i2 = i;
-            if (i2 >= mGates.size()) {
-                return null;
-            }
-            if (mGates.get(i2).isBlocking()) {
-                return (Gate) mGates.get(i2);
-            }
-            i = i2 + 1;
-        }
-    }
-
-    private void deactivateGates() {
-        int i = 0;
-        while (true) {
-            int i2 = i;
-            if (i2 < mGates.size()) {
-                mGates.get(i2).deactivate();
-                i = i2 + 1;
-            } else {
-                return;
-            }
-        }
+        // If we are here, we haven't found a blocking gate.
+        return null;
     }
 
     private Action firstAvailableAction() {
-        // int i = 0;
-        // while (true) {
-        //     int i2 = i;
-        //     if (i2 >= mActions.size()) {
-        //         return null;
-        //     }
-        //     if (((Action) mActions.get(i2)).isAvailable()) {
-        //         return (Action) mActions.get(i2);
-        //     }
-        //     i = i2 + 1;
-        // }
+        // TODO: put some logic as soon as we add more actions.
         return mActions.get(0);
     }
 
@@ -245,12 +192,14 @@ public class ElmyraService {
         Action updateActiveAction = updateActiveAction();
         if (updateActiveAction == null) {
             Log.i("Elmyra/ElmyraService", "No available actions");
-            deactivateGates();
+            // Deactivate gates
+            mGates.forEach(gate -> gate.deactivate());
             stopListening();
             return;
         }
-        activateGates();
-        Gate blockingGate = blockingGate();
+        // Activate gates
+        mGates.forEach(gate -> gate.activate());
+        Gate blockingGate = getBlockingGate();
         if (blockingGate != null) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Gated by ");

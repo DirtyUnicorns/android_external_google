@@ -54,7 +54,7 @@ public class GestureConfiguration {
     private float getUserSensitivity() {
         float floatForUser = Secure.getFloatForUser(
                 this.mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
-        return floatForUser / 10f;
+        return floatForUser / 8f;
     }
 
     public float getLowerThreshold() {
@@ -62,7 +62,7 @@ public class GestureConfiguration {
     }
 
     public float getSensitivity() {
-        int i = 0;
+        /*int i = 0;
         float f = this.mSensitivity;
         while (true) {
             int i2 = i;
@@ -72,7 +72,9 @@ public class GestureConfiguration {
             f = SENSITIVITY_RANGE.clamp(Float.valueOf(((
                     Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f))).floatValue();
             i = i2 + 1;
-        }
+        }*/
+        // Completely bypass any Adjustment
+        return mSensitivity;
     }
 
     public float getSlopeSensitivity() {

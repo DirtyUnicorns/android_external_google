@@ -38,7 +38,7 @@ public class CHREGestureSensor implements GestureSensor {
     private final boolean mNanoAppFoundOnBoot;
     private int mNanoAppHandle;
     private final float mProgressDetectThreshold;
-    private final SnapshotController.Listener mSnapshotListener = new _$$Lambda$CHREGestureSensor$9PliWiPLg_s_9_ha1Cbnsvp3HuA(this);
+    private final SnapshotController.Listener mSnapshotListener = new SnapshotControllerListenerImpl(this);
 
     class ContextHubCallback extends Callback {
         ContextHubCallback() {
@@ -83,7 +83,7 @@ public class CHREGestureSensor implements GestureSensor {
         mController = new AssistGestureController(context, this, snapshotConfiguration);
         mController.setSnapshotListener(mSnapshotListener);
         mGestureConfiguration = gestureConfiguration;
-        mGestureConfiguration.setListener(new _$$Lambda$CHREGestureSensor$GZmCEPt8kQ_zIdv2oTQazqe1swY(this));
+        mGestureConfiguration.setListener(new GestureConfigurationListenerImpl(this));
         mContextHubManager = (ContextHubManager) mContext.getSystemService(Context.CONTEXTHUB_SERVICE);
         mNanoAppFoundOnBoot = findNanoApp();
     }
@@ -220,6 +220,32 @@ public class CHREGestureSensor implements GestureSensor {
                 mContextHubManager.unregisterCallback(mContextHubCallback);
                 mIsListening = false;
             } catch (Throwable suppress) { /* do nothing */ }
+        }
+    }
+
+    private class GestureConfigurationListenerImpl implements GestureConfiguration.Listener {
+        private final CHREGestureSensor cHREGestureSensor;
+
+        public GestureConfigurationListenerImpl(CHREGestureSensor cHREGestureSens) {
+            cHREGestureSensor = cHREGestureSens;
+        }
+
+        @Override
+        public final void onGestureConfigurationChanged(GestureConfiguration gestureConfiguration) {
+            cHREGestureSensor.updateSensorConfiguration();
+        }
+    }
+
+    private class SnapshotControllerListenerImpl implements SnapshotController.Listener {
+        private final CHREGestureSensor cHREGestureSensor;
+
+        public SnapshotControllerListenerImpl(CHREGestureSensor cHREGestureSens) {
+            cHREGestureSensor = cHREGestureSens;
+        }
+
+        @Override
+        public final void onSnapshotRequested(SnapshotHeader snapshotHeader) {
+            cHREGestureSensor.requestSnapshot(snapshotHeader);
         }
     }
 }

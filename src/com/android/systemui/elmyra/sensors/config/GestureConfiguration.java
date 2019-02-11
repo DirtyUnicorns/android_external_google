@@ -12,8 +12,7 @@ import java.util.function.Consumer;
 
 public class GestureConfiguration {
     private static final Range<Float> SENSITIVITY_RANGE = Range.create(0.0f, 1.0f);
-    protected final Consumer<Adjustment> mAdjustmentCallback = new
-            _$$Lambda$GestureConfiguration$3mm6FunisrpGZpM7qxO1no0tVbU(this);
+    protected final Consumer<Adjustment> mAdjustmentCallback = new AdjustmentCallbackConsumer(this);
     private final List<Adjustment> mAdjustments;
     private final Context mContext;
     private Listener mListener;
@@ -28,19 +27,17 @@ public class GestureConfiguration {
     }
 
     public GestureConfiguration(Context context, List<Adjustment> list) {
-        this.mContext = context;
-        this.mAdjustments = new ArrayList(list);
-        this.mAdjustments.forEach(
-                new _$$Lambda$GestureConfiguration$F1rbWa9DGNKbISCQL2RDoKSl7Sw(this));
+        mContext = context;
+        mAdjustments = new ArrayList(list);
+        mAdjustments.forEach(adjustment -> adjustment.setCallback(mAdjustmentCallback));
         Resources resources = context.getResources();
-        new UserContentObserver(this.mContext, Secure.getUriFor(
-                "assist_gesture_sensitivity"),
-                new _$$Lambda$GestureConfiguration$qyMZ0LytUPraF62LfdN_eAAd2vo(this));
-        this.mUpperThreshold = resources.getIntArray(R.array.elmyra_upper_threshold);
-        this.mSlopeSensitivity = resources.getIntArray(R.array.elmyra_slope_sensitivity);
-        this.mLowerThreshold = resources.getIntArray(R.array.elmyra_lower_threshold);
-        this.mTimeWindow = resources.getIntArray(R.array.elmyra_time_window);
-        this.mSensitivity = getUserSensitivity();
+        new UserContentObserver(mContext, Secure.getUriFor(
+                "assist_gesture_sensitivity"), new AdjustmentCallbackConsumer(this));
+        mUpperThreshold = resources.getIntArray(R.array.elmyra_upper_threshold);
+        mSlopeSensitivity = resources.getIntArray(R.array.elmyra_slope_sensitivity);
+        mLowerThreshold = resources.getIntArray(R.array.elmyra_lower_threshold);
+        mTimeWindow = resources.getIntArray(R.array.elmyra_time_window);
+        mSensitivity = getUserSensitivity();
     }
 
     private float calculateFraction(float f, float f2, float f3) {
@@ -53,51 +50,65 @@ public class GestureConfiguration {
 
     private float getUserSensitivity() {
         float floatForUser = Secure.getFloatForUser(
-                this.mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
+                mContext.getContentResolver(), "assist_gesture_sensitivity", 0.5f, -2);
         return floatForUser / 8f;
     }
 
     public float getLowerThreshold() {
-        return calculateFraction(this.mLowerThreshold, getSensitivity());
+        return calculateFraction(mLowerThreshold, mSensitivity);
     }
 
     public float getSensitivity() {
+        //TODO: improve logic for adjustments, for now they are bypassed as we don't wanna use them.
+
         /*int i = 0;
-        float f = this.mSensitivity;
+        float f = mSensitivity;
         while (true) {
             int i2 = i;
-            if (i2 >= this.mAdjustments.size()) {
+            if (i2 >= mAdjustments.size()) {
                 return f;
             }
             f = SENSITIVITY_RANGE.clamp(Float.valueOf(((
-                    Adjustment) this.mAdjustments.get(i2)).adjustSensitivity(f))).floatValue();
+                    Adjustment) mAdjustments.get(i2)).adjustSensitivity(f))).floatValue();
             i = i2 + 1;
         }*/
-        // Completely bypass any Adjustment
         return mSensitivity;
     }
 
     public float getSlopeSensitivity() {
-        return calculateFraction(this.mSlopeSensitivity, getSensitivity()) / 100.0f;
+        return calculateFraction(mSlopeSensitivity, mSensitivity) / 100.0f;
     }
 
     public int getTimeWindow() {
-        return (int) calculateFraction(this.mTimeWindow, getSensitivity());
+        return (int) calculateFraction(mTimeWindow, mSensitivity);
     }
 
     public float getUpperThreshold() {
-        return calculateFraction(this.mUpperThreshold, getSensitivity());
+        return calculateFraction(mUpperThreshold, mSensitivity);
     }
 
     /* renamed from: onSensitivityChanged */
-    public void lambda$new$2() {
-        this.mSensitivity = getUserSensitivity();
-        if (this.mListener != null) {
-            this.mListener.onGestureConfigurationChanged(this);
+    public void onSensitivityChanged() {
+        mSensitivity = getUserSensitivity();
+        if (mListener != null) {
+            mListener.onGestureConfigurationChanged(this);
         }
     }
 
     public void setListener(Listener listener) {
-        this.mListener = listener;
+        mListener = listener;
     }
+
+    private class AdjustmentCallbackConsumer implements Consumer {
+        private final GestureConfiguration gestureConfiguration;
+
+        public AdjustmentCallbackConsumer(GestureConfiguration gestureConfig) {
+            gestureConfiguration = gestureConfig;
+        }
+
+        @Override
+        public final void accept(Object obj) {
+            gestureConfiguration.onSensitivityChanged();
+        }
+    };
 }

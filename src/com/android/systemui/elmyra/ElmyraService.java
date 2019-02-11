@@ -70,36 +70,20 @@ public class ElmyraService {
             int i = (detectionProperties == null || !detectionProperties.isHostSuspended()) ? !isInteractive ? 2 : 1 : 3;
             LogMaker latency = new LogMaker(999).setType(4).setSubtype(i).setLatency(isInteractive ? SystemClock.uptimeMillis() - mLastPrimedGesture : 0);
             mLastPrimedGesture = 0;
-            Action access$100 = updateActiveAction();
-            if (access$100 != null) {
-                access$100.onTrigger(detectionProperties);
-                i = 0;
-                while (true) {
-                    int i2 = i;
-                    if (i2 >= mFeedbackEffects.size()) {
-                        break;
-                    }
-                    mFeedbackEffects.get(i2).onResolve(detectionProperties);
-                    i = i2 + 1;
-                }
-                latency.setPackageName(access$100.getClass().getName());
+            Action activeAction = updateActiveAction();
+            if (activeAction != null) {
+                activeAction.onTrigger(detectionProperties);
+                mFeedbackEffects.forEach(feedbackEff -> feedbackEff.onResolve(detectionProperties));
             }
+            latency.setPackageName(activeAction.getClass().getName());
             mLogger.write(latency);
         }
 
         public void onGestureProgress(GestureSensor gestureSensor, float f, int i) {
-            Action access$100 = updateActiveAction();
-            if (access$100 != null) {
-                access$100.onProgress(f, i);
-                int i2 = 0;
-                while (true) {
-                    int i3 = i2;
-                    if (i3 >= mFeedbackEffects.size()) {
-                        break;
-                    }
-                    mFeedbackEffects.get(i3).onProgress(f, i);
-                    i2 = i3 + 1;
-                }
+            Action activeAction = updateActiveAction();
+            if (activeAction != null) {
+                activeAction.onProgress(f, i);
+                mFeedbackEffects.forEach(feedbackEff -> feedbackEff.onProgress(f, i));
             }
             if (i != mLastStage) {
                 long uptimeMillis = SystemClock.uptimeMillis();

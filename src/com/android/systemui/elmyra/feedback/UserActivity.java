@@ -33,14 +33,4 @@ public class UserActivity implements FeedbackEffect {
     public void onResolve(DetectionProperties detectionProperties) {
         mTriggerCount--;
     }
-
-    @Override
-	public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(super.toString());
-        stringBuilder.append(" [mTriggerCount -> ");
-        stringBuilder.append(mTriggerCount);
-        stringBuilder.append("]");
-        return stringBuilder.toString();
-    }
 }

@@ -10,21 +10,20 @@ import java.util.List;
 
 public class NavigationBarVisibility extends Gate {
     private final CommandQueue mCommandQueue;
-    private final Callbacks mCommandQueueCallbacks = new C16031();
+    private final Callbacks mCommandQueueCallbacks = new CommandQueueCallbacks();
     private final List<Action> mExceptions;
     private boolean mIsNavigationHidden;
 
-    /* renamed from: com.google.android.systemui.elmyra.gates.NavigationBarVisibility$1 */
-    class C16031 implements Callbacks {
-        C16031() {
+    private class CommandQueueCallbacks implements Callbacks {
+        CommandQueueCallbacks() {
         }
 
         public void setWindowState(int i, int i2) {
             if (i == 2) {
                 boolean z = i2 != 0;
-                if (z != NavigationBarVisibility.this.mIsNavigationHidden) {
-                    NavigationBarVisibility.this.mIsNavigationHidden = z;
-                    NavigationBarVisibility.this.notifyListener();
+                if (z != mIsNavigationHidden) {
+                    mIsNavigationHidden = z;
+                    notifyListener();
                 }
             }
         }
@@ -32,35 +31,24 @@ public class NavigationBarVisibility extends Gate {
 
     public NavigationBarVisibility(Context context, List<Action> list) {
         super(context);
-        this.mExceptions = new ArrayList(list);
-        this.mIsNavigationHidden = false;
-        this.mCommandQueue = (CommandQueue) SysUiServiceProvider.getComponent(context, CommandQueue.class);
-        this.mCommandQueue.addCallbacks(this.mCommandQueueCallbacks);
+        mExceptions = new ArrayList(list);
+        mIsNavigationHidden = false;
+        mCommandQueue = (CommandQueue) SysUiServiceProvider.getComponent(context, CommandQueue.class);
+        mCommandQueue.addCallbacks(mCommandQueueCallbacks);
     }
 
     protected boolean isBlocked() {
-        for (int i = 0; i < this.mExceptions.size(); i++) {
-            if (((Action) this.mExceptions.get(i)).isAvailable()) {
+        for (int i = 0; i < mExceptions.size(); i++) {
+            if (((Action) mExceptions.get(i)).isAvailable()) {
                 return false;
             }
         }
-        return this.mIsNavigationHidden;
+        return mIsNavigationHidden;
     }
 
     protected void onActivate() {
     }
 
     protected void onDeactivate() {
-    }
-
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(super.toString());
-        stringBuilder.append(" [mIsNavigationHidden -> ");
-        stringBuilder.append(this.mIsNavigationHidden);
-        stringBuilder.append("; mExceptions -> ");
-        stringBuilder.append(this.mExceptions);
-        stringBuilder.append("]");
-        return stringBuilder.toString();
     }
 }

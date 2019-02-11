@@ -5,7 +5,6 @@ import android.metrics.LogMaker;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
-import android.util.Log;
 import com.android.internal.logging.MetricsLogger;
 import com.google.android.systemui.elmyra.actions.Action;
 import com.google.android.systemui.elmyra.actions.Action.Listener;
@@ -73,10 +72,6 @@ public class ElmyraService {
             mLastPrimedGesture = 0;
             Action access$100 = updateActiveAction();
             if (access$100 != null) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Triggering ");
-                stringBuilder.append(access$100);
-                Log.i("Elmyra/ElmyraService", stringBuilder.toString());
                 access$100.onTrigger(detectionProperties);
                 i = 0;
                 while (true) {
@@ -176,12 +171,6 @@ public class ElmyraService {
     private Action updateActiveAction() {
         Action firstAvailableAction = firstAvailableAction();
         if (!(mLastActiveAction == null || firstAvailableAction == mLastActiveAction)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Switching action from ");
-            stringBuilder.append(mLastActiveAction);
-            stringBuilder.append(" to ");
-            stringBuilder.append(firstAvailableAction);
-            Log.i("Elmyra/ElmyraService", stringBuilder.toString());
             mLastActiveAction.onProgress(0.0f, 0);
         }
         mLastActiveAction = firstAvailableAction;
@@ -191,7 +180,6 @@ public class ElmyraService {
     protected void updateSensorListener() {
         Action updateActiveAction = updateActiveAction();
         if (updateActiveAction == null) {
-            Log.i("Elmyra/ElmyraService", "No available actions");
             // Deactivate gates
             mGates.forEach(gate -> gate.deactivate());
             stopListening();
@@ -201,17 +189,9 @@ public class ElmyraService {
         mGates.forEach(gate -> gate.activate());
         Gate blockingGate = getBlockingGate();
         if (blockingGate != null) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Gated by ");
-            stringBuilder.append(blockingGate);
-            Log.i("Elmyra/ElmyraService", stringBuilder.toString());
             stopListening();
             return;
         }
-        StringBuilder stringBuilder2 = new StringBuilder();
-        stringBuilder2.append("Unblocked; current action: ");
-        stringBuilder2.append(updateActiveAction);
-        Log.i("Elmyra/ElmyraService", stringBuilder2.toString());
         startListening();
     }
 }

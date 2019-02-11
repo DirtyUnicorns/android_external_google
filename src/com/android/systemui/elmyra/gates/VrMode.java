@@ -10,11 +10,11 @@ import android.util.Log;
 public class VrMode extends Gate {
     private boolean mInVrMode;
     private final IVrManager mVrManager = Stub.asInterface(ServiceManager.getService("vrmanager"));
-    private final IVrStateCallbacks mVrStateCallbacks = new C16101();
+    private final IVrStateCallbacks mVrStateCallbacks = new VrStateCallback();
 
     /* renamed from: com.google.android.systemui.elmyra.gates.VrMode$1 */
-    class C16101 extends IVrStateCallbacks.Stub {
-        C16101() {
+    class VrStateCallback extends IVrStateCallbacks.Stub {
+        VrStateCallback() {
         }
 
         public void onVrStateChanged(boolean z) {
@@ -39,7 +39,6 @@ public class VrMode extends Gate {
                 this.mInVrMode = this.mVrManager.getVrModeState();
                 this.mVrManager.registerListener(this.mVrStateCallbacks);
             } catch (Throwable e) {
-                Log.e("Elmyra/VrMode", "Could not register IVrManager listener", e);
                 this.mInVrMode = false;
             }
         }
@@ -50,7 +49,6 @@ public class VrMode extends Gate {
             try {
                 this.mVrManager.unregisterListener(this.mVrStateCallbacks);
             } catch (Throwable e) {
-                Log.e("Elmyra/VrMode", "Could not unregister IVrManager listener", e);
                 this.mInVrMode = false;
             }
         }

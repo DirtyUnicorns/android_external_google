@@ -50,18 +50,14 @@ public class UserContentObserver extends ContentObserver {
         updateContentObserver();
         try {
             ActivityManager.getService().registerUserSwitchObserver(mUserSwitchCallback, "Elmyra/UserContentObserver");
-        } catch (Throwable e) {
-            Log.e("Elmyra/UserContentObserver", "Failed to register user switch observer", e);
-        }
+        } catch (Throwable suppressed) { /* do nothing */ }
     }
 
     public void deactivate() {
         this.mContext.getContentResolver().unregisterContentObserver(this);
         try {
             ActivityManager.getService().unregisterUserSwitchObserver(mUserSwitchCallback);
-        } catch (Throwable e) {
-            Log.e("Elmyra/UserContentObserver", "Failed to unregister user switch observer", e);
-        }
+        } catch (Throwable suppressed) { /* do nothing */ }
     }
 
     public void onChange(boolean selfChange, Uri uri) {

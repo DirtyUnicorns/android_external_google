@@ -69,16 +69,6 @@ public class CustomActions extends Action {
         }
     }
 
-    @Override
-	public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(super.toString());
-        stringBuilder.append(" [CustomAction Enabled -> ");
-        stringBuilder.append(true);
-        stringBuilder.append("]");
-        return stringBuilder.toString();
-    }
-
     private void launchIntent(String customIntent, Context context) {
         Intent intent = new Intent(customIntent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

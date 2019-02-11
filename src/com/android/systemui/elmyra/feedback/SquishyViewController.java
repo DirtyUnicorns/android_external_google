@@ -24,14 +24,14 @@ class SquishyViewController implements FeedbackEffect {
     private final List<View> mLeftViews = new ArrayList();
     private float mPressure;
     private final List<View> mRightViews = new ArrayList();
-    private final Stub mRotationWatcher = new C15941();
+    private final Stub mRotationWatcher = new RotationWatcherStub();
     private int mScreenRotation;
     private final float mSquishTranslationMax;
     private final IWindowManager mWindowManager;
 
-    /* renamed from: com.google.android.systemui.elmyra.feedback.SquishyViewController$1 */
-    class C15941 extends Stub {
-        C15941() {
+
+    class RotationWatcherStub extends Stub {
+        RotationWatcherStub() {
         }
 
         public void onRotationChanged(int i) {
@@ -60,7 +60,6 @@ class SquishyViewController implements FeedbackEffect {
         try {
             mScreenRotation = mWindowManager.watchRotation(mRotationWatcher, mContext.getDisplay().getDisplayId());
         } catch (Throwable e) {
-            Log.e("SquishyViewController", "Couldn't get screen rotation or set watcher", e);
             mScreenRotation = 0;
         }
     }

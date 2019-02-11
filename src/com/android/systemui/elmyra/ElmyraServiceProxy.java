@@ -4,18 +4,17 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.IBinder.DeathRecipient;
-import android.util.Log;
 import com.google.android.systemui.elmyra.IElmyraService.Stub;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ElmyraServiceProxy extends Service {
-    private final Stub mBinder = new C15841();
+    private final Stub mBinder = new ElmyraServiceStub();
     private final List<ElmyraServiceListener> mElmyraServiceListeners = new ArrayList();
 
     /* renamed from: com.google.android.systemui.elmyra.ElmyraServiceProxy$1 */
-    class C15841 extends Stub {
-        C15841() {
+    class ElmyraServiceStub extends Stub {
+        ElmyraServiceStub() {
         }
 
         public void registerGestureListener(IBinder iBinder, IBinder iBinder2) {
@@ -29,16 +28,12 @@ public class ElmyraServiceProxy extends Service {
                         listener.setListener(iBinder, iBinder2);
                     }
                 }
-            } catch (Throwable e) {
-                Log.e("Elmyra/ElmyraServiceProxy", "Action isn't connected", e);
-            }
+            } catch (Throwable suppressed) { /* do nothing */ }
         }
 
         public void registerServiceListener(IBinder iBinder, IBinder iBinder2) {
             ElmyraServiceProxy.this.checkPermission();
-            if (iBinder == null) {
-                Log.e("Elmyra/ElmyraServiceProxy", "Binder token must not be null");
-            } else if (iBinder2 == null) {
+            if (iBinder2 == null) {
                 int i = 0;
                 while (true) {
                     int i2 = i;
@@ -68,9 +63,7 @@ public class ElmyraServiceProxy extends Service {
                         listener.triggerAction();
                     }
                 }
-            } catch (Throwable e) {
-                Log.e("Elmyra/ElmyraServiceProxy", "Error launching assistant", e);
-            }
+            } catch (Throwable suppressed) { /* do nothing */ }
         }
     }
 
@@ -88,14 +81,11 @@ public class ElmyraServiceProxy extends Service {
             if (this.mToken != null) {
                 try {
                     this.mToken.linkToDeath(this, 0);
-                } catch (Throwable e) {
-                    Log.e("Elmyra/ElmyraServiceProxy", "Unable to linkToDeath", e);
-                }
+                } catch (Throwable suppressed) { /* do nothing */ }
             }
         }
 
         public void binderDied() {
-            Log.w("Elmyra/ElmyraServiceProxy", "ElmyraServiceListener binder died");
             this.mToken = null;
             this.mListener = null;
         }
@@ -116,7 +106,8 @@ public class ElmyraServiceProxy extends Service {
     }
 
     private void checkPermission() {
-        enforceCallingOrSelfPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE", "Must have com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE permission");
+        enforceCallingOrSelfPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE", 
+                "Must have com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE permission");
     }
 
     public IBinder onBind(Intent intent) {

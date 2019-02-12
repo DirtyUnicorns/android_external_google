@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 
 import com.android.internal.util.du.ActionUtils;
@@ -16,7 +17,6 @@ import com.google.android.systemui.elmyra.sensors.GestureSensor.DetectionPropert
 public class CustomActions extends Action {
 
     private int mActionSelection;
-
     protected AssistManager mAssistManager;
 
     public CustomActions(Context context) {
@@ -43,34 +43,43 @@ public class CustomActions extends Action {
                 mAssistManager.startAssist(new Bundle() /* args */);
                 break;
             case 2: // Voice search
-                launchIntent(Intent.ACTION_SEARCH_LONG_PRESS, getContext());
+                launchVoiceSearch(getContext());
                 break;
-            case 3: // Flashlight
+            case 3: // Camera
+                launchCamera(getContext());
+                break;
+            case 4: // Flashlight
                 ActionUtils.toggleCameraFlash();
                 break;
-            case 4: // Clear notifications
+            case 5: // Clear notifications
                 ActionUtils.clearAllNotifications();
                 break;
-            case 5: // Volume panel
+            case 6: // Volume panel
                 ActionUtils.toggleVolumePanel(getContext());
                 break;
-            case 6: // Screen off
+            case 7: // Screen off
                 ActionUtils.switchScreenOff(getContext());
                 break;
-            case 7: // Notification panel
+            case 8: // Notification panel
                 ActionUtils.toggleNotifications();
                 break;
-            case 8: // Screenshot
+            case 9: // Screenshot
                 ActionUtils.takeScreenshot(true);
                 break;
-            case 9: // QS panel
+            case 10: // QS panel
                 ActionUtils.toggleQsPanel();
                 break;
         }
     }
 
-    private void launchIntent(String customIntent, Context context) {
-        Intent intent = new Intent(customIntent);
+    private static void launchCamera(Context context) {
+        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
+    private void launchVoiceSearch(Context context) {
+        Intent intent = new Intent(Intent.ACTION_SEARCH_LONG_PRESS);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

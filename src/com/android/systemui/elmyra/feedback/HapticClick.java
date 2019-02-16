@@ -79,6 +79,10 @@ public class HapticClick implements FeedbackEffect {
                 if (!isScreenOn) {
                     return;
                 }
+            case 11: // Application
+                if (!isScreenOn) {
+                    return;
+                }
                 break;
         }
         if (!(mLastGestureStage == 2 || i != 2 || mVibrator == null)) {
@@ -138,6 +142,11 @@ public class HapticClick implements FeedbackEffect {
                 }
                 break;
             case 10: // QS panel
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 11: // Application
                 if (!isScreenOn) {
                     return;
                 }

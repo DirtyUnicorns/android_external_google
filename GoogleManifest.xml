@@ -31,6 +31,16 @@
 
     <application>
 
+        <activity
+            android:name="com.google.android.systemui.elmyra.actions.AppPicker"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.MinWidth"
+            android:label="@string/app_picker_dialog_title" >
+            <intent-filter>
+                <action android:name="com.google.android.systemui.elmyra.actions.AppPicker" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:exported="true"
             android:name="com.google.android.systemui.elmyra.ElmyraServiceProxy"

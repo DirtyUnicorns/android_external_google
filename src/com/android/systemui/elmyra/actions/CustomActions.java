@@ -97,6 +97,9 @@ public class CustomActions extends Action {
                     launchApp(getContext());
                 }
                 break;
+            case 12: // Ringer modes
+                ActionUtils.toggleRingerModes(getContext());
+                break;
         }
     }
 

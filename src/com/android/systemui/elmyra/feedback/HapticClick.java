@@ -79,10 +79,13 @@ public class HapticClick implements FeedbackEffect {
                 if (!isScreenOn) {
                     return;
                 }
+                break;
             case 11: // Application
                 if (!isScreenOn) {
                     return;
                 }
+                break;
+            case 12: // Ringer modes
                 break;
         }
         if (!(mLastGestureStage == 2 || i != 2 || mVibrator == null)) {
@@ -150,6 +153,8 @@ public class HapticClick implements FeedbackEffect {
                 if (!isScreenOn) {
                     return;
                 }
+                break;
+            case 12: // Ringer modes
                 break;
         }
         if ((detectionProperties == null || !detectionProperties.isHapticConsumed()) && mVibrator != null) {

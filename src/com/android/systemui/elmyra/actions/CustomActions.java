@@ -3,7 +3,6 @@ package com.google.android.systemui.elmyra.actions;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.UserHandle;
@@ -15,8 +14,6 @@ import com.android.systemui.Dependency;
 import com.android.systemui.assist.AssistManager;
 
 import com.google.android.systemui.elmyra.sensors.GestureSensor.DetectionProperties;
-
-import java.util.Objects;
 
 public class CustomActions extends Action {
 
@@ -94,7 +91,8 @@ public class CustomActions extends Action {
                 break;
             case 11: // Application
                 if (isScreenOn) {
-                    launchApp(getContext());
+                    launchApp(getContext(),
+                            Settings.Secure.SQUEEZE_CUSTOM_APP);
                 }
                 break;
             case 12: // Ringer modes
@@ -103,15 +101,13 @@ public class CustomActions extends Action {
         }
     }
 
-    private void launchApp(Context context) {
-        SharedPreferences sp = context.getSharedPreferences("key", 0);
-        // Get the stored selected app from shared preferences
-        String selectedApp = sp.getString("selectedAppValue","");
-
-        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(
-                Objects.requireNonNull(selectedApp).toLowerCase());
-        if (launchIntent != null) {
-            context.startActivity(launchIntent);
+    private void launchApp(Context context, String action) {
+        try {
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(
+                    Settings.Secure.getString(context.getContentResolver(), action));
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

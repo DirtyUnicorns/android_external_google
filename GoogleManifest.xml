@@ -32,11 +32,11 @@
     <application>
 
         <activity
-            android:name="com.google.android.systemui.elmyra.actions.AppPicker"
+            android:name="com.google.android.systemui.elmyra.actions.SqueezeCustomApp"
             android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.MinWidth"
             android:label="@string/app_picker_dialog_title" >
             <intent-filter>
-                <action android:name="com.google.android.systemui.elmyra.actions.AppPicker" />
+                <action android:name="com.google.android.systemui.elmyra.actions.SqueezeCustomApp" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

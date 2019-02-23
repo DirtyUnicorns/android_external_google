@@ -40,6 +40,10 @@ class AssistGestureController {
     private final float mProgressAlpha;
     private final float mProgressReportThreshold;
     private final SnapshotController mSnapshotController;
+    // When the squeeze detection starts (expressed in ms)
+    private long mGestureStartTime;
+    // Long squeeze duration threshold
+    private long mLongSqueezeDuration;
 
     private class OPAQueryReceiver extends BroadcastReceiver {
         private OPAQueryReceiver() {
@@ -47,7 +51,7 @@ class AssistGestureController {
 
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("com.google.android.systemui.OPA_ELMYRA_QUERY_SUBMITTED")) {
-                AssistGestureController.this.mCompleteGestures.didReceiveQuery();
+                mCompleteGestures.didReceiveQuery();
             }
         }
     }
@@ -58,91 +62,104 @@ class AssistGestureController {
 
     AssistGestureController(Context context, GestureSensor gestureSensor, SnapshotConfiguration snapshotConfiguration) {
         int i = 0;
-        this.mOpaQueryReceiver = new OPAQueryReceiver();
+        mOpaQueryReceiver = new OPAQueryReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.google.android.systemui.OPA_ELMYRA_QUERY_SUBMITTED");
-        context.registerReceiver(this.mOpaQueryReceiver, intentFilter);
-        this.mGestureSensor = gestureSensor;
+        context.registerReceiver(mOpaQueryReceiver, intentFilter);
+        mGestureSensor = gestureSensor;
         Resources resources = context.getResources();
         TypedValue typedValue = new TypedValue();
-        this.mCompleteGestures = new SnapshotLogger(snapshotConfiguration != null ? snapshotConfiguration.getCompleteGestures() : 0);
+        mCompleteGestures = new SnapshotLogger(snapshotConfiguration != null ? snapshotConfiguration.getCompleteGestures() : 0);
         if (snapshotConfiguration != null) {
             i = snapshotConfiguration.getIncompleteGestures();
         }
-        this.mIncompleteGestures = new SnapshotLogger(i);
+        mIncompleteGestures = new SnapshotLogger(i);
         resources.getValue(R.dimen.elmyra_progress_alpha, typedValue, true);
-        this.mProgressAlpha = typedValue.getFloat();
+        mProgressAlpha = typedValue.getFloat();
         resources.getValue(R.dimen.elmyra_progress_report_threshold, typedValue, true);
-        this.mProgressReportThreshold = typedValue.getFloat();
-        this.mGestureCooldownTime = (long) resources.getInteger(R.integer.elmyra_gesture_cooldown_time);
-        this.mFalsePrimeWindow = this.mGestureCooldownTime + ((long) resources.getInteger(R.integer.elmyra_false_prime_window));
-        this.mSnapshotController = new SnapshotController(snapshotConfiguration);
+        mProgressReportThreshold = typedValue.getFloat();
+        mGestureCooldownTime = (long) resources.getInteger(R.integer.elmyra_gesture_cooldown_time);
+        mFalsePrimeWindow = mGestureCooldownTime + ((long) resources.getInteger(R.integer.elmyra_false_prime_window));
+        mLongSqueezeDuration = (long) resources.getInteger(R.integer.elmyra_long_squeeze_duration);
+        mSnapshotController = new SnapshotController(snapshotConfiguration);
     }
 
     private void sendGestureProgress(GestureSensor gestureSensor, float f, int i) {
-        if (this.mGestureListener != null) {
-            this.mGestureListener.onGestureProgress(gestureSensor, f, i);
+        if (mGestureListener != null) {
+            mGestureListener.onGestureProgress(gestureSensor, f, i);
         }
-        this.mSnapshotController.onGestureProgress(gestureSensor, f, i);
+        mSnapshotController.onGestureProgress(gestureSensor, f, i);
     }
 
 
     public Chassis getChassisConfiguration() {
-        return this.mChassis;
+        return mChassis;
     }
 
     public void onGestureDetected(DetectionProperties detectionProperties) {
         long uptimeMillis = SystemClock.uptimeMillis();
-        if (uptimeMillis - this.mLastDetectionTime >= this.mGestureCooldownTime && !this.mIsFalsePrimed) {
-            if (this.mGestureListener != null) {
-                this.mGestureListener.onGestureDetected(this.mGestureSensor, detectionProperties);
+        if (uptimeMillis - mLastDetectionTime >= mGestureCooldownTime && !mIsFalsePrimed) {
+            if (mGestureListener != null) {
+                mGestureListener.onGestureDetected(mGestureSensor, detectionProperties);
             }
-            this.mSnapshotController.onGestureDetected(this.mGestureSensor, detectionProperties);
-            this.mLastDetectionTime = uptimeMillis;
+            mSnapshotController.onGestureDetected(mGestureSensor, detectionProperties);
+            mLastDetectionTime = uptimeMillis;
         }
     }
 
     public void onGestureProgress(float f) {
         int i = 1;
-        if (f == 0.0f) {
-            this.mGestureProgress = 0.0f;
-            this.mIsFalsePrimed = false;
-        } else {
-            this.mGestureProgress = (this.mProgressAlpha * f) + ((1.0f - this.mProgressAlpha) * this.mGestureProgress);
+
+        // If the gesture progress is equal to 0, the action hasn't started yet.
+        if (mGestureProgress == 0.0f) {
+            // Store the time when the action got triggered.
+            mGestureStartTime = SystemClock.uptimeMillis();
         }
+
+        if (f == 0.0f) {
+            mGestureProgress = 0.0f;
+            mIsFalsePrimed = false;
+        } else {
+            mGestureProgress = (mProgressAlpha * f) + ((1.0f - mProgressAlpha) * mGestureProgress);
+        }
+
         long uptimeMillis = SystemClock.uptimeMillis();
-        if (uptimeMillis - this.mLastDetectionTime >= this.mGestureCooldownTime && !this.mIsFalsePrimed) {
-            if (uptimeMillis - this.mLastDetectionTime < this.mFalsePrimeWindow && f == 1.0f) {
-                this.mIsFalsePrimed = true;
-            } else if (this.mGestureProgress < this.mProgressReportThreshold) {
-                sendGestureProgress(this.mGestureSensor, 0.0f, 0);
+        float f2;
+
+        if (uptimeMillis - mLastDetectionTime >= mGestureCooldownTime && !mIsFalsePrimed) {
+            if (uptimeMillis - mLastDetectionTime < mFalsePrimeWindow && f == 1.0f) {
+                mIsFalsePrimed = true;
+            } else if (mGestureProgress < mProgressReportThreshold) {
+                sendGestureProgress(mGestureSensor, 0.0f, 0);
+            } else if (uptimeMillis - mGestureStartTime >= mLongSqueezeDuration && f == 1.0f) {
+                    f2 = (mGestureProgress - mProgressReportThreshold) / (1.0f - mProgressReportThreshold);
+                    onGestureDetected(new DetectionProperties(false, false, /* longSqueeze */ true));
+                    // Send progress to have consistent animations
+                    sendGestureProgress(mGestureSensor, f2, f == 1f ? 2 : i);
             } else {
-                float f2 = (this.mGestureProgress - this.mProgressReportThreshold) / (1.0f - this.mProgressReportThreshold);
-                if (f == 1.0f) {
-                    i = 2;
-                }
-                sendGestureProgress(this.mGestureSensor, f2, i);
+                f2 = (mGestureProgress - mProgressReportThreshold) / (1.0f - mProgressReportThreshold);
+                sendGestureProgress(mGestureSensor, f2, f == 1f ? 2 : i);
             }
         }
     }
 
     public void onSnapshotReceived(Snapshot snapshot) {
         if (snapshot.header.gestureType == 1) {
-            this.mCompleteGestures.addSnapshot(snapshot, System.currentTimeMillis());
+            mCompleteGestures.addSnapshot(snapshot, System.currentTimeMillis());
         } else {
-            this.mIncompleteGestures.addSnapshot(snapshot, System.currentTimeMillis());
+            mIncompleteGestures.addSnapshot(snapshot, System.currentTimeMillis());
         }
     }
 
     public void setGestureListener(Listener listener) {
-        this.mGestureListener = listener;
+        mGestureListener = listener;
     }
 
     public void setSnapshotListener(SnapshotController.Listener listener) {
-        this.mSnapshotController.setListener(listener);
+        mSnapshotController.setListener(listener);
     }
 
     public void storeChassisConfiguration(Chassis chassis) {
-        this.mChassis = chassis;
+        mChassis = chassis;
     }
 }

@@ -19,16 +19,16 @@ public class SquishyNavigationButtons extends NavigationBarEffect {
     private final KeyguardViewMediator mKeyguardViewMediator;
     private final SquishyViewController mViewController;
 
-    private ContentResolver resolver;
-    private PowerManager pm;
+    private ContentResolver mResolver;
+    private PowerManager mPm;
 
     public SquishyNavigationButtons(Context context) {
         super(context);
-        resolver = context.getContentResolver();
+        mResolver = context.getContentResolver();
         mViewController = new SquishyViewController(context);
         mKeyguardViewMediator = (KeyguardViewMediator) SysUiServiceProvider.getComponent(
             context, KeyguardViewMediator.class);
-        pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     }
 
     protected List<FeedbackEffect> findFeedbackEffects(NavigationBarView navigationBarView) {
@@ -47,13 +47,15 @@ public class SquishyNavigationButtons extends NavigationBarEffect {
 
     @Override
     protected boolean isActiveFeedbackEffect(FeedbackEffect feedbackEffect) {
-        boolean squeezeSelection = Settings.Secure.getIntForUser(resolver,
-                Settings.Secure.SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        boolean shortSqueezeSelection = Settings.Secure.getIntForUser(mResolver,
+                Settings.Secure.SHORT_SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        boolean longSqueezeSelection = Settings.Secure.getIntForUser(mResolver,
+                Settings.Secure.LONG_SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
         /* Make sure we're not calling the navbar animation if battery saver
            mode is on and/or if the screen is off.*/
-        return !pm.isPowerSaveMode() && !squeezeSelection && pm.isScreenOn()
-                && !mKeyguardViewMediator.isShowingAndNotOccluded();
+        return !mPm.isPowerSaveMode() && (!shortSqueezeSelection || !longSqueezeSelection)
+                && mPm.isScreenOn() && !mKeyguardViewMediator.isShowingAndNotOccluded();
     }
 
     @Override

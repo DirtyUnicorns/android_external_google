@@ -6,7 +6,7 @@ import android.widget.ListView;
 
 import com.dirtyunicorns.support.preferences.AppPicker;
 
-public class SqueezeCustomApp extends AppPicker {
+public class ShortSqueezeCustomApp extends AppPicker {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -16,9 +16,9 @@ public class SqueezeCustomApp extends AppPicker {
         String mFriendlyAppString = (String) applist.get(position).loadLabel(packageManager);
 
         Settings.Secure.putString(
-                getContentResolver(), Settings.Secure.SQUEEZE_CUSTOM_APP, mAppString);
+                getContentResolver(), Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP, mAppString);
         Settings.Secure.putString(
-                getContentResolver(), Settings.Secure.SQUEEZE_CUSTOM_APP_FR_NAME,
+                getContentResolver(), Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP_FR_NAME,
                 mFriendlyAppString);
         finish();
     }

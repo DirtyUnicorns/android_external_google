@@ -32,11 +32,21 @@
     <application>
 
         <activity
-            android:name="com.google.android.systemui.elmyra.actions.SqueezeCustomApp"
+            android:name="com.google.android.systemui.elmyra.actions.ShortSqueezeCustomApp"
             android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.MinWidth"
             android:label="@string/app_picker_dialog_title" >
             <intent-filter>
-                <action android:name="com.google.android.systemui.elmyra.actions.SqueezeCustomApp" />
+                <action android:name="com.google.android.systemui.elmyra.actions.ShortSqueezeCustomApp" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.google.android.systemui.elmyra.actions.LongSqueezeCustomApp"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.MinWidth"
+            android:label="@string/app_picker_dialog_title" >
+            <intent-filter>
+                <action android:name="com.google.android.systemui.elmyra.actions.LongSqueezeCustomApp" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

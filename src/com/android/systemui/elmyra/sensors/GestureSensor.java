@@ -14,22 +14,28 @@ public interface GestureSensor extends Sensor {
         final long mActionId = new Random().nextLong();
         final boolean mHapticConsumed;
         final boolean mHostSuspended;
+        final boolean mLongSqueeze;
 
-        public DetectionProperties(boolean z, boolean z2) {
-            this.mHapticConsumed = z;
-            this.mHostSuspended = z2;
+        public DetectionProperties(boolean z, boolean z2, boolean longSqueeze) {
+            mHapticConsumed = z;
+            mHostSuspended = z2;
+            mLongSqueeze = longSqueeze;
         }
 
         public long getActionId() {
-            return this.mActionId;
+            return mActionId;
         }
 
         public boolean isHapticConsumed() {
-            return this.mHapticConsumed;
+            return mHapticConsumed;
         }
 
         public boolean isHostSuspended() {
-            return this.mHostSuspended;
+            return mHostSuspended;
+        }
+
+        public boolean isLongSqueeze() {
+            return mLongSqueeze;
         }
     }
 

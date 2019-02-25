@@ -8,6 +8,7 @@ import android.os.PowerManager;
 import android.os.UserHandle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import com.android.internal.util.du.ActionUtils;
 import com.android.systemui.Dependency;
@@ -90,9 +91,7 @@ public class CustomActions extends Action {
                 break;
             case 11: // Application
                 if (isScreenOn) {
-                    launchApp(getContext(), detectionProperties.isLongSqueeze() ?
-                            Settings.Secure.LONG_SQUEEZE_CUSTOM_APP :
-                            Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP);
+                    launchApp(getContext(), detectionProperties.isLongSqueeze());
                 }
                 break;
             case 12: // Ringer modes
@@ -111,13 +110,25 @@ public class CustomActions extends Action {
         }
     }
 
-    private void launchApp(Context context, String action) {
+    private void launchApp(Context context, boolean isLongSqueeze) {
+        Intent intent = null;
+        String packageName = Settings.Secure.getString(context.getContentResolver(),
+                isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_APP
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP);
+        String activity = Settings.Secure.getString(context.getContentResolver(),
+                isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_ACTIVITY
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY);
+        boolean launchActivity = activity != null && !TextUtils.equals("NONE", activity);
         try {
-            Intent intent = context.getPackageManager().getLaunchIntentForPackage(
-                    Settings.Secure.getString(context.getContentResolver(), action));
+            if (launchActivity) {
+                intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName(packageName, activity);
+            } else {
+                intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             context.startActivity(intent);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

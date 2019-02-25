@@ -1,25 +1,23 @@
 package com.google.android.systemui.elmyra.actions;
 
+import android.content.pm.ActivityInfo;
 import android.provider.Settings;
-import android.view.View;
-import android.widget.ListView;
 
-import com.dirtyunicorns.support.preferences.AppPicker;
-
-public class LongSqueezeCustomApp extends AppPicker {
+public class LongSqueezeCustomApp extends ShortSqueezeCustomApp {
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        String mAppString = applist.get(position).packageName;
-        String mFriendlyAppString = (String) applist.get(position).loadLabel(packageManager);
-
+    protected void setPackage(String packageName, String friendlyAppString) {
         Settings.Secure.putString(
-                getContentResolver(), Settings.Secure.LONG_SQUEEZE_CUSTOM_APP, mAppString);
+                getContentResolver(), Settings.Secure.LONG_SQUEEZE_CUSTOM_APP, packageName);
         Settings.Secure.putString(
                 getContentResolver(), Settings.Secure.LONG_SQUEEZE_CUSTOM_APP_FR_NAME,
-                mFriendlyAppString);
-        finish();
+                friendlyAppString);
+    }
+
+    @Override
+    protected void setPackageActivity(ActivityInfo ai) {
+        Settings.Secure.putString(
+                getContentResolver(), Settings.Secure.LONG_SQUEEZE_CUSTOM_ACTIVITY,
+                ai != null ? ai.name : "NONE");
     }
 }

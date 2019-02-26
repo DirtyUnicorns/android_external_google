@@ -1,10 +1,12 @@
 package com.google.android.systemui.elmyra.actions;
 
 import android.content.pm.ActivityInfo;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.ListView;
 
+import com.dirtyunicorns.support.R;
 import com.dirtyunicorns.support.preferences.AppPicker;
 
 public class ShortSqueezeCustomApp extends AppPicker {
@@ -30,6 +32,7 @@ public class ShortSqueezeCustomApp extends AppPicker {
     public void onBackPressed() {
         if (mIsActivitiesList) {
             setListAdapter(listadapter);
+            setTitle(R.string.active_edge_app_select_title);
             // Reset the dialog again
             mIsActivitiesList = false;
         } else {
@@ -50,16 +53,18 @@ public class ShortSqueezeCustomApp extends AppPicker {
     }
 
     protected void setPackage(String packageName, String friendlyAppString) {
-        Settings.Secure.putString(
-                getContentResolver(), Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP, packageName);
-        Settings.Secure.putString(
-                getContentResolver(), Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP_FR_NAME,
-                friendlyAppString);
+        Settings.Secure.putStringForUser(getContentResolver(),
+                Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP, packageName,
+                UserHandle.USER_CURRENT);
+        Settings.Secure.putStringForUser(getContentResolver(),
+                Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP_FR_NAME, friendlyAppString,
+                UserHandle.USER_CURRENT);
     }
 
     protected void setPackageActivity(ActivityInfo ai) {
-        Settings.Secure.putString(
+        Settings.Secure.putStringForUser(
                 getContentResolver(), Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY,
-                ai != null ? ai.name : "NONE");
+                ai != null ? ai.name : "NONE",
+                UserHandle.USER_CURRENT);
     }
 }

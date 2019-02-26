@@ -112,12 +112,14 @@ public class CustomActions extends Action {
 
     private void launchApp(Context context, boolean isLongSqueeze) {
         Intent intent = null;
-        String packageName = Settings.Secure.getString(context.getContentResolver(),
+        String packageName = Settings.Secure.getStringForUser(context.getContentResolver(),
                 isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_APP
-                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP);
-        String activity = Settings.Secure.getString(context.getContentResolver(),
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP,
+                UserHandle.USER_CURRENT);
+        String activity = Settings.Secure.getStringForUser(context.getContentResolver(),
                 isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_ACTIVITY
-                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY);
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY,
+                UserHandle.USER_CURRENT);
         boolean launchActivity = activity != null && !TextUtils.equals("NONE", activity);
         try {
             if (launchActivity) {

@@ -6,7 +6,6 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.ListView;
 
-import com.dirtyunicorns.support.R;
 import com.dirtyunicorns.support.preferences.AppPicker;
 
 public class ShortSqueezeCustomApp extends AppPicker {
@@ -26,18 +25,6 @@ public class ShortSqueezeCustomApp extends AppPicker {
 
         mIsActivitiesList = false;
         finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mIsActivitiesList) {
-            setListAdapter(listadapter);
-            setTitle(R.string.active_edge_app_select_title);
-            // Reset the dialog again
-            mIsActivitiesList = false;
-        } else {
-            finish();
-        }
     }
 
     @Override

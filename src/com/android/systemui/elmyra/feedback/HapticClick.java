@@ -29,13 +29,72 @@ public class HapticClick implements FeedbackEffect {
 
     @Override
     public void onProgress(float f, int i) {
-        boolean shortSqueezeSelection = Settings.Secure.getIntForUser(mResolver,
-                Settings.Secure.SHORT_SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
+        /* Disable the vibration for certain actions while the screen is turned off.
+           We just have to check for shortSqueezeSelection in this case because
+           the longSqueeze is dependant on shortSqueeze vibration. The final
+           vibration will be handled by onResolve.*/
+        int shortSqueezeSelection = Settings.Secure.getIntForUser(mResolver,
+                Settings.Secure.SHORT_SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT);
+
         boolean longSqueezeSelection = Settings.Secure.getIntForUser(mResolver,
                 Settings.Secure.LONG_SQUEEZE_SELECTION, 0, UserHandle.USER_CURRENT) == 0;
 
-        if (shortSqueezeSelection && longSqueezeSelection) {
+        if (shortSqueezeSelection == 0 && longSqueezeSelection) {
             return;
+        }
+
+        // Check whether the screen is on or off
+        boolean isScreenOn = mPm.isScreenOn();
+
+        switch (shortSqueezeSelection) {
+            case 0: // No action
+            default:
+                return;
+            case 1: // Assistant
+                break;
+            case 2: // Voice search
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 3: // Camera
+                break;
+            case 4: // Flashlight
+                break;
+            case 5: // Clear notifications
+                break;
+            case 6: // Volume panel
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 7: // Screen off
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 8: // Notification panel
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 9: // Screenshot
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 10: // QS panel
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 11: // Application
+                if (!isScreenOn) {
+                    return;
+                }
+                break;
+            case 12: // Ringer modes
+                break;
         }
 
         if (!(mLastGestureStage == 2 || i != 2 || mVibrator == null)) {

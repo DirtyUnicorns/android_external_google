@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.UserHandle;
 import android.provider.Settings;
+import com.android.internal.util.du.Utils;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.VendorServices;
 import com.android.systemui.R;
@@ -35,6 +36,11 @@ public class GoogleServices extends VendorServices {
             if(action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 // Get packageName from Uri
                 String packageName = intent.getData().getSchemeSpecificPart();
+                // If the package is still installed
+                if (Utils.isPackageInstalled(context, packageName)) {
+                    // it's an application update, we can skip the rest.
+                    return;
+                }
                 // Get package names currently set as default
                 String shortPackageName = Settings.Secure.getStringForUser(context.getContentResolver(),
                         Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP,

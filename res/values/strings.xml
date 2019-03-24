@@ -2,5 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_picker_dialog_title">Select an app</string>
+    <!-- Dreamliner -->
+    <string name="config_dockComponent">com.google.android.systemui.dreamliner.WirelessChargerImpl</string>
 
 </resources>

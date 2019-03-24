@@ -8,15 +8,15 @@ public class DockDevice {
     }
 
     DockDevice(String id, String name) {
-        this.mId = id;
-        this.mName = name;
+        mId = id;
+        mName = name;
     }
 
     public String getName() {
-        return this.mName;
+        return mName;
     }
 
     public String getId() {
-        return this.mId;
+        return mId;
     }
 }

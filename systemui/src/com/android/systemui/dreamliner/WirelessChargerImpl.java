@@ -26,11 +26,11 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
     private IWirelessCharger mWirelessCharger;
 
     public WirelessChargerImpl() {
-        this.mHandler = new Handler(Looper.getMainLooper());
-        this.mRunnable = new Runnable() {
+        mHandler = new Handler(Looper.getMainLooper());
+        mRunnable = new Runnable() {
             @Override
             public void run() {
-                WirelessChargerImpl.this.isDockPresentInternal(WirelessChargerImpl.this);
+                isDockPresentInternal(WirelessChargerImpl.this);
             }
         };
     }
@@ -47,9 +47,10 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
     }
 
     private void initHALInterface() {
-        if (this.mWirelessCharger == null) {
+        if (mWirelessCharger == null) {
             try {
-                (this.mWirelessCharger = IWirelessCharger.getService()).linkToDeath((DeathRecipient)this, 0L);
+                (mWirelessCharger = IWirelessCharger.getService()).linkToDeath((
+                        DeathRecipient)this, 0L);
             }
             catch (Exception ex) {
                 final StringBuilder sb = new StringBuilder();
@@ -63,16 +64,16 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
                 }
                 sb.append(message);
                 Log.i("Dreamliner-WLC_HAL", sb.toString());
-                this.mWirelessCharger = null;
+                mWirelessCharger = null;
             }
         }
     }
 
     private void isDockPresentInternal(final isDockPresentCallback isDockPresentCallback) {
-        this.initHALInterface();
-        if (this.mWirelessCharger != null) {
+        initHALInterface();
+        if (mWirelessCharger != null) {
             try {
-                this.mWirelessCharger.isDockPresent(isDockPresentCallback);
+                mWirelessCharger.isDockPresent(isDockPresentCallback);
             }
             catch (Exception ex) {
                 final StringBuilder sb = new StringBuilder();
@@ -86,22 +87,25 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PACKAGE)
     @Override
     public void asyncIsDockPresent(final IsDockPresentCallback isDockPresentCallback) {
-        this.initHALInterface();
-        if (this.mWirelessCharger != null) {
-            this.mPollingStartedTimeNs = System.nanoTime();
-            this.mCallback = new IsDockPresentCallbackWrapper(isDockPresentCallback);
-            this.mHandler.removeCallbacks(this.mRunnable);
-            this.mHandler.postDelayed(this.mRunnable, 100L);
+        initHALInterface();
+        if (mWirelessCharger != null) {
+            mPollingStartedTimeNs = System.nanoTime();
+            mCallback = new IsDockPresentCallbackWrapper(isDockPresentCallback);
+            mHandler.removeCallbacks(mRunnable);
+            mHandler.postDelayed(mRunnable, 100L);
         }
     }
 
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PACKAGE)
     @Override
-    public void challenge(final byte b, final byte[] array, final ChallengeCallback challengeCallback) {
-        this.initHALInterface();
-        if (this.mWirelessCharger != null) {
+    public void challenge(final byte b, final byte[] array,
+                          final ChallengeCallback challengeCallback) {
+        initHALInterface();
+        if (mWirelessCharger != null) {
             try {
-                this.mWirelessCharger.challenge(b, this.convertPrimitiveArrayToArrayList(array), (IWirelessCharger.challengeCallback)new ChallengeCallbackWrapper(challengeCallback));
+                mWirelessCharger.challenge(b, convertPrimitiveArrayToArrayList(array),
+                        (IWirelessCharger.challengeCallback) new ChallengeCallbackWrapper(
+                                challengeCallback));
             }
             catch (Exception ex) {
                 final StringBuilder sb = new StringBuilder();
@@ -115,10 +119,11 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PACKAGE)
     @Override
     public void getInformation(final GetInformationCallback getInformationCallback) {
-        this.initHALInterface();
-        if (this.mWirelessCharger != null) {
+        initHALInterface();
+        if (mWirelessCharger != null) {
             try {
-                this.mWirelessCharger.getInformation((IWirelessCharger.getInformationCallback)new GetInformationCallbackWrapper(getInformationCallback));
+                mWirelessCharger.getInformation((IWirelessCharger.getInformationCallback)
+                        new GetInformationCallbackWrapper(getInformationCallback));
             }
             catch (Exception ex) {
                 final StringBuilder sb = new StringBuilder();
@@ -132,10 +137,12 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PACKAGE)
     @Override
     public void keyExchange(final byte[] array, final KeyExchangeCallback keyExchangeCallback) {
-        this.initHALInterface();
-        if (this.mWirelessCharger != null) {
+        initHALInterface();
+        if (mWirelessCharger != null) {
             try {
-                this.mWirelessCharger.keyExchange(this.convertPrimitiveArrayToArrayList(array), (IWirelessCharger.keyExchangeCallback)new KeyExchangeCallbackWrapper(keyExchangeCallback));
+                mWirelessCharger.keyExchange(convertPrimitiveArrayToArrayList(array),
+                        (IWirelessCharger.keyExchangeCallback) new KeyExchangeCallbackWrapper(
+                                keyExchangeCallback));
             }
             catch (Exception ex) {
                 final StringBuilder sb = new StringBuilder();
@@ -146,84 +153,86 @@ public class WirelessChargerImpl extends WirelessCharger implements DeathRecipie
         }
     }
 
-    public void onValues(final boolean b, final byte b2, final byte b3, final boolean b4, final int n) {
-        if (System.nanoTime() < this.mPollingStartedTimeNs + WirelessChargerImpl.MAX_POLLING_TIMEOUT_NS && n == 0) {
-            this.mHandler.postDelayed(this.mRunnable, 100L);
+    public void onValues(final boolean b, final byte b2, final byte b3, final boolean b4,
+                         final int n) {
+        if (System.nanoTime() < mPollingStartedTimeNs +
+                MAX_POLLING_TIMEOUT_NS && n == 0) {
+            mHandler.postDelayed(mRunnable, 100L);
             return;
         }
-        if (this.mCallback == null) {
+        if (mCallback == null) {
             return;
         }
-        this.mCallback.onValues(b, b2, b3, b4, n);
-        this.mCallback = null;
+        mCallback.onValues(b, b2, b3, b4, n);
+        mCallback = null;
     }
 
     public void serviceDied(final long n) {
         Log.i("Dreamliner-WLC_HAL", "serviceDied");
-        this.mWirelessCharger = null;
+        mWirelessCharger = null;
     }
 
-    final class ChallengeCallbackWrapper implements challengeCallback
-    {
+    final class ChallengeCallbackWrapper implements challengeCallback {
         private ChallengeCallback mCallback;
 
-        public ChallengeCallbackWrapper(final ChallengeCallback mCallback) {
-            this.mCallback = mCallback;
+        public ChallengeCallbackWrapper(final ChallengeCallback callback) {
+            mCallback = callback;
         }
 
         @Override
         public void onValues(final byte b, final ArrayList<Byte> list) {
-            this.mCallback.onCallback(new Byte(b), list);
+            mCallback.onCallback(new Byte(b), list);
         }
     }
 
-    final class GetInformationCallbackWrapper implements getInformationCallback
-    {
+    final class GetInformationCallbackWrapper implements getInformationCallback {
         private GetInformationCallback mCallback;
 
-        public GetInformationCallbackWrapper(final GetInformationCallback mCallback) {
-            this.mCallback = mCallback;
+        public GetInformationCallbackWrapper(final GetInformationCallback callback) {
+            mCallback = callback;
         }
 
-        private com.google.android.systemui.dreamliner.DockInfo convertDockInfo(final DockInfo dockInfo) {
-            return new com.google.android.systemui.dreamliner.DockInfo(dockInfo.manufacturer, dockInfo.model, dockInfo.serial, new Byte(dockInfo.type));
+        private com.google.android.systemui.dreamliner.DockInfo convertDockInfo(
+                final DockInfo dockInfo) {
+            return new com.google.android.systemui.dreamliner.DockInfo(dockInfo.manufacturer,
+                    dockInfo.model, dockInfo.serial, new Byte(dockInfo.type));
         }
 
         @Override
         public void onValues(final byte b, final DockInfo dockInfo) {
-            this.mCallback.onCallback(new Byte(b), this.convertDockInfo(dockInfo));
+            mCallback.onCallback(new Byte(b), convertDockInfo(dockInfo));
         }
     }
 
-    final class IsDockPresentCallbackWrapper implements isDockPresentCallback
-    {
+    final class IsDockPresentCallbackWrapper implements isDockPresentCallback {
         private IsDockPresentCallback mCallback;
 
-        public IsDockPresentCallbackWrapper(final IsDockPresentCallback mCallback) {
-            this.mCallback = mCallback;
+        public IsDockPresentCallbackWrapper(final IsDockPresentCallback callback) {
+            mCallback = callback;
         }
 
         @Override
-        public void onValues(final boolean b, final byte b2, final byte b3, final boolean b4, final int n) {
-            this.mCallback.onCallback(b, b2, b3, b4, n);
+        public void onValues(final boolean b, final byte b2, final byte b3, final boolean b4, 
+                final int n) {
+            mCallback.onCallback(b, b2, b3, b4, n);
         }
     }
 
-    final class KeyExchangeCallbackWrapper implements keyExchangeCallback
-    {
+    final class KeyExchangeCallbackWrapper implements keyExchangeCallback {
         private KeyExchangeCallback mCallback;
 
-        public KeyExchangeCallbackWrapper(final KeyExchangeCallback mCallback) {
-            this.mCallback = mCallback;
+        public KeyExchangeCallbackWrapper(final KeyExchangeCallback callback) {
+            mCallback = callback;
         }
 
         @Override
         public void onValues(final byte b, final KeyExchangeResponse keyExchangeResponse) {
             if (keyExchangeResponse != null) {
-                this.mCallback.onCallback(new Byte(b), keyExchangeResponse.dockId, keyExchangeResponse.dockPublicKey);
+                mCallback.onCallback(new Byte(b), keyExchangeResponse.dockId,
+                        keyExchangeResponse.dockPublicKey);
             }
             else {
-                this.mCallback.onCallback(new Byte(b), (byte)(-1), null);
+                mCallback.onCallback(new Byte(b), (byte)(-1), null);
             }
         }
     }

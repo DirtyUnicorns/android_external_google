@@ -21,21 +21,21 @@ public class DockAsyncQueryHandler extends AsyncQueryHandler {
         ArrayList<DockDevice> devices = new ArrayList();
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                devices.add(new DockDevice(cursor.getString(cursor.getColumnIndex("dockId")), cursor.getString(cursor.getColumnIndex("dockName"))));
+                devices.add(new DockDevice(cursor.getString(cursor.getColumnIndex("dockId")),
+                        cursor.getString(cursor.getColumnIndex("dockName"))));
             }
         }
         return devices;
     }
 
-    /* Access modifiers changed, original: protected */
     public void onQueryComplete(int token, Object cookie, Cursor cursor) {
         super.onQueryComplete(token, cookie, cursor);
-        if (this.mListener != null) {
-            this.mListener.onQueryComplete(token, parseCursorToDockDevice(cursor));
+        if (mListener != null) {
+            mListener.onQueryComplete(token, parseCursorToDockDevice(cursor));
         }
     }
 
     public void setOnQueryListener(OnQueryListener listener) {
-        this.mListener = listener;
+        mListener = listener;
     }
 }

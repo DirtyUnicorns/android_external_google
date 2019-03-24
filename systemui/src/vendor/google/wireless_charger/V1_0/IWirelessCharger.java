@@ -68,13 +68,15 @@ public interface IWirelessCharger extends IBase {
 
         public void isDockPresent(isDockPresentCallback _hidl_cb) throws RemoteException {
             HwParcel _hidl_request = new HwParcel();
-            _hidl_request.writeInterfaceToken("vendor.google.wireless_charger@1.0::IWirelessCharger");
+            _hidl_request.writeInterfaceToken(
+                    "vendor.google.wireless_charger@1.0::IWirelessCharger");
             HwParcel _hidl_reply = new HwParcel();
             try {
                 this.mRemote.transact(1, _hidl_request, _hidl_reply, 0);
                 _hidl_reply.verifySuccess();
                 _hidl_request.releaseTemporaryStorage();
-                _hidl_cb.onValues(_hidl_reply.readBool(), _hidl_reply.readInt8(), _hidl_reply.readInt8(), _hidl_reply.readBool(), _hidl_reply.readInt32());
+                _hidl_cb.onValues(_hidl_reply.readBool(), _hidl_reply.readInt8(),
+                        _hidl_reply.readInt8(), _hidl_reply.readBool(), _hidl_reply.readInt32());
             } finally {
                 _hidl_reply.release();
             }
@@ -82,7 +84,8 @@ public interface IWirelessCharger extends IBase {
 
         public void getInformation(getInformationCallback _hidl_cb) throws RemoteException {
             HwParcel _hidl_request = new HwParcel();
-            _hidl_request.writeInterfaceToken("vendor.google.wireless_charger@1.0::IWirelessCharger");
+            _hidl_request.writeInterfaceToken(
+                    "vendor.google.wireless_charger@1.0::IWirelessCharger");
             HwParcel _hidl_reply = new HwParcel();
             try {
                 this.mRemote.transact(2, _hidl_request, _hidl_reply, 0);
@@ -97,9 +100,11 @@ public interface IWirelessCharger extends IBase {
             }
         }
 
-        public void keyExchange(ArrayList<Byte> myPublicKey, keyExchangeCallback _hidl_cb) throws RemoteException {
+        public void keyExchange(ArrayList<Byte> myPublicKey, keyExchangeCallback _hidl_cb)
+                throws RemoteException {
             HwParcel _hidl_request = new HwParcel();
-            _hidl_request.writeInterfaceToken("vendor.google.wireless_charger@1.0::IWirelessCharger");
+            _hidl_request.writeInterfaceToken(
+                    "vendor.google.wireless_charger@1.0::IWirelessCharger");
             _hidl_request.writeInt8Vector(myPublicKey);
             HwParcel _hidl_reply = new HwParcel();
             try {
@@ -115,9 +120,11 @@ public interface IWirelessCharger extends IBase {
             }
         }
 
-        public void challenge(byte dockId, ArrayList<Byte> challenge, challengeCallback _hidl_cb) throws RemoteException {
+        public void challenge(byte dockId, ArrayList<Byte> challenge, challengeCallback _hidl_cb)
+                throws RemoteException {
             HwParcel _hidl_request = new HwParcel();
-            _hidl_request.writeInterfaceToken("vendor.google.wireless_charger@1.0::IWirelessCharger");
+            _hidl_request.writeInterfaceToken(
+                    "vendor.google.wireless_charger@1.0::IWirelessCharger");
             _hidl_request.writeInt8(dockId);
             _hidl_request.writeInt8Vector(challenge);
             HwParcel _hidl_reply = new HwParcel();
@@ -173,7 +180,8 @@ public interface IWirelessCharger extends IBase {
                 ArrayList<byte[]> _hidl_out_hashchain = new ArrayList();
                 HwBlob _hidl_blob = _hidl_reply.readBuffer(16);
                 int _hidl_vec_size = _hidl_blob.getInt32(8);
-                HwBlob childBlob = _hidl_reply.readEmbeddedBuffer((long) (_hidl_vec_size * 32), _hidl_blob.handle(), 0, true);
+                HwBlob childBlob = _hidl_reply.readEmbeddedBuffer((long) (_hidl_vec_size * 32),
+                        _hidl_blob.handle(), 0, true);
                 _hidl_out_hashchain.clear();
                 while (true) {
                     int _hidl_index_02 = _hidl_index_0;
@@ -203,7 +211,8 @@ public interface IWirelessCharger extends IBase {
             }
         }
 
-        public boolean linkToDeath(DeathRecipient recipient, long cookie) throws RemoteException {
+        public boolean linkToDeath(DeathRecipient recipient, long cookie)
+                throws RemoteException {
             return this.mRemote.linkToDeath(recipient, cookie);
         }
 
@@ -253,7 +262,8 @@ public interface IWirelessCharger extends IBase {
         }
     }
 
-    void challenge(byte b, ArrayList<Byte> arrayList, challengeCallback challengecallback) throws RemoteException;
+    void challenge(byte b, ArrayList<Byte> arrayList, challengeCallback challengecallback)
+            throws RemoteException;
 
     void getInformation(getInformationCallback getinformationcallback) throws RemoteException;
 
@@ -261,7 +271,8 @@ public interface IWirelessCharger extends IBase {
 
     void isDockPresent(isDockPresentCallback isdockpresentcallback) throws RemoteException;
 
-    void keyExchange(ArrayList<Byte> arrayList, keyExchangeCallback keyexchangecallback) throws RemoteException;
+    void keyExchange(ArrayList<Byte> arrayList, keyExchangeCallback keyexchangecallback)
+            throws RemoteException;
 
     boolean linkToDeath(DeathRecipient deathRecipient, long j) throws RemoteException;
 
@@ -269,7 +280,8 @@ public interface IWirelessCharger extends IBase {
         if (binder == null) {
             return null;
         }
-        IHwInterface iface = binder.queryLocalInterface("vendor.google.wireless_charger@1.0::IWirelessCharger");
+        IHwInterface iface = binder.queryLocalInterface(
+                "vendor.google.wireless_charger@1.0::IWirelessCharger");
         if (iface != null && (iface instanceof IWirelessCharger)) {
             return (IWirelessCharger) iface;
         }
@@ -277,7 +289,8 @@ public interface IWirelessCharger extends IBase {
         try {
             Iterator it = proxy.interfaceChain().iterator();
             while (it.hasNext()) {
-                if (((String) it.next()).equals("vendor.google.wireless_charger@1.0::IWirelessCharger")) {
+                if (((String) it.next()).equals(
+                        "vendor.google.wireless_charger@1.0::IWirelessCharger")) {
                     return proxy;
                 }
             }
@@ -287,7 +300,8 @@ public interface IWirelessCharger extends IBase {
     }
 
     static IWirelessCharger getService(String serviceName) throws RemoteException {
-        return asInterface(HwBinder.getService("vendor.google.wireless_charger@1.0::IWirelessCharger", serviceName));
+        return asInterface(HwBinder.getService(
+                "vendor.google.wireless_charger@1.0::IWirelessCharger", serviceName));
     }
 
     static IWirelessCharger getService() throws RemoteException {

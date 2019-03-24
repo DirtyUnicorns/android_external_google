@@ -25,7 +25,8 @@ public final class KeyExchangeResponse {
     }
 
     public final int hashCode() {
-        return Objects.hash(new Object[]{Integer.valueOf(HidlSupport.deepHashCode(Byte.valueOf(this.dockId))), Integer.valueOf(HidlSupport.deepHashCode(this.dockPublicKey))});
+        return Objects.hash(new Object[]{Integer.valueOf(HidlSupport.deepHashCode(Byte.valueOf(
+                this.dockId))), Integer.valueOf(HidlSupport.deepHashCode(this.dockPublicKey))});
     }
 
     public final String toString() {
@@ -43,11 +44,13 @@ public final class KeyExchangeResponse {
         readEmbeddedFromParcel(parcel, parcel.readBuffer(24), 0);
     }
 
-    public final void readEmbeddedFromParcel(HwParcel parcel, HwBlob _hidl_blob, long _hidl_offset) {
+    public final void readEmbeddedFromParcel(HwParcel parcel, HwBlob _hidl_blob,
+                                             long _hidl_offset) {
         HwBlob hwBlob = _hidl_blob;
         this.dockId = hwBlob.getInt8(_hidl_offset + 0);
         int _hidl_vec_size = hwBlob.getInt32((_hidl_offset + 8) + 8);
-        HwBlob childBlob = parcel.readEmbeddedBuffer((long) (_hidl_vec_size * 1), _hidl_blob.handle(), (_hidl_offset + 8) + 0, true);
+        HwBlob childBlob = parcel.readEmbeddedBuffer((long) (_hidl_vec_size * 1),
+                _hidl_blob.handle(), (_hidl_offset + 8) + 0, true);
         this.dockPublicKey.clear();
         for (int _hidl_index_0 = 0; _hidl_index_0 < _hidl_vec_size; _hidl_index_0++) {
             this.dockPublicKey.add(Byte.valueOf(childBlob.getInt8((long) (_hidl_index_0 * 1))));

@@ -9,12 +9,9 @@ public final class DreamlinerUtils {
         if (context == null) {
             return null;
         }
-        // TODO: this is a possible way of overlaying the dock component
-        // for Pixel 3/XL.
+        // Get dock class name.
         String clsName = context.getString(R.string.config_dockComponent);
-        // if (TextUtils.isEmpty(clsName)) {
-        //     return null;
-        // }
+        // Try to load instance.
         try {
             return (WirelessCharger) context.getClassLoader().loadClass(clsName).newInstance();
         } catch (Throwable th) {

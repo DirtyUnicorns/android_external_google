@@ -36,88 +36,96 @@ public class ConnectedDockUpdater implements DockUpdater, OnGearClickListener, O
 
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            ConnectedDockUpdater.this.forceUpdate();
+            forceUpdate();
         }
     }
 
-    public ConnectedDockUpdater(Context context, DevicePreferenceCallback devicePreferenceCallback) {
-        this.mContext = context;
-        this.mDevicePreferenceCallback = devicePreferenceCallback;
-        this.mDockProviderUri = DockContract.DOCK_PROVIDER_CONNECTED_URI;
-        this.mConnectedDockObserver = new ConnectedDockObserver(new Handler(Looper.getMainLooper()));
-        this.mAsyncQueryHandler = new DockAsyncQueryHandler(this.mContext.getContentResolver());
-        this.mAsyncQueryHandler.setOnQueryListener(this);
+    public ConnectedDockUpdater(Context context,
+                                DevicePreferenceCallback devicePreferenceCallback) {
+        mContext = context;
+        mDevicePreferenceCallback = devicePreferenceCallback;
+        mDockProviderUri = DockContract.DOCK_PROVIDER_CONNECTED_URI;
+        mConnectedDockObserver = new ConnectedDockObserver(new Handler(Looper.getMainLooper()));
+        mAsyncQueryHandler = new DockAsyncQueryHandler(mContext.getContentResolver());
+        mAsyncQueryHandler.setOnQueryListener(this);
     }
 
     public void registerCallback() {
-        ContentProviderClient client = this.mContext.getContentResolver().acquireContentProviderClient(this.mDockProviderUri);
+        ContentProviderClient client =
+                mContext.getContentResolver().acquireContentProviderClient(
+                        mDockProviderUri);
         if (client != null) {
             client.release();
-            this.mContext.getContentResolver().registerContentObserver(this.mDockProviderUri, false, this.mConnectedDockObserver);
-            this.mIsObserverRegistered = true;
+            mContext.getContentResolver().registerContentObserver(
+                    mDockProviderUri, false,
+                    mConnectedDockObserver);
+            mIsObserverRegistered = true;
             forceUpdate();
         }
     }
 
     public void unregisterCallback() {
-        if (this.mIsObserverRegistered) {
-            this.mContext.getContentResolver().unregisterContentObserver(this.mConnectedDockObserver);
-            this.mIsObserverRegistered = false;
+        if (mIsObserverRegistered) {
+            mContext.getContentResolver().unregisterContentObserver(
+                    mConnectedDockObserver);
+            mIsObserverRegistered = false;
         }
     }
 
     public void forceUpdate() {
-        this.mAsyncQueryHandler.startQuery(1, this.mContext, this.mDockProviderUri, DockContract.DOCK_PROJECTION, null, null, null);
+        mAsyncQueryHandler.startQuery(1, mContext, mDockProviderUri,
+                DockContract.DOCK_PROJECTION, null, null, null);
     }
 
     public void onQueryComplete(int token, List<DockDevice> devices) {
         if (devices != null && !devices.isEmpty()) {
             DockDevice device = (DockDevice) devices.get(0);
-            this.mDockId = device.getId();
-            this.mDockName = device.getName();
+            mDockId = device.getId();
+            mDockName = device.getName();
             updatePreference();
-        } else if (this.mDockPreference != null && this.mDockPreference.isVisible()) {
-            this.mDockPreference.setVisible(false);
-            this.mDevicePreferenceCallback.onDeviceRemoved(this.mDockPreference);
+        } else if (mDockPreference != null && mDockPreference.isVisible()) {
+            mDockPreference.setVisible(false);
+            mDevicePreferenceCallback.onDeviceRemoved(mDockPreference);
         }
     }
 
     public void onGearClick(GearPreference p) {
-        this.mContext.startActivity(DockContract.buildDockSettingIntent(this.mDockId));
+        mContext.startActivity(DockContract.buildDockSettingIntent(mDockId));
     }
 
     private void updatePreference() {
-        if (this.mDockPreference == null) {
+        if (mDockPreference == null) {
             initPreference();
         }
-        if (TextUtils.isEmpty(this.mDockName)) {
-            if (this.mDockPreference.isVisible()) {
-                this.mDockPreference.setVisible(false);
-                this.mDevicePreferenceCallback.onDeviceRemoved(this.mDockPreference);
+        if (TextUtils.isEmpty(mDockName)) {
+            if (mDockPreference.isVisible()) {
+                mDockPreference.setVisible(false);
+                mDevicePreferenceCallback.onDeviceRemoved(mDockPreference);
             }
             return;
         }
-        this.mDockPreference.setTitle((CharSequence) this.mDockName);
-        if (TextUtils.isEmpty(this.mDockId)) {
-            this.mDockPreference.setOnGearClickListener(null);
+        mDockPreference.setTitle((CharSequence) mDockName);
+        if (TextUtils.isEmpty(mDockId)) {
+            mDockPreference.setOnGearClickListener(null);
         } else {
-            this.mDockPreference.setOnGearClickListener(this);
+            mDockPreference.setOnGearClickListener(this);
         }
-        if (!this.mDockPreference.isVisible()) {
-            this.mDockPreference.setVisible(true);
-            this.mDevicePreferenceCallback.onDeviceAdded(this.mDockPreference);
+        if (!mDockPreference.isVisible()) {
+            mDockPreference.setVisible(true);
+            mDevicePreferenceCallback.onDeviceAdded(mDockPreference);
         }
     }
 
-    /* Access modifiers changed, original: 0000 */
     @VisibleForTesting
     public void initPreference() {
-        if (this.mDockPreference == null) {
-            this.mDockPreference = new GearPreference(this.mContext, null);
-            this.mDockPreference.setIcon((int) R.drawable.ic_dock_24dp);
-            this.mDockPreference.setSummary((CharSequence) this.mContext.getString(R.string.dock_summary_charging_phone));
-            this.mDockPreference.setSelectable(false);
-            this.mDockPreference.setVisible(false);
+        if (mDockPreference == null) {
+            mDockPreference = new GearPreference(mContext, null);
+            mDockPreference.setIcon((int) R.drawable.ic_dock_24dp);
+            mDockPreference.setSummary((CharSequence) mContext.getString(
+                            R.string.battery_stats_charging_label) + " " +
+                            mContext.getString(R.string.usage_type_phone));
+            mDockPreference.setSelectable(false);
+            mDockPreference.setVisible(false);
         }
     }
 }

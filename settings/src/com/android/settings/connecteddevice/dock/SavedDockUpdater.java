@@ -20,6 +20,7 @@ import com.android.settings.widget.GearPreference.OnGearClickListener;
 import com.google.android.settings.connecteddevice.dock.DockAsyncQueryHandler.OnQueryListener;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SavedDockUpdater implements DockUpdater, OnGearClickListener, OnQueryListener {
     private final DockAsyncQueryHandler mAsyncQueryHandler;
@@ -40,47 +41,58 @@ public class SavedDockUpdater implements DockUpdater, OnGearClickListener, OnQue
 
         DockObserver(Handler handler, int token, Uri uri) {
             super(handler);
-            this.mToken = token;
-            this.mUri = uri;
+            mToken = token;
+            mUri = uri;
         }
 
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            SavedDockUpdater.this.startQuery(this.mToken, this.mUri);
+            startQuery(mToken, mUri);
         }
     }
 
     public SavedDockUpdater(Context context, DevicePreferenceCallback devicePreferenceCallback) {
-        this.mContext = context;
-        this.mDevicePreferenceCallback = devicePreferenceCallback;
-        this.mPreferenceMap = new ArrayMap();
+        mContext = context;
+        mDevicePreferenceCallback = devicePreferenceCallback;
+        mPreferenceMap = new ArrayMap();
         Handler handler = new Handler(Looper.getMainLooper());
-        this.mConnectedDockObserver = new DockObserver(handler, 1, DockContract.DOCK_PROVIDER_CONNECTED_URI);
-        this.mSavedDockObserver = new DockObserver(handler, 2, DockContract.DOCK_PROVIDER_SAVED_URI);
+        mConnectedDockObserver = new DockObserver(handler, 1,
+                DockContract.DOCK_PROVIDER_CONNECTED_URI);
+        mSavedDockObserver = new DockObserver(handler, 2,
+                DockContract.DOCK_PROVIDER_SAVED_URI);
         if (isRunningOnMainThread()) {
-            this.mAsyncQueryHandler = new DockAsyncQueryHandler(this.mContext.getContentResolver());
-            this.mAsyncQueryHandler.setOnQueryListener(this);
+            mAsyncQueryHandler = new DockAsyncQueryHandler(
+                    mContext.getContentResolver());
+            mAsyncQueryHandler.setOnQueryListener(this);
             return;
         }
-        this.mAsyncQueryHandler = null;
+        mAsyncQueryHandler = null;
     }
 
     public void registerCallback() {
-        ContentProviderClient client = this.mContext.getContentResolver().acquireContentProviderClient(DockContract.DOCK_PROVIDER_SAVED_URI);
+        ContentProviderClient client =
+                mContext.getContentResolver().acquireContentProviderClient(
+                        DockContract.DOCK_PROVIDER_SAVED_URI);
         if (client != null) {
             client.release();
-            this.mContext.getContentResolver().registerContentObserver(DockContract.DOCK_PROVIDER_CONNECTED_URI, false, this.mConnectedDockObserver);
-            this.mContext.getContentResolver().registerContentObserver(DockContract.DOCK_PROVIDER_SAVED_URI, false, this.mSavedDockObserver);
-            this.mIsObserverRegistered = true;
+            mContext.getContentResolver().registerContentObserver(
+                    DockContract.DOCK_PROVIDER_CONNECTED_URI, false,
+                    mConnectedDockObserver);
+            mContext.getContentResolver().registerContentObserver(
+                    DockContract.DOCK_PROVIDER_SAVED_URI, false,
+                    mSavedDockObserver);
+            mIsObserverRegistered = true;
             forceUpdate();
         }
     }
 
     public void unregisterCallback() {
-        if (this.mIsObserverRegistered) {
-            this.mContext.getContentResolver().unregisterContentObserver(this.mConnectedDockObserver);
-            this.mContext.getContentResolver().unregisterContentObserver(this.mSavedDockObserver);
-            this.mIsObserverRegistered = false;
+        if (mIsObserverRegistered) {
+            mContext.getContentResolver().unregisterContentObserver(
+                    mConnectedDockObserver);
+            mContext.getContentResolver().unregisterContentObserver(
+                    mSavedDockObserver);
+            mIsObserverRegistered = false;
         }
     }
 
@@ -101,11 +113,11 @@ public class SavedDockUpdater implements DockUpdater, OnGearClickListener, OnQue
     }
 
     public void onGearClick(GearPreference p) {
-        this.mContext.startActivity(DockContract.buildDockSettingIntent(p.getKey()));
+        mContext.startActivity(DockContract.buildDockSettingIntent(p.getKey()));
     }
 
     private GearPreference initPreference(String id, String name) {
-        GearPreference preference = new GearPreference(this.mContext, null);
+        GearPreference preference = new GearPreference(mContext, null);
         preference.setIcon((int) R.drawable.ic_dock_24dp);
         preference.setSelectable(false);
         preference.setTitle((CharSequence) name);
@@ -122,12 +134,14 @@ public class SavedDockUpdater implements DockUpdater, OnGearClickListener, OnQue
 
     private void startQuery(int token, Uri dockProviderUri) {
         if (isRunningOnMainThread()) {
-            this.mAsyncQueryHandler.startQuery(token, this.mContext, dockProviderUri, DockContract.DOCK_PROJECTION, null, null, null);
+            mAsyncQueryHandler.startQuery(token, mContext, dockProviderUri,
+                    DockContract.DOCK_PROJECTION, null, null, null);
             return;
         }
         Cursor cursor;
         try {
-            cursor = this.mContext.getApplicationContext().getContentResolver().query(dockProviderUri, DockContract.DOCK_PROJECTION, null, null, null);
+            cursor = mContext.getApplicationContext().getContentResolver().query(
+                    dockProviderUri, DockContract.DOCK_PROJECTION, null, null, null);
             onQueryComplete(token, DockAsyncQueryHandler.parseCursorToDockDevice(cursor));
             if (cursor != null) {
                 cursor.close();
@@ -140,53 +154,56 @@ public class SavedDockUpdater implements DockUpdater, OnGearClickListener, OnQue
 
     private void updateConnectedDevice(List<DockDevice> devices) {
         if (devices.isEmpty()) {
-            this.mConnectedDockId = null;
+            mConnectedDockId = null;
             updateDevices();
             return;
         }
-        this.mConnectedDockId = ((DockDevice) devices.get(0)).getId();
-        if (this.mPreferenceMap.containsKey(this.mConnectedDockId)) {
-            this.mDevicePreferenceCallback.onDeviceRemoved((Preference) this.mPreferenceMap.get(this.mConnectedDockId));
-            this.mPreferenceMap.remove(this.mConnectedDockId);
+        mConnectedDockId = ((DockDevice) devices.get(0)).getId();
+        if (mPreferenceMap.containsKey(mConnectedDockId)) {
+            mDevicePreferenceCallback.onDeviceRemoved((Preference) mPreferenceMap.get(
+                    mConnectedDockId));
+            mPreferenceMap.remove(mConnectedDockId);
         }
     }
 
     private void updateSavedDevicesList(List<DockDevice> devices) {
-        if (this.mSavedDevices == null) {
-            this.mSavedDevices = new ArrayMap();
+        if (mSavedDevices == null) {
+            mSavedDevices = new ArrayMap();
         }
-        this.mSavedDevices.clear();
+        mSavedDevices.clear();
         for (DockDevice device : devices) {
             String name = device.getName();
             if (!TextUtils.isEmpty(name)) {
-                this.mSavedDevices.put(device.getId(), name);
+                mSavedDevices.put(device.getId(), name);
             }
         }
         updateDevices();
     }
 
     private void updateDevices() {
-        if (this.mSavedDevices != null) {
-            for (String id : this.mSavedDevices.keySet()) {
-                if (!TextUtils.equals(id, this.mConnectedDockId)) {
-                    String name = (String) this.mSavedDevices.get(id);
-                    if (this.mPreferenceMap.containsKey(id)) {
-                        ((GearPreference) this.mPreferenceMap.get(id)).setTitle((CharSequence) name);
+        if (mSavedDevices != null) {
+            for (String id : mSavedDevices.keySet()) {
+                if (!TextUtils.equals(id, mConnectedDockId)) {
+                    String name = (String) mSavedDevices.get(id);
+                    if (mPreferenceMap.containsKey(id)) {
+                        ((GearPreference) Objects.requireNonNull(
+                                mPreferenceMap.get(id))).setTitle((CharSequence) name);
                     } else {
-                        this.mPreferenceMap.put(id, initPreference(id, name));
-                        this.mDevicePreferenceCallback.onDeviceAdded((Preference) this.mPreferenceMap.get(id));
+                        mPreferenceMap.put(id, initPreference(id, name));
+                        mDevicePreferenceCallback.onDeviceAdded((
+                                Preference) mPreferenceMap.get(id));
                     }
                 }
-            }
-            this.mPreferenceMap.keySet().removeIf(new Lambda$SavedDockUpdater$J8Vme1TBFB2Oj8doX2QnYETFs1E(this));
+            };
+            mPreferenceMap.keySet().removeIf(p -> hasDeviceBeenRemoved(p));
         }
     }
 
     public boolean hasDeviceBeenRemoved(String id) {
-        if (this.mSavedDevices.containsKey(id)) {
+        if (mSavedDevices.containsKey(id)) {
             return false;
         }
-        this.mDevicePreferenceCallback.onDeviceRemoved((Preference) this.mPreferenceMap.get(id));
+        mDevicePreferenceCallback.onDeviceRemoved((Preference) mPreferenceMap.get(id));
         return true;
     }
 }

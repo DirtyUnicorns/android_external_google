@@ -9,31 +9,31 @@ public class DockInfo {
     private String serialNumber = "";
 
     public DockInfo(String manufacturer, String model, String serialNumber, int accessoryType) {
-        this.manufacturer = manufacturer;
-        this.model = model;
-        this.serialNumber = serialNumber;
-        this.accessoryType = accessoryType;
+        manufacturer = manufacturer;
+        model = model;
+        serialNumber = serialNumber;
+        accessoryType = accessoryType;
     }
 
     /* Access modifiers changed, original: 0000 */
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
-        bundle.putString("manufacturer", this.manufacturer);
-        bundle.putString("model", this.model);
-        bundle.putString("serialNumber", this.serialNumber);
-        bundle.putInt("accessoryType", this.accessoryType);
+        bundle.putString("manufacturer", manufacturer);
+        bundle.putString("model", model);
+        bundle.putString("serialNumber", serialNumber);
+        bundle.putInt("accessoryType", accessoryType);
         return bundle;
     }
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.manufacturer);
+        stringBuilder.append(manufacturer);
         stringBuilder.append(", ");
-        stringBuilder.append(this.model);
+        stringBuilder.append(model);
         stringBuilder.append(", ");
-        stringBuilder.append(this.serialNumber);
+        stringBuilder.append(serialNumber);
         stringBuilder.append(", ");
-        stringBuilder.append(this.accessoryType);
+        stringBuilder.append(accessoryType);
         return stringBuilder.toString();
     }
 }

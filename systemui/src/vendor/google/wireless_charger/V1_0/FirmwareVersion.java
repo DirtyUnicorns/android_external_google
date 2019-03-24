@@ -18,14 +18,17 @@ public final class FirmwareVersion {
             return false;
         }
         FirmwareVersion other = (FirmwareVersion) otherObject;
-        if (this.major == other.major && this.minor == other.minor && HidlSupport.deepEquals(this.extra, other.extra)) {
+        if (this.major == other.major && this.minor == other.minor && HidlSupport.deepEquals(
+                this.extra, other.extra)) {
             return true;
         }
         return false;
     }
 
     public final int hashCode() {
-        return Objects.hash(new Object[]{Integer.valueOf(HidlSupport.deepHashCode(Integer.valueOf(this.major))), Integer.valueOf(HidlSupport.deepHashCode(Integer.valueOf(this.minor))), Integer.valueOf(HidlSupport.deepHashCode(this.extra))});
+        return Objects.hash(new Object[]{Integer.valueOf(HidlSupport.deepHashCode(Integer.valueOf(
+                this.major))), Integer.valueOf(HidlSupport.deepHashCode(Integer.valueOf(
+                this.minor))), Integer.valueOf(HidlSupport.deepHashCode(this.extra))});
     }
 
     public final String toString() {
@@ -46,6 +49,7 @@ public final class FirmwareVersion {
         this.major = hwBlob.getInt32(_hidl_offset + 0);
         this.minor = hwBlob.getInt32(_hidl_offset + 4);
         this.extra = hwBlob.getString(_hidl_offset + 8);
-        parcel.readEmbeddedBuffer((long) (this.extra.getBytes().length + 1), _hidl_blob.handle(), (_hidl_offset + 8) + 0, false);
+        parcel.readEmbeddedBuffer((long) (this.extra.getBytes().length + 1), _hidl_blob.handle(),
+                (_hidl_offset + 8) + 0, false);
     }
 }

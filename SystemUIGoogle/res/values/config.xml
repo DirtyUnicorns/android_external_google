@@ -2,6 +2,8 @@
 
 <resources>
 
+    <!-- Google services -->
+    <string name="config_systemUIVendorServiceComponent">com.google.android.systemui.GoogleServices</string>
     <!-- Dreamliner Wireless Charger implementation -->
     <string name="config_dockComponent">com.google.android.systemui.dreamliner.WirelessChargerImpl</string>
 

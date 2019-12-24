@@ -16,12 +16,13 @@
 
 package com.google.android.settings.overlay;
 
-import android.support.annotation.Keep;
+import com.android.settings.aware.AwareFeatureProvider;
 import com.android.settings.overlay.DockUpdaterFeatureProvider;
+import com.google.android.settings.aware.AwareFeatureProviderGoogleImpl;
 import com.google.android.settings.connecteddevice.dock.DockUpdaterFeatureProviderGoogleImpl;
 
 public final class FeatureFactoryImpl extends com.android.settings.overlay.FeatureFactoryImpl {
-
+    private AwareFeatureProvider mAwareFeatureProvider;
     private DockUpdaterFeatureProvider mDockUpdaterFeatureProvider;
 
     @Override
@@ -30,5 +31,13 @@ public final class FeatureFactoryImpl extends com.android.settings.overlay.Featu
             mDockUpdaterFeatureProvider = new DockUpdaterFeatureProviderGoogleImpl();
         }
         return mDockUpdaterFeatureProvider;
+    }
+
+    @Override
+    public AwareFeatureProvider getAwareFeatureProvider() {
+        if (mAwareFeatureProvider == null) {
+            mAwareFeatureProvider = new AwareFeatureProviderGoogleImpl();
+        }
+        return mAwareFeatureProvider;
     }
 }

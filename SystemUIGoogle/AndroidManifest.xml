@@ -44,6 +44,7 @@
     <uses-permission android:name="com.android.systemui.permission.PLUGIN"/>
     <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.QSB" />
     <uses-permission android:name="com.google.android.deskclock.permission.RECEIVE_ALERT_BROADCASTS" />
+    <uses-permission android:name="com.android.systemui.permission.SEND_ALERT_BROADCASTS" />
     <uses-permission android:name="com.google.android.apps.dreamliner.permission.DREAMLINER_SERVICE" />
     <uses-permission android:name="com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE" />
     <uses-permission android:name="com.google.restricted_assist_gesture.permission.RESTRICTED_ASSIST_GESTURE_PROVIDER" />

@@ -1,146 +1,164 @@
 package com.google.android.systemui.elmyra;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.metrics.LogMaker;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
+import android.util.Log;
+
 import com.android.internal.logging.MetricsLogger;
+import com.android.systemui.Dumpable;
 import com.google.android.systemui.elmyra.actions.Action;
-import com.google.android.systemui.elmyra.actions.Action.Listener;
 import com.google.android.systemui.elmyra.feedback.FeedbackEffect;
 import com.google.android.systemui.elmyra.gates.Gate;
 import com.google.android.systemui.elmyra.sensors.GestureSensor;
-import com.google.android.systemui.elmyra.sensors.GestureSensor.DetectionProperties;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ElmyraService {
-    protected final Listener mActionListener = new C15821();
-    private final List<Action> mActions;
-    private final Context mContext;
-    private final List<FeedbackEffect> mFeedbackEffects;
-    protected final Gate.Listener mGateListener = new C15832();
-    private final List<Gate> mGates;
-    private final GestureSensor.Listener mGestureListener = new GestureListener(this, null);
-    private final GestureSensor mGestureSensor;
+public class ElmyraService implements Dumpable {
+    private Context mContext;
+    private GestureSensor.Listener mGestureListener = new GestureListener();
+    private static GestureSensor mGestureSensor;
+    private static List<Gate> mGates;
     private Action mLastActiveAction;
-    private long mLastPrimedGesture;
-    private int mLastStage;
-    private final MetricsLogger mLogger;
-    private final PowerManager mPowerManager;
-    private final WakeLock mWakeLock;
+    private static long mLastPrimedGesture;
+    private static int mLastStage;
+    private static MetricsLogger mLogger;
+    public static PowerManager mPowerManager;
+    public static PowerManager.WakeLock mWakeLock;
+    private static List<FeedbackEffect> mFeedbackEffects;
+    private static List<Action> mActions;
 
-    /* renamed from: com.google.android.systemui.elmyra.ElmyraService$1 */
-    class C15821 implements Listener {
-        C15821() {
-        }
-
-        @Override
-        public void onActionAvailabilityChanged(Action action) {
-            updateSensorListener();
-        }
-    }
-
-    /* renamed from: com.google.android.systemui.elmyra.ElmyraService$2 */
-    class C15832 implements Gate.Listener {
-        C15832() {
-        }
-
-        @Override
-        public void onGateChanged(Gate gate) {
-            updateSensorListener();
-        }
-    }
+    private Action.Listener mActionListener = action -> updateSensorListener();
+    private Gate.Listener mGateListener = gate -> updateSensorListener();
 
     private class GestureListener implements GestureSensor.Listener {
         private GestureListener() {
         }
 
-        GestureListener(ElmyraService elmyraService, C15821 c15821) {
-            this();
-        }
-
-        public void onGestureDetected(GestureSensor gestureSensor, DetectionProperties detectionProperties) {
-            mWakeLock.acquire(2000);
-            boolean isInteractive = mPowerManager.isInteractive();
-            int i = (detectionProperties == null || !detectionProperties.isHostSuspended()) ? !isInteractive ? 2 : 1 : 3;
-            LogMaker latency = new LogMaker(999).setType(4).setSubtype(i).setLatency(isInteractive ? SystemClock.uptimeMillis() - mLastPrimedGesture : 0);
-            mLastPrimedGesture = 0;
-            Action activeAction = updateActiveAction();
-            if (activeAction != null) {
-                activeAction.onTrigger(detectionProperties);
-                mFeedbackEffects.forEach(feedbackEff -> feedbackEff.onResolve(detectionProperties));
-            }
-            latency.setPackageName(activeAction.getClass().getName());
-            mLogger.write(latency);
-        }
-
         public void onGestureProgress(GestureSensor gestureSensor, float f, int i) {
-            Action activeAction = updateActiveAction();
-            if (activeAction != null) {
-                activeAction.onProgress(f, i);
-                mFeedbackEffects.forEach(feedbackEff -> feedbackEff.onProgress(f, i));
+            Action access = updateActiveAction();
+            if (access != null) {
+                access.onProgress(f, i);
+                for (int i2 = 0; i2 < ElmyraService.mFeedbackEffects.size(); i2++) {
+                    ElmyraService.mFeedbackEffects.get(i2).onProgress(f, i);
+                }
             }
-            if (i != mLastStage) {
+            if (i != ElmyraService.mLastStage) {
                 long uptimeMillis = SystemClock.uptimeMillis();
                 if (i == 2) {
-                    mLogger.action(998);
-                    mLastPrimedGesture = uptimeMillis;
-                } else if (i == 0 && mLastPrimedGesture != 0) {
-                    mLogger.write(new LogMaker(997).setType(4).setLatency(uptimeMillis - mLastPrimedGesture));
+                    ElmyraService.mLogger.action(998);
+                    long unused = ElmyraService.mLastPrimedGesture = uptimeMillis;
+                } else if (i == 0 && ElmyraService.mLastPrimedGesture != 0) {
+                    ElmyraService.mLogger.write(new LogMaker(
+                            997).setType(4).setLatency(uptimeMillis - ElmyraService.mLastPrimedGesture));
                 }
-                mLastStage = i;
+                int unused2 = ElmyraService.mLastStage = i;
             }
+        }
+
+        public void onGestureDetected(GestureSensor gestureSensor, GestureSensor.DetectionProperties detectionProperties) {
+            ElmyraService.mWakeLock.acquire(2000);
+            boolean isInteractive = ElmyraService.mPowerManager.isInteractive();
+            LogMaker latency = new LogMaker(999).setType(4).setSubtype(
+                    (detectionProperties == null ||
+                            !detectionProperties.isHostSuspended()) ?
+                            !isInteractive ? 2 : 1 : 3).setLatency(isInteractive ?
+                    SystemClock.uptimeMillis() - ElmyraService.mLastPrimedGesture : 0);
+            long unused = ElmyraService.mLastPrimedGesture = 0;
+            Action access = updateActiveAction();
+            if (access != null) {
+                Log.i("Elmyra/ElmyraService", "Triggering " + access);
+                access.onTrigger(detectionProperties);
+                for (int i = 0; i < ElmyraService.mFeedbackEffects.size(); i++) {
+                    ElmyraService.mFeedbackEffects.get(i).onResolve(detectionProperties);
+                }
+                latency.setPackageName(access.getClass().getName());
+            }
+            ElmyraService.mLogger.write(latency);
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     public ElmyraService(Context context, ServiceConfiguration serviceConfiguration) {
         mContext = context;
         mLogger = new MetricsLogger();
-        mPowerManager = (PowerManager) mContext.getSystemService("power");
+        mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mWakeLock = mPowerManager.newWakeLock(1, "Elmyra/ElmyraService");
+        mActions = new ArrayList<>(serviceConfiguration.getActions());
+        Consumer action = obj -> ElmyraActionService( (Action) obj );
+        for (Action mAction : mActions) {
+            action.accept( mAction );
+        }
 
-        mActions = new ArrayList(serviceConfiguration.getActions());
-        mActions.forEach(action -> action.setListener(mActionListener));
+        mFeedbackEffects = new ArrayList<>(serviceConfiguration.getFeedbackEffects());
+        mGates = new ArrayList<>(serviceConfiguration.getGates());
+        Consumer action1 = obj -> ElmyraGateService( (Gate) obj );
+        for (Gate mGate : mGates) {
+            action1.accept( mGate );
+        }
 
-        mFeedbackEffects = new ArrayList(serviceConfiguration.getFeedbackEffects());
-
-        mGates = new ArrayList(serviceConfiguration.getGates());
-        mGates.forEach(gate -> gate.setListener(mGateListener));
         mGestureSensor = serviceConfiguration.getGestureSensor();
-        if (mGestureSensor != null) {
-            mGestureSensor.setGestureListener(mGestureListener);
+        GestureSensor gestureSensor = mGestureSensor;
+        if (gestureSensor != null) {
+            gestureSensor.setGestureListener(mGestureListener);
         }
         updateSensorListener();
     }
 
-    private Gate getBlockingGate() {
-        for (Gate gate : mGates) {
-            if (gate.isBlocking()) {
-                return gate;
+    private void ElmyraActionService(Action action) {
+        action.setListener(mActionListener);
+    }
+
+    private void ElmyraGateService(Gate gate) {
+        gate.setListener(mGateListener);
+    }
+
+    private static void activateGates() {
+        for (int i = 0; i < mGates.size(); i++) {
+            mGates.get(i).activate();
+        }
+    }
+
+    private static void deactivateGates() {
+        for (int i = 0; i < mGates.size(); i++) {
+            mGates.get(i).deactivate();
+        }
+    }
+
+    private static Gate blockingGate() {
+        for (int i = 0; i < mGates.size(); i++) {
+            if (mGates.get(i).isBlocking()) {
+                return mGates.get(i);
             }
         }
-        // If we are here, we haven't found a blocking gate.
         return null;
     }
 
-    private Action firstAvailableAction() {
-        // TODO: put some logic as soon as we add more actions.
-        return mActions.get(0);
+    private static Action firstAvailableAction() {
+        for (int i = 0; i < mActions.size(); i++) {
+            if (mActions.get(i).isAvailable()) {
+                return mActions.get(i);
+            }
+        }
+        return null;
     }
 
-    private void startListening() {
-        if (mGestureSensor != null && !mGestureSensor.isListening()) {
+    private static void startListening() {
+        GestureSensor gestureSensor = mGestureSensor;
+        if (gestureSensor != null && !gestureSensor.isListening()) {
             mGestureSensor.startListening();
         }
     }
 
     private void stopListening() {
-        if (mGestureSensor != null && mGestureSensor.isListening()) {
+        GestureSensor gestureSensor = mGestureSensor;
+        if (gestureSensor != null && gestureSensor.isListening()) {
             mGestureSensor.stopListening();
             for (int i = 0; i < mFeedbackEffects.size(); i++) {
                 mFeedbackEffects.get(i).onRelease();
@@ -152,30 +170,82 @@ public class ElmyraService {
         }
     }
 
-    private Action updateActiveAction() {
+    public Action updateActiveAction() {
         Action firstAvailableAction = firstAvailableAction();
-        if (!(mLastActiveAction == null || firstAvailableAction == mLastActiveAction)) {
+        Action action = mLastActiveAction;
+        if (!(action == null || firstAvailableAction == action)) {
+            Log.i("Elmyra/ElmyraService", "Switching action from "
+                    + mLastActiveAction + " to " + firstAvailableAction);
             mLastActiveAction.onProgress(0.0f, 0);
         }
         mLastActiveAction = firstAvailableAction;
         return firstAvailableAction;
     }
 
-    protected void updateSensorListener() {
+    public void updateSensorListener() {
         Action updateActiveAction = updateActiveAction();
         if (updateActiveAction == null) {
-            // Deactivate gates
-            mGates.forEach(gate -> gate.deactivate());
+            Log.i("Elmyra/ElmyraService", "No available actions");
+            deactivateGates();
             stopListening();
             return;
         }
-        // Activate gates
-        mGates.forEach(gate -> gate.activate());
-        Gate blockingGate = getBlockingGate();
+        activateGates();
+        Gate blockingGate = blockingGate();
         if (blockingGate != null) {
+            Log.i("Elmyra/ElmyraService", "Gated by " + blockingGate);
             stopListening();
             return;
         }
+        Log.i("Elmyra/ElmyraService", "Unblocked; current action: " + updateActiveAction);
         startListening();
     }
+
+    public void dump(FileDescriptor fileDescriptor, PrintWriter printWriter, String[] strArr) {
+        String str;
+        String str2;
+        printWriter.println(ElmyraService.class.getSimpleName() + " state:");
+        printWriter.println("  Gates:");
+        int i = 0;
+        while (true) {
+            str = "X ";
+            if (i >= mGates.size()) {
+                break;
+            }
+            printWriter.print("    ");
+            if (mGates.get(i).isActive()) {
+                if (!mGates.get(i).isBlocking()) {
+                    str = "O ";
+                }
+                printWriter.print(str);
+            } else {
+                printWriter.print("- ");
+            }
+            printWriter.println(mGates.get(i).toString());
+            i++;
+        }
+        printWriter.println("  Actions:");
+        for (int i2 = 0; i2 < mActions.size(); i2++) {
+            printWriter.print("    ");
+            if (mActions.get(i2).isAvailable()) {
+                str2 = "O ";
+            } else {
+                str2 = str;
+            }
+            printWriter.print(str2);
+            printWriter.println(mActions.get(i2).toString());
+        }
+        printWriter.println("  Active: " + mLastActiveAction);
+        printWriter.println("  Feedback Effects:");
+        for (int i3 = 0; i3 < mFeedbackEffects.size(); i3++) {
+            printWriter.print("    ");
+            printWriter.println(mFeedbackEffects.get(i3).toString());
+        }
+        printWriter.println("  Gesture Sensor: " + mGestureSensor.toString());
+        GestureSensor gestureSensor = mGestureSensor;
+        if (gestureSensor instanceof Dumpable) {
+            ((Dumpable) gestureSensor).dump(fileDescriptor, printWriter, strArr);
+        }
+    }
 }
+

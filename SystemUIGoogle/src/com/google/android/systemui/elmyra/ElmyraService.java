@@ -152,7 +152,7 @@ public class ElmyraService implements Dumpable {
     private static void startListening() {
         GestureSensor gestureSensor = mGestureSensor;
         if (gestureSensor != null && !gestureSensor.isListening()) {
-            mGestureSensor.startListening();
+	        mGestureSensor.startListening();
         }
     }
 

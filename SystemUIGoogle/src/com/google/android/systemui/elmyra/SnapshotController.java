@@ -3,7 +3,7 @@ package com.google.android.systemui.elmyra;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import com.google.android.systemui.elmyra.proto.nano.SnapshotMessages.SnapshotHeader;
+import com.google.android.systemui.elmyra.proto.nano.SnapshotProtos.SnapshotHeader;
 import com.google.android.systemui.elmyra.sensors.GestureSensor;
 import com.google.android.systemui.elmyra.sensors.GestureSensor.DetectionProperties;
 import java.util.Random;
@@ -12,7 +12,7 @@ public final class SnapshotController implements com.google.android.systemui.elm
     private final Handler mHandler = new Handler(Looper.getMainLooper()) {
         public void handleMessage(Message message) {
             if (message.what == 1) {
-                SnapshotController.this.requestSnapshot((SnapshotHeader) message.obj);
+                requestSnapshot((SnapshotHeader) message.obj);
             }
         }
     };
@@ -21,38 +21,48 @@ public final class SnapshotController implements com.google.android.systemui.elm
     private Listener mSnapshotListener;
 
     public interface Listener {
-        void onSnapshotRequested(SnapshotHeader snapshotHeader);
+        void onSnapshotRequested(SnapshotHeader snapshotProtos);
     }
 
     public SnapshotController(SnapshotConfiguration snapshotConfiguration) {
-        this.mSnapshotDelayAfterGesture = snapshotConfiguration.getSnapshotDelayAfterGesture();
-    }
-
-    private void requestSnapshot(SnapshotHeader snapshotHeader) {
-        if (this.mSnapshotListener != null) {
-            this.mSnapshotListener.onSnapshotRequested(snapshotHeader);
-        }
-    }
-
-    public void onGestureDetected(GestureSensor gestureSensor, DetectionProperties detectionProperties) {
-        SnapshotHeader snapshotHeader = new SnapshotHeader();
-        snapshotHeader.gestureType = 1;
-        snapshotHeader.identifier = detectionProperties != null ? detectionProperties.getActionId() : 0;
-        this.mLastGestureStage = 0;
-        this.mHandler.sendMessageDelayed(this.mHandler.obtainMessage(1, snapshotHeader), (long) this.mSnapshotDelayAfterGesture);
+        mSnapshotDelayAfterGesture = snapshotConfiguration.getSnapshotDelayAfterGesture();
     }
 
     public void onGestureProgress(GestureSensor gestureSensor, float f, int i) {
-        if (this.mLastGestureStage == 2 && i != 2) {
-            SnapshotHeader snapshotHeader = new SnapshotHeader();
-            snapshotHeader.identifier = new Random().nextLong();
-            snapshotHeader.gestureType = 2;
-            requestSnapshot(snapshotHeader);
+        if (mLastGestureStage == 2 && i != 2) {
+            SnapshotHeader snapshotProtos = new SnapshotHeader();
+            snapshotProtos.identifier = new Random().nextLong();
+            snapshotProtos.gestureType = 2;
+            requestSnapshot(snapshotProtos);
         }
-        this.mLastGestureStage = i;
+        mLastGestureStage = i;
+    }
+
+    public void onGestureDetected(GestureSensor gestureSensor, DetectionProperties detectionProperties) {
+        SnapshotHeader snapshotProtos = new SnapshotHeader();
+        snapshotProtos.gestureType = 1;
+        snapshotProtos.identifier = detectionProperties != null ? detectionProperties.getActionId() : 0;
+        mLastGestureStage = 0;
+        Handler handler = mHandler;
+        handler.sendMessageDelayed(handler.obtainMessage(1, snapshotProtos), (long) mSnapshotDelayAfterGesture);
+    }
+
+    public void onWestworldPull() {
+        SnapshotHeader snapshotProtos = new SnapshotHeader();
+        snapshotProtos.gestureType = 4;
+        snapshotProtos.identifier = 0;
+        Handler handler = mHandler;
+        handler.sendMessage(handler.obtainMessage(1, snapshotProtos));
     }
 
     public void setListener(Listener listener) {
-        this.mSnapshotListener = listener;
+        mSnapshotListener = listener;
+    }
+
+    private void requestSnapshot(SnapshotHeader snapshotProtos) {
+        Listener listener = mSnapshotListener;
+        if (listener != null) {
+            listener.onSnapshotRequested(snapshotProtos);
+        }
     }
 }

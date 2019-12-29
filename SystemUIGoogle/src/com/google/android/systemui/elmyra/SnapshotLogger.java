@@ -1,7 +1,7 @@
 package com.google.android.systemui.elmyra;
 
 import android.os.Binder;
-import com.google.android.systemui.elmyra.proto.nano.ElmyraChassis.SensorEvent;
+import com.google.android.systemui.elmyra.proto.nano.SnapshotProtos;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ public class SnapshotLogger {
     private List<Snapshot> mSnapshots;
 
     public class Snapshot {
-        final com.google.android.systemui.elmyra.proto.nano.SnapshotMessages.Snapshot mSnapshot;
+        final SnapshotProtos.Snapshot mSnapshot;
         final long mTimestamp;
 
-        Snapshot(com.google.android.systemui.elmyra.proto.nano.SnapshotMessages.Snapshot snapshot, long j) {
+        Snapshot(SnapshotProtos.Snapshot snapshot, long j) {
             this.mSnapshot = snapshot;
             this.mTimestamp = j;
         }
 
-        public com.google.android.systemui.elmyra.proto.nano.SnapshotMessages.Snapshot getSnapshot() {
+        public SnapshotProtos.Snapshot getSnapshot() {
             return this.mSnapshot;
         }
 
@@ -34,7 +34,7 @@ public class SnapshotLogger {
         this.mSnapshots = new ArrayList(i);
     }
 
-    public void addSnapshot(com.google.android.systemui.elmyra.proto.nano.SnapshotMessages.Snapshot snapshot, long j) {
+    public void addSnapshot(SnapshotProtos.Snapshot snapshot, long j) {
         if (this.mSnapshots.size() == this.mSnapshotCapacity) {
             this.mSnapshots.remove(0);
         }

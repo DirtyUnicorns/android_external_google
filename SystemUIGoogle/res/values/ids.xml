@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <item type="id" name="home_control" />
+    <item type="id" name="assistant_poodle" />
+    <item type="id" name="top_icon" />
+    <item type="id" name="docked_top_icon" />
+
+</resources>

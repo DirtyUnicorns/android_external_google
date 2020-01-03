@@ -1,0 +1,54 @@
+android_app {
+    name: "SystemUIGoogle",
+    overrides: [
+        "SystemUI",
+    ],
+    srcs: [
+        "src/**/*.java",
+        "src/**/I*.aidl",
+    ],
+    static_libs: [
+        "SystemUI-core",
+        "SystemUIPluginLib",
+        "SystemUISharedLib",
+        "SettingsLib",
+        "android.hidl.base-V1.0-java",
+        "androidx.legacy_legacy-support-v4",
+        "androidx.recyclerview_recyclerview",
+        "androidx.preference_preference",
+        "androidx.appcompat_appcompat",
+        "androidx.mediarouter_mediarouter",
+        "androidx.palette_palette",
+        "androidx.legacy_legacy-preference-v14",
+        "androidx.leanback_leanback",
+        "androidx.slice_slice-core",
+        "androidx.slice_slice-view",
+        "androidx.slice_slice-builders",
+        "androidx.arch.core_core-runtime",
+        "androidx.lifecycle_lifecycle-extensions",
+        "SystemUI-tags",
+        "SystemUI-proto",
+    ],
+    libs: [
+        "telephony-common",
+    ],
+    manifest: "AndroidManifest.xml",
+    platform_apis: true,
+    product_specific: true,
+    certificate: "platform",
+    privileged: true,
+    optimize: {
+        proguard_flags_files: [
+            "proguard.flags",
+        ],
+    },
+    resource_dirs: [
+        "res",
+    ],
+    dxflags: ["--multi-dex"],
+    aaptflags: [
+        "--extra-packages",
+        "com.android.keyguard",
+    ],
+    required: ["privapp_whitelist_com.android.systemui"],
+}

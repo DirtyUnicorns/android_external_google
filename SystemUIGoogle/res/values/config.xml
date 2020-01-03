@@ -4,6 +4,9 @@
 
     <!-- Google services -->
     <string name="config_systemUIVendorServiceComponent">com.google.android.systemui.GoogleServices</string>
+    <!-- Fully-qualified class name for the implementation of the FeatureFactory to be instantiated. -->
+    <string name="config_featureFactory"
+            translatable="false">com.google.android.settings.overlay.FeatureFactoryImpl</string>
     <!-- Dreamliner Wireless Charger implementation -->
     <string name="config_dockComponent">com.google.android.systemui.dreamliner.WirelessChargerImpl</string>
 

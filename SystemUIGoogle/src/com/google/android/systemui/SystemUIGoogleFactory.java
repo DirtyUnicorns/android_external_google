@@ -1,28 +1,35 @@
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License
+ */
+
 package com.google.android.systemui;
 
 import android.content.Context;
+
 import com.android.systemui.SystemUIFactory;
-import com.android.systemui.dock.DockManager;
-import com.android.systemui.statusbar.notification.NotificationEntryManager;
-import com.android.systemui.statusbar.notification.NotificationFilter;
-import com.android.systemui.statusbar.notification.NotificationInterruptionStateProvider;
-import com.android.systemui.statusbar.policy.BatteryController;
+import com.android.systemui.SystemUIRootComponent;
 
-import com.android.systemui.plugins.statusbar.StatusBarStateController;
-
-import com.google.android.systemui.dreamliner.DockObserver;
-import com.google.android.systemui.dreamliner.DreamlinerUtils;
-
-import com.google.android.systemui.statusbar.NotificationInterruptionStateProviderGoogle;
-
-
+/**
+ * Class factory to provide Google specific SystemUI components.
+ */
 public class SystemUIGoogleFactory extends SystemUIFactory {
-
-    public DockManager provideDockManager(Context context) {
-        return new DockObserver(context, DreamlinerUtils.getInstance(context));
-    }
-
-    public NotificationInterruptionStateProvider provideNotificationInterruptionStateProvider(Context context, NotificationFilter notificationFilter, StatusBarStateController statusBarStateController, BatteryController batteryController) {
-        return new NotificationInterruptionStateProviderGoogle(context, notificationFilter, statusBarStateController, batteryController);
+    @Override
+    protected SystemUIRootComponent buildSystemUIRootComponent(Context context) {
+        return DaggerSystemUIGoogleRootComponent.builder()
+                .dependencyProvider(new com.android.systemui.DependencyProvider())
+                .contextHolder(new ContextHolder(context))
+                .build();
     }
 }

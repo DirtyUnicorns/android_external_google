@@ -28,6 +28,7 @@ import com.android.systemui.power.EnhancedEstimates;
 import com.android.systemui.power.EnhancedEstimatesImpl;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
+import com.android.systemui.statusbar.notification.NotificationInterruptionStateProvider;
 import com.android.systemui.statusbar.notification.collection.NotificationData;
 import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
 import com.android.systemui.statusbar.phone.ShadeController;
@@ -35,6 +36,7 @@ import com.android.systemui.statusbar.phone.StatusBar;
 
 import com.google.android.systemui.dreamliner.DockObserver;
 import com.google.android.systemui.dreamliner.DreamlinerUtils;
+import com.google.android.systemui.statusbar.NotificationInterruptionStateProviderGoogle;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -72,6 +74,10 @@ abstract class SystemUIGoogleModule {
     @Binds
     abstract NotificationData.KeyguardEnvironment bindKeyguardEnvironment(
             KeyguardEnvironmentImpl keyguardEnvironment);
+
+    @Binds
+    abstract NotificationInterruptionStateProvider bindNotificationInterruptionStateProvider(
+            NotificationInterruptionStateProviderGoogle notificationInterruptionStateProvider);
 
     @Singleton
     @Provides

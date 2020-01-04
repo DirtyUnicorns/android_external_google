@@ -7,6 +7,9 @@
     <!-- Fully-qualified class name for the implementation of the FeatureFactory to be instantiated. -->
     <string name="config_featureFactory"
             translatable="false">com.google.android.settings.overlay.FeatureFactoryImpl</string>
+    <!-- SystemUIFactory component -->
+    <string name="config_systemUIFactoryComponent"
+            translatable="false">com.google.android.systemui.SystemUIGoogleFactory</string>
     <!-- Dreamliner Wireless Charger implementation -->
     <string name="config_dockComponent">com.google.android.systemui.dreamliner.WirelessChargerImpl</string>
 

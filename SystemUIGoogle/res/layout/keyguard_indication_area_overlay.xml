@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_gravity="bottom|center"
+    android:orientation="horizontal"
+    android:id="@id/keyguard_indication_area"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/keyguard_indication_margin_bottom"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_gravity="center|left"
+        android:id="@id/home_control"
+        android:visibility="gone"
+        android:clickable="true"
+        android:layout_width="@dimen/dock_logo_min_size"
+        android:layout_height="@dimen/dock_logo_min_size"
+        android:layout_marginLeft="@dimen/dock_logo_margin"
+        android:layout_marginRight="@dimen/dock_indication_margin"
+        android:src="@drawable/ic_home_logo"
+        android:scaleType="center" />
+
+    <LinearLayout
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0">
+
+        <ImageView
+            android:layout_gravity="center|top"
+            android:id="@id/docked_top_icon"
+            android:padding="@dimen/dock_top_logo_padding"
+            android:visibility="gone"
+            android:clickable="true"
+            android:layout_width="@dimen/dock_logo_min_size"
+            android:layout_height="@dimen/dock_logo_min_size"
+            android:layout_marginBottom="@dimen/dock_top_logo_margin"
+            android:scaleType="fitXY"
+            android:cropToPadding="true" />
+
+        <include layout="@layout/keyguard_indication_text_view" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_gravity="center|right"
+        android:id="@id/assistant_poodle"
+        android:visibility="gone"
+        android:clickable="true"
+        android:layout_width="@dimen/dock_logo_min_size"
+        android:layout_height="@dimen/dock_logo_min_size"
+        android:layout_marginLeft="@dimen/dock_indication_margin"
+        android:layout_marginRight="@dimen/dock_logo_margin"
+        android:src="@drawable/ic_assistant_logo"
+        android:scaleType="center" />
+</LinearLayout>

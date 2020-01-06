@@ -3,5 +3,6 @@
 <resources>
 
     <string name="app_picker_dialog_title">Select an app</string>
+    <string name="accessibility_settings_gear">Pixel Stand settings</string>
 
 </resources>

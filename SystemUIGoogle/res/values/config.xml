@@ -10,6 +10,9 @@
     <!-- SystemUIFactory component -->
     <string name="config_systemUIFactoryComponent"
             translatable="false">com.google.android.systemui.SystemUIGoogleFactory</string>
+    <!-- StatusBar component -->
+    <string name="config_statusBarComponent"
+            translatable="false">com.google.android.systemui.statusbar.phone.StatusBarGoogle</string>
     <!-- Dreamliner Wireless Charger implementation -->
     <string name="config_dockComponent">com.google.android.systemui.dreamliner.WirelessChargerImpl</string>
 

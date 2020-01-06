@@ -8,4 +8,15 @@
     <item type="dimen" name="elmyra_progress_report_threshold">0.55</item>
     <item type="dimen" name="elmyra_screen_off_adjustment">-0.1</item>
 
+    <!-- Dreamliner -->
+    <dimen name="dock_indication_margin">8.0dip</dimen>
+    <dimen name="dock_logo_margin">32.0dip</dimen>
+    <dimen name="dock_logo_min_size">48.0dip</dimen>
+    <dimen name="dock_top_logo_margin">12.0dip</dimen>
+    <dimen name="dock_top_logo_padding">8.0dip</dimen>
+
+    <dimen name="settings_gear_margin">30.0dip</dimen>
+    <dimen name="settings_gear_size">24.0dip</dimen>
+    <dimen name="settings_gear_touch_target_size">48.0dip</dimen>
+
 </resources>

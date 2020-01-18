@@ -2,6 +2,11 @@
 
 <resources>
 
+    <!-- SystemUI Plugins that can be loaded on user builds. -->
+    <string-array name="config_pluginWhitelist" translatable="false">
+        <item>com.android.systemui</item>
+        <item>com.google.oslo</item>
+    </string-array>
     <!-- Google services -->
     <string name="config_systemUIVendorServiceComponent">com.google.android.systemui.GoogleServices</string>
     <!-- Fully-qualified class name for the implementation of the FeatureFactory to be instantiated. -->

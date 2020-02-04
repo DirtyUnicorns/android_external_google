@@ -6,6 +6,7 @@ android_app {
     srcs: [
         "src/**/*.java",
         "src/**/I*.aidl",
+        "src/**/*.proto",
     ],
     static_libs: [
         "SystemUI-core",

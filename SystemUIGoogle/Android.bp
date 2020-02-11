@@ -31,6 +31,7 @@ android_app {
         "SystemUI-proto",
         "dagger2-2.19",
         "//external/kotlinc:kotlin-annotations",
+        "VendorSupport-preference",
     ],
     libs: [
         "telephony-common",

@@ -61,8 +61,10 @@ public class CustomActions extends Action {
             case 4: // Flashlight
                 ActionUtils.toggleCameraFlash();
                 break;
-            case 5: // Clear notifications
-                // ActionUtils.clearAllNotifications();
+            case 5: // Application
+                if (isScreenOn) {
+                    launchApp(getContext(), detectionProperties.isLongSqueeze());
+                }
                 break;
             case 6: // Volume panel
                 if (isScreenOn) {
@@ -74,14 +76,14 @@ public class CustomActions extends Action {
                     ActionUtils.switchScreenOff(getContext());
                 }
                 break;
-            case 8: // Notification panel
-                if (isScreenOn) {
-                    // ActionUtils.toggleNotifications();
-                }
-                break;
-            case 9: // Screenshot
+            case 8: // Screenshot
                 if (isScreenOn) {
                     ActionUtils.takeScreenshot(true);
+                }
+                break;
+            case 9: // Notification panel
+                if (isScreenOn) {
+                    // ActionUtils.toggleNotifications();
                 }
                 break;
             case 10: // QS panel
@@ -89,10 +91,8 @@ public class CustomActions extends Action {
                     // ActionUtils.toggleQsPanel();
                 }
                 break;
-            case 11: // Application
-                if (isScreenOn) {
-                    // launchApp(getContext(), detectionProperties.isLongSqueeze());
-                }
+            case 11: // Clear notifications
+                // ActionUtils.clearAllNotifications();
                 break;
             case 12: // Ringer modes
                 // ActionUtils.toggleRingerModes(getContext());
@@ -110,29 +110,29 @@ public class CustomActions extends Action {
         }
     }
 
-    // private void launchApp(Context context, boolean isLongSqueeze) {
-    //     Intent intent = null;
-    //     String packageName = Settings.Secure.getStringForUser(context.getContentResolver(),
-    //             isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_APP
-    //             : Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP,
-    //             UserHandle.USER_CURRENT);
-    //     String activity = Settings.Secure.getStringForUser(context.getContentResolver(),
-    //             isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_ACTIVITY
-    //             : Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY,
-    //             UserHandle.USER_CURRENT);
-    //     boolean launchActivity = activity != null && !TextUtils.equals("NONE", activity);
-    //     try {
-    //         if (launchActivity) {
-    //             intent = new Intent(Intent.ACTION_MAIN);
-    //             intent.setClassName(packageName, activity);
-    //         } else {
-    //             intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-    //         }
-    //         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    //         context.startActivity(intent);
-    //     } catch (Exception e) {
-    //     }
-    // }
+    private void launchApp(Context context, boolean isLongSqueeze) {
+        Intent intent = null;
+        String packageName = Settings.Secure.getStringForUser(context.getContentResolver(),
+                isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_APP
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_APP,
+                UserHandle.USER_CURRENT);
+        String activity = Settings.Secure.getStringForUser(context.getContentResolver(),
+                isLongSqueeze ? Settings.Secure.LONG_SQUEEZE_CUSTOM_ACTIVITY
+                : Settings.Secure.SHORT_SQUEEZE_CUSTOM_ACTIVITY,
+                UserHandle.USER_CURRENT);
+        boolean launchActivity = activity != null && !TextUtils.equals("NONE", activity);
+        try {
+            if (launchActivity) {
+                intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName(packageName, activity);
+            } else {
+                intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(intent);
+        } catch (Exception e) {
+        }
+    }
 
     private static void launchCamera(Context context) {
         Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE);

@@ -51,12 +51,12 @@ public class CustomActions extends Action {
                 break;
             case 2: // Voice search
                 if (isScreenOn) {
-                    launchVoiceSearch(getContext());
+                    ActionUtils.launchVoiceSearch(getContext());
                 }
                 break;
             case 3: // Camera
                 ActionUtils.switchScreenOn(getContext());
-                launchCamera(getContext());
+                ActionUtils.launchCamera(getContext());
                 break;
             case 4: // Flashlight
                 ActionUtils.toggleCameraFlash();
@@ -132,17 +132,5 @@ public class CustomActions extends Action {
             context.startActivity(intent);
         } catch (Exception e) {
         }
-    }
-
-    private static void launchCamera(Context context) {
-        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.startActivity(intent);
-    }
-
-    private void launchVoiceSearch(Context context) {
-        Intent intent = new Intent(Intent.ACTION_SEARCH_LONG_PRESS);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
     }
 }

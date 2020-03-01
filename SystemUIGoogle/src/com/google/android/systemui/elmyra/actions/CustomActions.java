@@ -97,6 +97,11 @@ public class CustomActions extends Action {
             case 12: // Ringer modes
                 ActionUtils.toggleRingerModes(getContext());
                 break;
+            case 13: // Kill app
+                if (isScreenOn) {
+                    ActionUtils.killForegroundApp();
+                }
+                break;
         }
     }
 

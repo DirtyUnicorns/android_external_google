@@ -6,6 +6,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.DeviceConfig;
 import android.provider.Settings;
 
 import com.android.settings.aware.AwareFeatureProvider;
@@ -44,7 +45,7 @@ public class AwareHelper {
         }
 
         public void onChange(boolean z, Uri uri) {
-            Callback callback = this.mCallback;
+            Callback callback = mCallback;
             if (callback != null) {
                 callback.onChange(uri);
             }
@@ -81,6 +82,10 @@ public class AwareHelper {
 
     public void unregister() {
         mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
+    }
+
+    public static boolean isTapAvailableOnTheDevice() {
+        return DeviceConfig.getBoolean("oslo", "enable_tap", true);
     }
 
     public void writeFeatureEnabled(String str, boolean z) {

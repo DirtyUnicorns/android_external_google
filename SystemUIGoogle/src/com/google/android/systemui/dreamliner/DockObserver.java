@@ -80,7 +80,8 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
     SettingsGearController mSettingsGearController;
     private final CurrentUserTracker mUserTracker;
     private final WirelessCharger mWirelessCharger;
-    
+    AlignmentStateListener mAlignmentListener;
+
     public DockObserver(Context context, WirelessCharger wirelessCharger) {
         mDreamlinerReceiver = new DreamlinerBroadcastReceiver();
         mDockState = 0;
@@ -96,7 +97,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         mWirelessCharger = wirelessCharger;
         context.registerReceiver(this, getPowerConnectedIntentFilter());
     }
-    
+
     private boolean assertNotNull(Object o, String str) {
         if (o == null) {
             StringBuilder sb = new StringBuilder();
@@ -107,7 +108,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         }
         return true;
     }
-    
+
     private byte[] convertArrayListToPrimitiveArray(ArrayList<Byte> list) {
         if (list != null && !list.isEmpty()) {
             final byte[] array = new byte[list.size()];
@@ -118,7 +119,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         }
         return null;
     }
-    
+
     private Bundle createChallengeResponseBundle(ArrayList<Byte> list) {
         if (list != null && !list.isEmpty()) {
             final byte[] convertArrayListToPrimitiveArray = convertArrayListToPrimitiveArray(list);
@@ -128,7 +129,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         }
         return null;
     }
-    
+
     private Bundle createKeyExchangeResponseBundle(byte b, ArrayList<Byte> list) {
         if (list != null && !list.isEmpty()) {
             final byte[] convertArrayListToPrimitiveArray = convertArrayListToPrimitiveArray(list);
@@ -139,20 +140,20 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         }
         return null;
     }
-    
+
     private void dispatchDockEvent(DockEventListener dockEventListener) {
         dockEventListener.onEvent(mDockState);
     }
-    
+
     private final Intent getBatteryStatus(Context context) {
         return context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
-    
+
     private IDreamManager getDreamManager() {
         return IDreamManager.Stub.asInterface(
                 ServiceManager.checkService(DreamService.DREAM_SERVICE));
     }
-    
+
     private IntentFilter getPowerConnectedIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_POWER_CONNECTED);
@@ -162,16 +163,16 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
         intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         return intentFilter;
     }
-    
+
     private boolean isChargingOrFull(Intent intent) {
         final int intExtra = intent.getIntExtra("status", -1);
         return intExtra == 2 || intExtra == 5;
     }
-    
+
     public static boolean isDockingUiShowing() {
         return sIsDockingUiShowing;
     }
-    
+
     private void notifyForceEnabledAmbientDisplay(boolean b) {
         IDreamManager dreamManagerInstance = getDreamManager();
         if (dreamManagerInstance != null) {
@@ -186,22 +187,32 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             Log.e(TAG, "DreamManager not found");
         }
     }
-    
+
     private static void runOnBackgroundThread(Runnable runnable) {
         if (mSingleThreadExecutor == null) {
             mSingleThreadExecutor = Executors.newSingleThreadExecutor();
         }
         mSingleThreadExecutor.execute(runnable);
     }
-    
+
     private void sendDockActiveIntent(Context context) {
         context.sendBroadcast(new Intent(Intent.ACTION_DOCK_ACTIVE).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
     }
-    
+
     private void sendDockIdleIntent(Context context) {
         context.sendBroadcast(new Intent(Intent.ACTION_DOCK_IDLE).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
     }
-    
+
+    @Override
+    public void addAlignmentStateListener(AlignmentStateListener listener) {
+        mAlignmentListener = listener;
+    }
+
+    @Override
+    public void removeAlignmentStateListener(AlignmentStateListener listener) {
+        mAlignmentListener = listener;
+    }
+
     private void startDreamlinerService(Context context, int n, int n2, int n3) {
         synchronized (this) {
             notifyForceEnabledAmbientDisplay(true);
@@ -237,7 +248,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private void stopDreamlinerService(final Context context) {
         notifyForceEnabledAmbientDisplay(false);
         onDockStateChanged(0);
@@ -257,7 +268,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             Log.e(TAG, ex.getMessage(), ex);
         }
     }
-    
+
     private void triggerChallengeWithDock(Intent intent) {
         if (intent == null) {
             return;
@@ -274,7 +285,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private void triggerKeyExchangeWithDock(Intent intent) {
         if (intent == null) {
             return;
@@ -290,25 +301,25 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private void tryTurnScreenOff(Context context) {
         PowerManager powerManager = context.getSystemService(PowerManager.class);
         if (powerManager.isScreenOn()) {
             powerManager.goToSleep(SystemClock.uptimeMillis());
         }
     }
-    
+
     public void addListener(DockEventListener dockEventListener) {
         if (!mClients.contains(dockEventListener)) {
             mClients.add(dockEventListener);
         }
         mHandler.post(() -> dispatchDockEvent(dockEventListener));
     }
-    
+
     public boolean isDocked() {
         return mDockState == 1 || mDockState == 2;
     }
-    
+
     @VisibleForTesting
     void onDockStateChanged(int i) {
         if (mDockState == i) {
@@ -320,7 +331,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             mIndicationController.setDocking(isDocked());
         }
     }
-    
+
     public void onReceive(final Context context, final Intent intent) {
         if (intent == null) {
             return;
@@ -372,19 +383,19 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             runOnBackgroundThread(new IsDockPresent(context));
         }
     }
-    
+
     public void removeListener(DockEventListener dockEventListener) {
         mClients.remove(dockEventListener);
     }
-    
+
     public void setDreamlinerGear(ImageView dreamlinerGear) {
         mDreamlinerGear = dreamlinerGear;
     }
-    
+
     public void setIndicationController(DockIndicationController indicationController) {
         mIndicationController = indicationController;
     }
-    
+
     @VisibleForTesting
     final void updateCurrentDockingStatus(Context context) {
         notifyForceEnabledAmbientDisplay(false);
@@ -392,16 +403,16 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             runOnBackgroundThread(new IsDockPresent(context));
         }
     }
-    
+
     @VisibleForTesting
     final class ChallengeCallback implements WirelessCharger.ChallengeCallback
     {
         private final ResultReceiver mResultReceiver;
-        
+
         ChallengeCallback(ResultReceiver resultReceiver) {
             mResultReceiver = resultReceiver;
         }
-        
+
         @Override
         public void onCallback(int n, ArrayList<Byte> list) {
             if (n == 0) {
@@ -412,19 +423,19 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private class ChallengeWithDock implements Runnable
     {
         final byte[] mChallengeData;
         final byte mDockId;
         final ResultReceiver mResultReceiver;
-        
+
         public ChallengeWithDock(ResultReceiver resultReceiver, byte dockId, byte[] challengeData) {
             mDockId = dockId;
             mChallengeData = challengeData;
             mResultReceiver = resultReceiver;
         }
-        
+
         @Override
         public void run() {
             if (mWirelessCharger == null) {
@@ -433,12 +444,12 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             mWirelessCharger.challenge(mDockId, mChallengeData, new ChallengeCallback(mResultReceiver));
         }
     }
-    
+
     @VisibleForTesting
     class DreamlinerBroadcastReceiver extends BroadcastReceiver
     {
         private boolean mListening;
-        
+
         private IntentFilter getIntentFilter() {
             final IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(ACTION_GET_DOCK_INFO);
@@ -455,7 +466,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             intentFilter.addAction("com.google.android.systemui.dreamliner.assistant_poodle");
             return intentFilter;
         }
-        
+
         public void onReceive(Context context, Intent intent) {
             if (intent == null) {
                 return;
@@ -533,7 +544,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
                 }
             }
         }
-        
+
         public void registerReceiver(Context context) {
             if (!mListening) {
                 context.registerReceiverAsUser(this, UserHandle.ALL, getIntentFilter(),
@@ -541,7 +552,7 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
                 mListening = true;
             }
         }
-        
+
         public void unregisterReceiver(Context context) {
             if (mListening) {
                 context.unregisterReceiver(this);
@@ -549,39 +560,39 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     @VisibleForTesting
     final class DreamlinerServiceConn implements ServiceConnection
     {
         private Context mContext;
-        
+
         public DreamlinerServiceConn(Context context) {
             mContext = context;
         }
-        
+
         public void onBindingDied(ComponentName componentName) {
             stopDreamlinerService(mContext);
             sIsDockingUiShowing = false;
         }
-        
+
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
         }
-        
+
         public void onServiceDisconnected(ComponentName componentName) {
             sendDockActiveIntent(mContext);
         }
     }
-    
+
     private class GetDockInfo implements Runnable
     {
         private Context mContext;
         private ResultReceiver mResultReceiver;
-        
+
         public GetDockInfo(ResultReceiver resultReceiver, Context context) {
             mResultReceiver = resultReceiver;
             mContext = context;
         }
-        
+
         @Override
         public void run() {
             if (mWirelessCharger == null) {
@@ -590,16 +601,16 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             mWirelessCharger.getInformation(new GetInformationCallback(mResultReceiver));
         }
     }
-    
+
     @VisibleForTesting
     final class GetInformationCallback implements WirelessCharger.GetInformationCallback
     {
         private ResultReceiver mResultReceiver;
-        
+
         GetInformationCallback(ResultReceiver resultReceiver) {
             mResultReceiver = resultReceiver;
         }
-        
+
         @Override
         public void onCallback(int n, DockInfo dockInfo) {
             if (n == 0) {
@@ -609,15 +620,15 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private class IsDockPresent implements Runnable
     {
         private Context mContext;
-        
+
         public IsDockPresent(Context context) {
             mContext = context;
         }
-        
+
         @Override
         public void run() {
             if (mWirelessCharger == null) {
@@ -626,16 +637,16 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             mWirelessCharger.asyncIsDockPresent(new IsDockPresentCallback(mContext));
         }
     }
-    
+
     @VisibleForTesting
     final class IsDockPresentCallback implements WirelessCharger.IsDockPresentCallback
     {
         private Context mContext;
-        
+
         IsDockPresentCallback(Context context) {
             mContext = context;
         }
-        
+
         @Override
         public void onCallback(boolean b, byte b2, byte b3, boolean b4, int n) {
             if (b) {
@@ -643,16 +654,16 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     @VisibleForTesting
     final class KeyExchangeCallback implements WirelessCharger.KeyExchangeCallback
     {
         private ResultReceiver mResultReceiver;
-        
+
         KeyExchangeCallback(ResultReceiver resultReceiver) {
             mResultReceiver = resultReceiver;
         }
-        
+
         @Override
         public void onCallback(int n, byte b, ArrayList<Byte> list) {
             if (n == 0) {
@@ -663,17 +674,17 @@ public class DockObserver extends BroadcastReceiver implements DockManager {
             }
         }
     }
-    
+
     private class KeyExchangeWithDock implements Runnable
     {
         private byte[] mPublicKey;
         private ResultReceiver mResultReceiver;
-        
+
         public KeyExchangeWithDock(ResultReceiver resultReceiver, byte[] publicKey) {
             mPublicKey = publicKey;
             mResultReceiver = resultReceiver;
         }
-        
+
         @Override
         public void run() {
             if (mWirelessCharger == null) {

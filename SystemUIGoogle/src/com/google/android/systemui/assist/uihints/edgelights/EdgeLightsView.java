@@ -42,25 +42,25 @@ public class EdgeLightsView extends View {
     public interface Mode {
         int getSubType();
 
-        default void onAudioLevelUpdate(float f, float f2) {
+        void onAudioLevelUpdate(float f, float f2) {
         }
 
-        default void onConfigurationChanged() {
+        void onConfigurationChanged() {
         }
 
         void onNewModeRequest(EdgeLightsView edgeLightsView, Mode mode);
 
-        default boolean preventsInvocations() {
+        boolean preventsInvocations() {
             return false;
         }
 
         void start(EdgeLightsView edgeLightsView, PerimeterPathGuide perimeterPathGuide, Mode mode);
 
-        default void logState() {
+        void logState() {
             MetricsLogger.action(new LogMaker(1716).setType(6).setSubtype(getSubType()));
         }
 
-        static default Mode fromBundle(Bundle bundle, Context context) {
+        static Mode fromBundle(Bundle bundle, Context context) {
             String string = bundle.getString("state", "");
             if (string == null) {
                 Log.e("EdgeLightsView", "Cannot construct mode, returning null");

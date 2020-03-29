@@ -111,7 +111,7 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
                     }
 
                     public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        FulfillPerimeter.this.lambda$start$1$FulfillPerimeter(this.f$1, this.f$2, this.f$3, this.f$4, valueAnimator);
+                        lambda$start$1$FulfillPerimeter(this.f$1, this.f$2, this.f$3, this.f$4, valueAnimator);
                     }
                 });
                 animatorSet.play(valueAnimator);
@@ -130,23 +130,9 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
                     boolean unused = FulfillPerimeter.this.mDisappearing = false;
                     animatorSet.start();
                 } else if (FulfillPerimeter.this.mNextMode != null) {
-                    new Handler().postDelayed(new Runnable(edgeLightsView2) {
-                        /* class com.google.android.systemui.assist.uihints.edgelights.mode.$$Lambda$FulfillPerimeter$1$uToVp7_HsUUglmWlzavSyXNWCo */
-                        private final /* synthetic */ EdgeLightsView f$1;
-
-                        {
-                            this.f$1 = r2;
-                        }
-
-                        public final void run() {
-                            FulfillPerimeter.C15751.this.lambda$onAnimationEnd$0$FulfillPerimeter$1(this.f$1);
-                        }
-                    }, 500);
+                    // FIXME: Wrong approach on handler(s)
+                    new Handler().postDelayed(() -> edgeLightsView2.commitModeTransition(mNextMode), 500);
                 }
-            }
-
-            public /* synthetic */ void lambda$onAnimationEnd$0$FulfillPerimeter$1(EdgeLightsView edgeLightsView) {
-                edgeLightsView.commitModeTransition(FulfillPerimeter.this.mNextMode);
             }
         });
         animatorSet.start();

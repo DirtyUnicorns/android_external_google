@@ -26,15 +26,18 @@ import com.android.systemui.SystemUIRootComponent;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.power.EnhancedEstimates;
 import com.android.systemui.power.EnhancedEstimatesImpl;
+import com.android.systemui.assist.AssistManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.notification.NotificationInterruptionStateProvider;
 import com.android.systemui.statusbar.notification.collection.NotificationData;
 import com.android.systemui.statusbar.notification.NotificationEntryManager;
+import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
 import com.android.systemui.statusbar.phone.ShadeController;
 import com.android.systemui.statusbar.phone.StatusBar;
 
+import com.google.android.systemui.assist.AssistManagerGoogle;
 import com.google.android.systemui.NotificationLockscreenUserManagerGoogle;
 import com.google.android.systemui.dreamliner.DockObserver;
 import com.google.android.systemui.dreamliner.DreamlinerUtils;
@@ -64,6 +67,13 @@ abstract class SystemUIGoogleModule {
 
     @Binds
     abstract EnhancedEstimates bindEnhancedEstimates(EnhancedEstimatesImpl enhancedEstimates);
+
+    // TODO: This is WIP.
+    @Provides
+    static AssistManager provideAssistManager(
+            DeviceProvisionedController deviceProvisionedController, Context context) {
+        return new AssistManagerGoogle(deviceProvisionedController, context);
+    }
 
     @Binds
     abstract NotificationEntryManager bindNotificationEntryManager(

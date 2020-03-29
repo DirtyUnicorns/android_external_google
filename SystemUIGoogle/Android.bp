@@ -30,6 +30,7 @@ android_app {
         "SystemUI-tags",
         "SystemUI-proto",
         "dagger2-2.19",
+        "guava",
         "//external/kotlinc:kotlin-annotations",
         "VendorSupport-preference",
     ],

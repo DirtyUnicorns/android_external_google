@@ -143,45 +143,27 @@ public class AssistManagerGoogle extends AssistManager {
         if (!(z == this.mIsGoogleAssistant && extractNga == this.mNgaPresent)) {
             if (!z || !extractNga) {
                 if (z) {
-                    Handler handler = this.mUiHandler;
-                    AssistManager.UiController uiController = this.mUiController;
-                    Objects.requireNonNull(uiController);
-                    handler.post(new Runnable() {
-                        /* class com.google.android.systemui.assist.$$Lambda$TkhdwbVoyla191eZ3wIgUBfZKXA */
+                    // FIXME: Decompiler code smell?
+                    Objects.requireNonNull(mUiHandler);
+                    mUiHandler.post(() -> mUiController.hide());
 
-                        public final void run() {
-                            AssistManager.UiController.this.hide();
-                        }
-                    });
                     GoogleDefaultUiController googleDefaultUiController = this.mDefaultUiController;
                     this.mUiController = googleDefaultUiController;
                     googleDefaultUiController.setGoogleAssistant(true);
                 } else {
-                    Handler handler2 = this.mUiHandler;
-                    AssistManager.UiController uiController2 = this.mUiController;
-                    Objects.requireNonNull(uiController2);
-                    handler2.post(new Runnable() {
-                        /* class com.google.android.systemui.assist.$$Lambda$TkhdwbVoyla191eZ3wIgUBfZKXA */
+                    // FIXME: Decompiler code smell?
+                    Objects.requireNonNull(mUiHandler);
+                    mUiHandler.post(() -> mUiController.hide());
 
-                        public final void run() {
-                            AssistManager.UiController.this.hide();
-                        }
-                    });
                     GoogleDefaultUiController googleDefaultUiController2 = this.mDefaultUiController;
                     this.mUiController = googleDefaultUiController2;
                     googleDefaultUiController2.setGoogleAssistant(false);
                 }
             } else if (this.mUiController.equals(this.mDefaultUiController)) {
-                Handler handler3 = this.mUiHandler;
-                AssistManager.UiController uiController3 = this.mUiController;
-                Objects.requireNonNull(uiController3);
-                handler3.post(new Runnable() {
-                    /* class com.google.android.systemui.assist.$$Lambda$TkhdwbVoyla191eZ3wIgUBfZKXA */
+                // FIXME: Decompiler code smell?
+                Objects.requireNonNull(mUiHandler);
+                mUiHandler.post(() -> mUiController.hide());
 
-                    public final void run() {
-                        AssistManager.UiController.this.hide();
-                    }
-                });
                 this.mUiController = this.mNgaUiController;
             }
             this.mNgaPresent = extractNga;

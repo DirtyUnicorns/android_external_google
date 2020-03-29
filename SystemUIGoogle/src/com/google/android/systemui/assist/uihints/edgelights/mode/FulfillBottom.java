@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.PathInterpolator;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-import com.android.systemui.C1732R$color;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.android.systemui.assist.p003ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightUpdateListener;
@@ -112,10 +112,10 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
             this.mGreenLight = assistLights[3];
         } else {
             float regionWidth = this.mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM) * 0.25f;
-            this.mBlueLight = new EdgeLight(this.mContext.getResources().getColor(C1732R$color.edge_light_blue, null), 0.0f, regionWidth);
-            this.mRedLight = new EdgeLight(this.mContext.getResources().getColor(C1732R$color.edge_light_red, null), regionWidth, regionWidth);
-            this.mYellowLight = new EdgeLight(this.mContext.getResources().getColor(C1732R$color.edge_light_yellow, null), 2.0f * regionWidth, regionWidth);
-            this.mGreenLight = new EdgeLight(this.mContext.getResources().getColor(C1732R$color.edge_light_green, null), 3.0f * regionWidth, regionWidth);
+            this.mBlueLight = new EdgeLight(this.mContext.getResources().getColor(R.color.edge_light_blue, null), 0.0f, regionWidth);
+            this.mRedLight = new EdgeLight(this.mContext.getResources().getColor(R.color.edge_light_red, null), regionWidth, regionWidth);
+            this.mYellowLight = new EdgeLight(this.mContext.getResources().getColor(R.color.edge_light_yellow, null), 2.0f * regionWidth, regionWidth);
+            this.mGreenLight = new EdgeLight(this.mContext.getResources().getColor(R.color.edge_light_green, null), 3.0f * regionWidth, regionWidth);
         }
         this.mLights = new ArrayList<>();
         this.mLights.addAll(Arrays.asList(this.mBlueLight, this.mRedLight, this.mYellowLight, this.mGreenLight));

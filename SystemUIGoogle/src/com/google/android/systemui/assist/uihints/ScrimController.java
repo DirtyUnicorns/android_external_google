@@ -13,10 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1734R$drawable;
-import com.android.systemui.C1737R$layout;
-import com.android.systemui.C1741R$string;
+import com.android.systemui.R;
 import com.android.systemui.assist.PhenotypeHelper;
 import com.google.android.systemui.assist.uihints.TranscriptionController;
 
@@ -47,11 +44,11 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
       ClspMth{android.view.LayoutInflater.inflate(org.xmlpull.v1.XmlPullParser, android.view.ViewGroup, boolean):android.view.View}
       ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
     public ScrimController(Context context, ViewGroup viewGroup, LightnessProvider lightnessProvider, VisibilityListener visibilityListener, Runnable runnable) {
-        this.mRoot = LayoutInflater.from(context).inflate(C1737R$layout.scrim_view, viewGroup, false);
+        this.mRoot = LayoutInflater.from(context).inflate(R.layout.scrim_view, viewGroup, false);
         this.mRoot.setBackgroundTintBlendMode(BlendMode.SRC_IN);
         this.mFullscreenScrim = new View(context);
         this.mFullscreenScrim.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-        this.mFullscreenScrim.setContentDescription(context.getString(C1741R$string.assistant_scrim_label));
+        this.mFullscreenScrim.setContentDescription(context.getString(R.string.assistant_scrim_label));
         this.mFullscreenScrim.setVisibility(8);
         this.mLightnessProvider = lightnessProvider;
         this.mVisibilityListener = visibilityListener;
@@ -80,7 +77,7 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
             this.mFullscreenScrim.getBoundsOnScreen(rect);
         } else {
             this.mRoot.getBoundsOnScreen(rect);
-            rect.top = rect.bottom - this.mRoot.getContext().getResources().getDimensionPixelSize(C1733R$dimen.scrim_touchable_height);
+            rect.top = rect.bottom - this.mRoot.getContext().getResources().getDimensionPixelSize(R.dimen.scrim_touchable_height);
         }
         return rect;
     }
@@ -239,7 +236,7 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
                 refresh();
             }
             View view = this.mRoot;
-            view.setBackground(view.getVisibility() == 0 ? this.mRoot.getContext().getDrawable(C1734R$drawable.scrim_strip) : null);
+            view.setBackground(view.getVisibility() == 0 ? this.mRoot.getContext().getDrawable(R.drawable.scrim_strip) : null);
         }
     }
 

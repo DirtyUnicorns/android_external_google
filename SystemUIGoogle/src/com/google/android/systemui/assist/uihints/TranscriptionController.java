@@ -9,8 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1737R$layout;
+import com.android.systemui.R;
 import com.android.systemui.Dependency;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.google.android.systemui.assist.uihints.OverlayUiHost;
@@ -70,7 +69,7 @@ public class TranscriptionController implements ConfigurationController.Configur
         this.mParent = viewGroup;
         this.mDefaultOnTap = runnable;
         setUpViews();
-        this.mMargin = this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.transcription_space_bottom_margin);
+        this.mMargin = this.mContext.getResources().getDimensionPixelSize(R.dimen.transcription_space_bottom_margin);
         ((ConfigurationController) Dependency.get(ConfigurationController.class)).addCallback(this);
     }
 
@@ -259,7 +258,7 @@ public class TranscriptionController implements ConfigurationController.Configur
 
     private void setUpViews() {
         this.mViewMap = new HashMap();
-        TranscriptionView transcriptionView = (TranscriptionView) createView(C1737R$layout.assist_transcription);
+        TranscriptionView transcriptionView = (TranscriptionView) createView(R.layout.assist_transcription);
         transcriptionView.setOnClickListener(new View.OnClickListener() {
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$KKdRQ8kRnXrWPunS0MBIwBRXepo */
 
@@ -268,7 +267,7 @@ public class TranscriptionController implements ConfigurationController.Configur
             }
         });
         this.mViewMap.put(State.TRANSCRIPTION, transcriptionView);
-        GreetingView greetingView = (GreetingView) createView(C1737R$layout.assist_greeting);
+        GreetingView greetingView = (GreetingView) createView(R.layout.assist_greeting);
         greetingView.setOnClickListener(new View.OnClickListener() {
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$DHMbRsTm4tBz9fnxjeGTYGOM9tg */
 
@@ -277,7 +276,7 @@ public class TranscriptionController implements ConfigurationController.Configur
             }
         });
         this.mViewMap.put(State.GREETING, greetingView);
-        this.mViewMap.put(State.CHIPS, (ChipsContainer) createView(C1737R$layout.assist_chips_container));
+        this.mViewMap.put(State.CHIPS, (ChipsContainer) createView(R.layout.assist_chips_container));
     }
 
     public /* synthetic */ void lambda$setUpViews$4$TranscriptionController(View view) {

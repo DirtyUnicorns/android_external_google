@@ -21,8 +21,7 @@ import android.view.animation.PathInterpolator;
 import android.widget.TextView;
 import androidx.core.math.MathUtils;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.systemui.C1732R$color;
-import com.android.systemui.C1733R$dimen;
+import com.android.systemui.R;
 import com.android.systemui.assist.PhenotypeHelper;
 import com.google.android.systemui.assist.uihints.StringUtils;
 import com.google.android.systemui.assist.uihints.TranscriptionController;
@@ -87,12 +86,12 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         this.mDisplayWidthPx = 0;
         this.mTranscriptionAnimator = new TranscriptionAnimator();
         initializePhenotypeHelper(new PhenotypeHelper());
-        this.BUMPER_DISTANCE_START_PX = context.getResources().getDimension(C1733R$dimen.zerostate_icon_left_margin) + context.getResources().getDimension(C1733R$dimen.zerostate_icon_tap_padding);
-        this.BUMPER_DISTANCE_END_PX = context.getResources().getDimension(C1733R$dimen.keyboard_icon_right_margin) + context.getResources().getDimension(C1733R$dimen.keyboard_icon_tap_padding);
-        this.FADE_DISTANCE_START_PX = context.getResources().getDimension(C1733R$dimen.zerostate_icon_size);
-        this.FADE_DISTANCE_END_PX = context.getResources().getDimension(C1733R$dimen.keyboard_icon_size) / 2.0f;
-        this.TEXT_COLOR_DARK = context.getResources().getColor(C1732R$color.transcription_text_dark);
-        this.TEXT_COLOR_LIGHT = context.getResources().getColor(C1732R$color.transcription_text_light);
+        this.BUMPER_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_left_margin) + context.getResources().getDimension(R.dimen.zerostate_icon_tap_padding);
+        this.BUMPER_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_right_margin) + context.getResources().getDimension(R.dimen.keyboard_icon_tap_padding);
+        this.FADE_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_size);
+        this.FADE_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_size) / 2.0f;
+        this.TEXT_COLOR_DARK = context.getResources().getColor(R.color.transcription_text_dark);
+        this.TEXT_COLOR_LIGHT = context.getResources().getColor(R.color.transcription_text_light);
         updateDisplayWidth();
         setHasDarkBackground(!this.mHasDarkBackground);
     }
@@ -184,7 +183,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
     }
 
     public void onFontSizeChanged() {
-        setTextSize(0, super.mContext.getResources().getDimension(C1733R$dimen.transcription_text_size));
+        setTextSize(0, super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
     }
 
     /* access modifiers changed from: package-private */

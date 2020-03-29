@@ -3,7 +3,7 @@ package com.google.android.systemui.assist.uihints;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import com.android.systemui.C1737R$layout;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.DefaultUiController;
 
 public class GoogleDefaultUiController extends DefaultUiController {
@@ -17,7 +17,7 @@ public class GoogleDefaultUiController extends DefaultUiController {
         super(context);
         context.getResources();
         setGoogleAssistant(false);
-        super.mInvocationLightsView = (AssistantInvocationLightsView) LayoutInflater.from(context).inflate(C1737R$layout.invocation_lights, (ViewGroup) super.mRoot, false);
+        super.mInvocationLightsView = (AssistantInvocationLightsView) LayoutInflater.from(context).inflate(R.layout.invocation_lights, (ViewGroup) super.mRoot, false);
         super.mRoot.addView(super.mInvocationLightsView);
     }
 

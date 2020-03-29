@@ -13,8 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1737R$layout;
+import com.android.systemui.R;
 import com.android.systemui.Dependency;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.android.systemui.shared.system.QuickStepContract;
@@ -75,7 +74,7 @@ public final class GlowController implements EdgeLightsListener {
                 GlowController.this.lambda$new$0$GlowController(i);
             }
         });
-        this.mGlowView = (GlowView) LayoutInflater.from(context).inflate(C1737R$layout.glow_view, viewGroup, false);
+        this.mGlowView = (GlowView) LayoutInflater.from(context).inflate(R.layout.glow_view, viewGroup, false);
         GlowView glowView = this.mGlowView;
         int i = this.mGlowsY;
         glowView.setGlowsY(i, i, null);
@@ -214,11 +213,11 @@ public final class GlowController implements EdgeLightsListener {
       ClspMth{java.lang.Math.min(int, int):int}
       ClspMth{java.lang.Math.min(float, float):float} */
     private int getInvocationBlurRadius(float f) {
-        return (int) MathUtils.lerp((float) getBlurRadius(), (float) this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_tall_blur), Math.min(1.0f, f * 5.0f));
+        return (int) MathUtils.lerp((float) getBlurRadius(), (float) this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_blur), Math.min(1.0f, f * 5.0f));
     }
 
     private int getInvocationTranslationY(float f) {
-        return (int) MathUtils.min((int) MathUtils.lerp((float) getMinTranslationY(), (float) this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_tall_min_y), f), this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_invocation_max));
+        return (int) MathUtils.min((int) MathUtils.lerp((float) getMinTranslationY(), (float) this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_min_y), f), this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_invocation_max));
     }
 
     private int getBlurRadius() {
@@ -226,32 +225,32 @@ public final class GlowController implements EdgeLightsListener {
             return this.mGlowView.getBlurRadius();
         }
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_short_blur);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_blur);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_tall_blur);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_blur);
         }
         return 0;
     }
 
     private int getMinTranslationY() {
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_short_min_y);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_min_y);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_tall_min_y);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_min_y);
         }
-        return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_gone_min_y);
+        return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_min_y);
     }
 
     private int getMaxTranslationY() {
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_short_max_y);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_max_y);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_tall_max_y);
+            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_max_y);
         }
-        return this.mContext.getResources().getDimensionPixelSize(C1733R$dimen.glow_gone_max_y);
+        return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_max_y);
     }
 
     public void onModeStarted(EdgeLightsView.Mode mode) {

@@ -9,10 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.android.systemui.C1732R$color;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1734R$drawable;
-import com.android.systemui.C1735R$id;
+import com.android.systemui.R;
 import com.google.android.systemui.assist.uihints.OverlayUiHost;
 
 public class KeyboardIconView extends FrameLayout implements OverlayUiHost.BottomMarginListener {
@@ -35,9 +32,9 @@ public class KeyboardIconView extends FrameLayout implements OverlayUiHost.Botto
 
     public KeyboardIconView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
-        this.COLOR_DARK_BACKGROUND = getResources().getColor(C1732R$color.transcription_icon_dark);
-        this.COLOR_LIGHT_BACKGROUND = getResources().getColor(C1732R$color.transcription_icon_light);
-        this.mMargin = getResources().getDimensionPixelSize(C1733R$dimen.keyboard_icon_bottom_margin);
+        this.COLOR_DARK_BACKGROUND = getResources().getColor(R.color.transcription_icon_dark);
+        this.COLOR_LIGHT_BACKGROUND = getResources().getColor(R.color.transcription_icon_light);
+        this.mMargin = getResources().getDimensionPixelSize(R.dimen.keyboard_icon_bottom_margin);
     }
 
     public void onBottomMarginChanged(int i) {
@@ -47,7 +44,7 @@ public class KeyboardIconView extends FrameLayout implements OverlayUiHost.Botto
 
     /* access modifiers changed from: protected */
     public void onFinishInflate() {
-        this.mKeyboardIcon = (ImageView) findViewById(C1735R$id.keyboard_icon_image);
+        this.mKeyboardIcon = (ImageView) findViewById(R.id.keyboard_icon_image);
     }
 
     public void setHasDarkBackground(boolean z) {
@@ -90,6 +87,6 @@ public class KeyboardIconView extends FrameLayout implements OverlayUiHost.Botto
 
     /* access modifiers changed from: package-private */
     public void onDensityChanged() {
-        this.mKeyboardIcon.setImageDrawable(getContext().getDrawable(C1734R$drawable.ic_keyboard));
+        this.mKeyboardIcon.setImageDrawable(getContext().getDrawable(R.drawable.ic_keyboard));
     }
 }

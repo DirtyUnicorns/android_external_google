@@ -5,9 +5,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-import com.android.systemui.C1732R$color;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1741R$string;
+import com.android.systemui.R;
 import com.android.systemui.Dependency;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.google.android.systemui.assist.uihints.OverlayUiHost;
@@ -42,18 +40,18 @@ public class PromptView extends TextView implements ConfigurationController.Conf
         this.mHasDarkBackground = false;
         this.mEnabled = false;
         this.mLastInvocationType = 0;
-        this.mTextColorDark = getResources().getColor(C1732R$color.transcription_text_dark);
-        this.mTextColorLight = getResources().getColor(C1732R$color.transcription_text_light);
-        this.mRiseDistance = getResources().getDimension(C1733R$dimen.assist_prompt_rise_distance);
-        this.mHandleString = getResources().getString(C1741R$string.handle_invocation_prompt);
-        this.mSqueezeString = getResources().getString(C1741R$string.squeeze_invocation_prompt);
-        this.mMargin = getResources().getDimensionPixelSize(C1733R$dimen.assist_prompt_start_height);
+        this.mTextColorDark = getResources().getColor(R.color.transcription_text_dark);
+        this.mTextColorLight = getResources().getColor(R.color.transcription_text_light);
+        this.mRiseDistance = getResources().getDimension(R.dimen.assist_prompt_rise_distance);
+        this.mHandleString = getResources().getString(R.string.handle_invocation_prompt);
+        this.mSqueezeString = getResources().getString(R.string.squeeze_invocation_prompt);
+        this.mMargin = getResources().getDimensionPixelSize(R.dimen.assist_prompt_start_height);
         ((ConfigurationController) Dependency.get(ConfigurationController.class)).addCallback(this);
         setHasDarkBackground(!this.mHasDarkBackground);
     }
 
     public void onDensityOrFontScaleChanged() {
-        setTextSize(0, super.mContext.getResources().getDimension(C1733R$dimen.transcription_text_size));
+        setTextSize(0, super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
         updateViewHeight();
     }
 
@@ -124,7 +122,7 @@ public class PromptView extends TextView implements ConfigurationController.Conf
     private void updateViewHeight() {
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (layoutParams != null) {
-            layoutParams.height = (int) (getResources().getDimension(C1733R$dimen.assist_prompt_start_height) + this.mRiseDistance + super.mContext.getResources().getDimension(C1733R$dimen.transcription_text_size));
+            layoutParams.height = (int) (getResources().getDimension(R.dimen.assist_prompt_start_height) + this.mRiseDistance + super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
         }
         requestLayout();
     }

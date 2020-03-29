@@ -9,10 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.android.systemui.C1732R$color;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1734R$drawable;
-import com.android.systemui.C1735R$id;
+import com.android.systemui.R;
 import com.google.android.systemui.assist.uihints.OverlayUiHost;
 
 public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.BottomMarginListener {
@@ -35,9 +32,9 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
 
     public ZeroStateIconView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
-        this.COLOR_DARK_BACKGROUND = getResources().getColor(C1732R$color.transcription_icon_dark);
-        this.COLOR_LIGHT_BACKGROUND = getResources().getColor(C1732R$color.transcription_icon_light);
-        this.mMargin = getResources().getDimensionPixelSize(C1733R$dimen.zerostate_icon_bottom_margin);
+        this.COLOR_DARK_BACKGROUND = getResources().getColor(R.color.transcription_icon_dark);
+        this.COLOR_LIGHT_BACKGROUND = getResources().getColor(R.color.transcription_icon_light);
+        this.mMargin = getResources().getDimensionPixelSize(R.dimen.zerostate_icon_bottom_margin);
     }
 
     public void onBottomMarginChanged(int i) {
@@ -47,7 +44,7 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
 
     /* access modifiers changed from: protected */
     public void onFinishInflate() {
-        this.mZeroStateIcon = (ImageView) findViewById(C1735R$id.zerostate_icon_image);
+        this.mZeroStateIcon = (ImageView) findViewById(R.id.zerostate_icon_image);
     }
 
     public void setHasDarkBackground(boolean z) {
@@ -90,6 +87,6 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
 
     /* access modifiers changed from: package-private */
     public void onDensityChanged() {
-        this.mZeroStateIcon.setImageDrawable(getContext().getDrawable(C1734R$drawable.ic_explore));
+        this.mZeroStateIcon.setImageDrawable(getContext().getDrawable(R.drawable.ic_explore));
     }
 }

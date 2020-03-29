@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
-import com.android.systemui.C1735R$id;
+import com.android.systemui.R;
 import com.google.common.base.Preconditions;
 
 public class ChipView extends LinearLayout {
@@ -37,13 +37,13 @@ public class ChipView extends LinearLayout {
 
     /* access modifiers changed from: protected */
     public void onFinishInflate() {
-        ImageView imageView = (ImageView) findViewById(C1735R$id.chip_icon);
+        ImageView imageView = (ImageView) findViewById(R.id.chip_icon);
         Preconditions.checkNotNull(imageView);
         this.mIconView = imageView;
-        TextView textView = (TextView) findViewById(C1735R$id.chip_label);
+        TextView textView = (TextView) findViewById(R.id.chip_label);
         Preconditions.checkNotNull(textView);
         this.mLabelView = textView;
-        Space space = (Space) findViewById(C1735R$id.chip_element_padding);
+        Space space = (Space) findViewById(R.id.chip_element_padding);
         Preconditions.checkNotNull(space);
         this.mSpaceView = space;
     }

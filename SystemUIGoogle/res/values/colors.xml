@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- NGA -->
+    <color name="assist_chip_background_light">#dbf1f3f4</color>
+    <color name="assist_chip_background_dark">#6e99a0a7</color>
+    <color name="assist_chip_text_light">#3c4043</color>
+    <color name="assist_chip_text_dark">#dadce0</color>
+    
+    <color name="edge_light_blue">#4185f4</color>
+    <color name="edge_light_green">#3aa853</color>
+    <color name="edge_light_red">#ea4234</color>
+    <color name="edge_light_yellow">#fbbc06</color>
+
+    <color name="transcription_icon_dark">#8affffff</color>
+    <color name="transcription_icon_light">#8a000000</color>
+    <color name="transcription_text_dark">#ffffff</color>
+    <color name="transcription_text_light">#de000000</color>
+</resources>

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import com.android.systemui.C1737R$layout;
+import com.android.systemui.R;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsView;
 
 public final class EdgeLightsController {
@@ -20,7 +20,7 @@ public final class EdgeLightsController {
       ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
     public EdgeLightsController(Context context, ViewGroup viewGroup) {
         this.mContext = context;
-        this.mEdgeLightsView = (EdgeLightsView) LayoutInflater.from(context).inflate(C1737R$layout.edge_lights_view, viewGroup, false);
+        this.mEdgeLightsView = (EdgeLightsView) LayoutInflater.from(context).inflate(R.layout.edge_lights_view, viewGroup, false);
         viewGroup.addView(this.mEdgeLightsView);
     }
 

@@ -9,8 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.android.systemui.C1734R$drawable;
-import com.android.systemui.C1735R$id;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.google.android.systemui.assist.uihints.BlurProvider;
 import java.util.ArrayList;
@@ -52,15 +51,15 @@ public final class GlowView extends FrameLayout {
         this.mGlowImageMatrix = new Matrix();
         this.mBlurRadius = 0;
         this.mPaint = new Paint();
-        this.mBlurProvider = new BlurProvider(context, context.getResources().getDrawable(C1734R$drawable.glow_vector, null));
+        this.mBlurProvider = new BlurProvider(context, context.getResources().getDrawable(R.drawable.glow_vector, null));
     }
 
     /* access modifiers changed from: protected */
     public void onFinishInflate() {
-        this.mBlueGlow = (ImageView) findViewById(C1735R$id.blue_glow);
-        this.mRedGlow = (ImageView) findViewById(C1735R$id.red_glow);
-        this.mYellowGlow = (ImageView) findViewById(C1735R$id.yellow_glow);
-        this.mGreenGlow = (ImageView) findViewById(C1735R$id.green_glow);
+        this.mBlueGlow = (ImageView) findViewById(R.id.blue_glow);
+        this.mRedGlow = (ImageView) findViewById(R.id.red_glow);
+        this.mYellowGlow = (ImageView) findViewById(R.id.yellow_glow);
+        this.mGreenGlow = (ImageView) findViewById(R.id.green_glow);
         this.mGlowImageViews = new ArrayList<>(Arrays.asList(this.mBlueGlow, this.mRedGlow, this.mYellowGlow, this.mGreenGlow));
     }
 

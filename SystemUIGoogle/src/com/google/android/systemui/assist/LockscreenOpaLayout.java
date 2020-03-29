@@ -12,8 +12,7 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1735R$id;
+import com.android.systemui.R;
 import com.android.systemui.Interpolators;
 import com.google.android.systemui.elmyra.feedback.FeedbackEffect;
 import com.google.android.systemui.elmyra.sensors.GestureSensor;
@@ -57,10 +56,10 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
     public void onFinishInflate() {
         super.onFinishInflate();
         this.mResources = getResources();
-        this.mBlue = findViewById(C1735R$id.blue);
-        this.mRed = findViewById(C1735R$id.red);
-        this.mYellow = findViewById(C1735R$id.yellow);
-        this.mGreen = findViewById(C1735R$id.green);
+        this.mBlue = findViewById(R.id.blue);
+        this.mRed = findViewById(R.id.red);
+        this.mYellow = findViewById(R.id.yellow);
+        this.mGreen = findViewById(R.id.green);
         this.mAnimatedViews.add(this.mBlue);
         this.mAnimatedViews.add(this.mRed);
         this.mAnimatedViews.add(this.mYellow);
@@ -278,11 +277,11 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
             return this.mCannedAnimatorSet;
         }
         this.mCannedAnimatorSet = new AnimatorSet();
-        ObjectAnimator translationObjectAnimatorX = OpaUtils.getTranslationObjectAnimatorX(this.mRed, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_canned_ry), this.mRed.getX(), 83);
+        ObjectAnimator translationObjectAnimatorX = OpaUtils.getTranslationObjectAnimatorX(this.mRed, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_ry), this.mRed.getX(), 83);
         translationObjectAnimatorX.setStartDelay(17);
-        ObjectAnimator translationObjectAnimatorX2 = OpaUtils.getTranslationObjectAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_canned_ry), this.mYellow.getX(), 83);
+        ObjectAnimator translationObjectAnimatorX2 = OpaUtils.getTranslationObjectAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_ry), this.mYellow.getX(), 83);
         translationObjectAnimatorX2.setStartDelay(17);
-        this.mCannedAnimatorSet.play(translationObjectAnimatorX).with(translationObjectAnimatorX2).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_canned_bg), this.mBlue.getX(), 167)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_canned_bg), this.mGreen.getX(), 167)).with(OpaUtils.getAlphaObjectAnimator(this.mRed, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mYellow, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mBlue, 1.0f, 50, 113, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mGreen, 1.0f, 50, 113, Interpolators.LINEAR));
+        this.mCannedAnimatorSet.play(translationObjectAnimatorX).with(translationObjectAnimatorX2).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_bg), this.mBlue.getX(), 167)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_bg), this.mGreen.getX(), 167)).with(OpaUtils.getAlphaObjectAnimator(this.mRed, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mYellow, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mBlue, 1.0f, 50, 113, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mGreen, 1.0f, 50, 113, Interpolators.LINEAR));
         return this.mCannedAnimatorSet;
     }
 
@@ -295,7 +294,7 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
             return this.mLineAnimatorSet;
         }
         this.mLineAnimatorSet = new AnimatorSet();
-        this.mLineAnimatorSet.play(OpaUtils.getTranslationObjectAnimatorX(this.mRed, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_translation_ry), this.mRed.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mYellow, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_translation_ry), this.mYellow.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_translation_bg), this.mGreen.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, C1733R$dimen.opa_lockscreen_translation_bg), this.mBlue.getX(), 366));
+        this.mLineAnimatorSet.play(OpaUtils.getTranslationObjectAnimatorX(this.mRed, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_ry), this.mRed.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mYellow, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_ry), this.mYellow.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_bg), this.mGreen.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_bg), this.mBlue.getX(), 366));
         return this.mLineAnimatorSet;
     }
 

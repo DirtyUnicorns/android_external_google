@@ -7,7 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.SystemClock;
 import android.view.animation.PathInterpolator;
-import com.android.systemui.C1733R$dimen;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.android.systemui.assist.p003ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightUpdateListener;
@@ -27,7 +27,7 @@ public final class HalfListening implements EdgeLightsView.Mode {
     }
 
     public HalfListening(Context context, long j) {
-        this.mLightLengthPx = context.getResources().getDimensionPixelSize(C1733R$dimen.navigation_home_handle_width) / this.mLights.length;
+        this.mLightLengthPx = context.getResources().getDimensionPixelSize(R.dimen.navigation_home_handle_width) / this.mLights.length;
         this.mTimeoutMs = j;
         this.mTimeoutTimestampMs = this.mTimeoutMs > 0 ? SystemClock.uptimeMillis() + this.mTimeoutMs : -1;
     }

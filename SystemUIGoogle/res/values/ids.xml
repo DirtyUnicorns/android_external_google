@@ -8,4 +8,32 @@
     <item type="id" name="docked_top_icon" />
     <item type="id" name="dreamliner_gear" />
 
+    <!-- NGA -->
+    <item type="id" name="assist_prompt" />
+
+    <item type="id" name="chip_element_padding" />
+    <item type="id" name="chip_icon" />
+    <item type="id" name="chip_label" />
+
+    <item type="id" name="halo" />
+    <item type="id" name="home_button" />
+
+    <item type="id" name="keyboard_icon_image" />
+
+    <!-- :ignoreAlphabeticalOrder -->
+    <item type="id" name="red" />
+    <item type="id" name="green" />
+    <item type="id" name="blue" />
+    <item type="id" name="yellow" />
+
+    <item type="id" name="red_glow" />
+    <item type="id" name="green_glow" />
+    <item type="id" name="blue_glow" />
+    <item type="id" name="yellow_glow" />
+
+    <item type="id" name="white" />
+    <item type="id" name="white_cutout" />
+
+    <item type="id" name="zerostate_icon_image" />
+
 </resources>

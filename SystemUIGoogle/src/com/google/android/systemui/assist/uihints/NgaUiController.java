@@ -25,8 +25,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.PathInterpolator;
 import com.android.internal.logging.MetricsLogger;
-import com.android.systemui.C1733R$dimen;
-import com.android.systemui.C1737R$layout;
+import com.android.systemui.R;
 import com.android.systemui.Dependency;
 import com.android.systemui.ScreenDecorations;
 import com.android.systemui.SysUiServiceProvider;
@@ -534,18 +533,18 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     NgaUiController.this.lambda$setViewParent$5$NgaUiController(i);
                 }
             }, r8);
-            this.mInvocationLightsView = (AssistantInvocationLightsView) from.inflate(C1737R$layout.invocation_lights, parent, false);
+            this.mInvocationLightsView = (AssistantInvocationLightsView) from.inflate(R.layout.invocation_lights, parent, false);
             this.mInvocationLightsView.setGoogleAssistant(true);
             parent.addView(this.mInvocationLightsView);
             this.mEdgeLightsController = new EdgeLightsController(this.mContext, parent);
             this.mEdgeLightsController.addListener(this.mGlowController);
             this.mTranscriptionController = new TranscriptionController(this.mContext, parent, r8);
             this.mTranscriptionController.setListener(this.mGlowController.getScrimController());
-            this.mKeyboardIcon = (KeyboardIconView) from.inflate(C1737R$layout.keyboard_icon, parent, false);
+            this.mKeyboardIcon = (KeyboardIconView) from.inflate(R.layout.keyboard_icon, parent, false);
             parent.addView(this.mKeyboardIcon);
-            this.mZeroStateIcon = (ZeroStateIconView) LayoutInflater.from(this.mContext).inflate(C1737R$layout.zerostate_icon, parent, false);
+            this.mZeroStateIcon = (ZeroStateIconView) LayoutInflater.from(this.mContext).inflate(R.layout.zerostate_icon, parent, false);
             parent.addView(this.mZeroStateIcon);
-            this.mPromptView = (PromptView) from.inflate(C1737R$layout.assist_prompt, parent, false);
+            this.mPromptView = (PromptView) from.inflate(R.layout.assist_prompt, parent, false);
             parent.addView(this.mPromptView);
             this.mUiHost.addMarginListener(this.mTranscriptionController);
             this.mUiHost.addMarginListener(this.mKeyboardIcon);
@@ -611,7 +610,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (!z || this.mGlowController.getScrimSurfaceControllerHandle() != null) {
                 this.mIsMonitoringColor = z;
                 if (this.mIsMonitoringColor) {
-                    int rotatedHeight = (DisplayUtils.getRotatedHeight(this.mContext) - ((int) this.mContext.getResources().getDimension(C1733R$dimen.transcription_space_bottom_margin))) - DisplayUtils.convertSpToPx(20.0f, this.mContext);
+                    int rotatedHeight = (DisplayUtils.getRotatedHeight(this.mContext) - ((int) this.mContext.getResources().getDimension(R.dimen.transcription_space_bottom_margin))) - DisplayUtils.convertSpToPx(20.0f, this.mContext);
                     Rect rect = new Rect(0, rotatedHeight - DisplayUtils.convertDpToPx(160.0f, this.mContext), DisplayUtils.getRotatedWidth(this.mContext), rotatedHeight);
                     this.mColorMonitoringStart = SystemClock.elapsedRealtime();
                     this.mLightnessProvider.enableColorMonitoring(true, rect, this.mGlowController.getScrimSurfaceControllerHandle());

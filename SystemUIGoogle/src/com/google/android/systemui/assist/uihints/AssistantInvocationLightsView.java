@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.MathUtils;
-import com.android.systemui.C1732R$color;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.CornerPathRenderer;
 import com.android.systemui.assist.p003ui.InvocationLightsView;
 import com.android.systemui.assist.p003ui.PathSpecCornerPathRenderer;
@@ -31,10 +31,10 @@ public class AssistantInvocationLightsView extends InvocationLightsView {
     public AssistantInvocationLightsView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
         Resources resources = context.getResources();
-        this.mColorRed = resources.getColor(C1732R$color.edge_light_red);
-        this.mColorYellow = resources.getColor(C1732R$color.edge_light_yellow);
-        this.mColorBlue = resources.getColor(C1732R$color.edge_light_blue);
-        this.mColorGreen = resources.getColor(C1732R$color.edge_light_green);
+        this.mColorRed = resources.getColor(R.color.edge_light_red);
+        this.mColorYellow = resources.getColor(R.color.edge_light_yellow);
+        this.mColorBlue = resources.getColor(R.color.edge_light_blue);
+        this.mColorGreen = resources.getColor(R.color.edge_light_green);
     }
 
     public void setGoogleAssistant(boolean z) {

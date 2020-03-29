@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 import com.android.internal.app.AssistUtils;
-import com.android.systemui.C1733R$dimen;
+import com.android.systemui.R;
 
 public final class OpaUtils {
     static final Interpolator INTERPOLATOR_40_40 = new PathInterpolator(0.4f, 0.0f, 0.6f, 1.0f);
@@ -147,18 +147,18 @@ public final class OpaUtils {
     }
 
     static float getDeltaDiamondPositionTopY(Resources resources) {
-        return -getPxVal(resources, C1733R$dimen.opa_diamond_translation);
+        return -getPxVal(resources, R.dimen.opa_diamond_translation);
     }
 
     static float getDeltaDiamondPositionLeftX(Resources resources) {
-        return -getPxVal(resources, C1733R$dimen.opa_diamond_translation);
+        return -getPxVal(resources, R.dimen.opa_diamond_translation);
     }
 
     static float getDeltaDiamondPositionRightX(Resources resources) {
-        return getPxVal(resources, C1733R$dimen.opa_diamond_translation);
+        return getPxVal(resources, R.dimen.opa_diamond_translation);
     }
 
     static float getDeltaDiamondPositionBottomY(Resources resources) {
-        return getPxVal(resources, C1733R$dimen.opa_diamond_translation);
+        return getPxVal(resources, R.dimen.opa_diamond_translation);
     }
 }

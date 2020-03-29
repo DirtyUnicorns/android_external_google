@@ -7,7 +7,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.MathUtils;
 import android.view.animation.PathInterpolator;
-import com.android.systemui.C1732R$color;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.android.systemui.assist.p003ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.RollingAverage;
@@ -43,7 +43,7 @@ public final class FullListening implements EdgeLightsView.Mode {
     }
 
     public FullListening(Context context) {
-        this.mLights = new EdgeLight[]{new EdgeLight(context.getResources().getColor(C1732R$color.edge_light_blue, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(C1732R$color.edge_light_red, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(C1732R$color.edge_light_yellow, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(C1732R$color.edge_light_green, null), 0.0f, 0.0f)};
+        this.mLights = new EdgeLight[]{new EdgeLight(context.getResources().getColor(R.color.edge_light_blue, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(R.color.edge_light_red, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(R.color.edge_light_yellow, null), 0.0f, 0.0f), new EdgeLight(context.getResources().getColor(R.color.edge_light_green, null), 0.0f, 0.0f)};
     }
 
     public void start(EdgeLightsView edgeLightsView, PerimeterPathGuide perimeterPathGuide, EdgeLightsView.Mode mode) {

@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import com.android.internal.logging.MetricsLogger;
-import com.android.systemui.C1732R$color;
+import com.android.systemui.R;
 import com.android.systemui.assist.p003ui.EdgeLight;
 import com.android.systemui.assist.p003ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.BezierCornerPathRenderer;
@@ -149,10 +149,10 @@ public class EdgeLightsView extends View {
         this.mMode = new Gone();
         commitModeTransition(this.mMode);
         Resources resources = getResources();
-        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(C1732R$color.edge_light_blue), 0.0f, 0.0f));
-        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(C1732R$color.edge_light_red), 0.0f, 0.0f));
-        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(C1732R$color.edge_light_yellow), 0.0f, 0.0f));
-        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(C1732R$color.edge_light_green), 0.0f, 0.0f));
+        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(R.color.edge_light_blue), 0.0f, 0.0f));
+        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(R.color.edge_light_red), 0.0f, 0.0f));
+        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(R.color.edge_light_yellow), 0.0f, 0.0f));
+        this.mAssistInvocationLights.add(new EdgeLight(resources.getColor(R.color.edge_light_green), 0.0f, 0.0f));
     }
 
     /* access modifiers changed from: protected */

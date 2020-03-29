@@ -12,8 +12,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
-import com.android.systemui.C1732R$color;
-import com.android.systemui.C1733R$dimen;
+import com.android.systemui.R;
 import com.google.android.systemui.assist.uihints.GreetingView;
 import com.google.android.systemui.assist.uihints.TranscriptionController;
 import com.google.common.util.concurrent.Futures;
@@ -53,14 +52,14 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
         this.mGreetingBuilder = new SpannableStringBuilder();
         this.mSpans = new ArrayList<>();
         this.mAnimatorSet = new AnimatorSet();
-        this.TEXT_COLOR_DARK = getResources().getColor(C1732R$color.transcription_text_dark);
-        this.TEXT_COLOR_LIGHT = getResources().getColor(C1732R$color.transcription_text_light);
-        this.START_DELTA = (int) getResources().getDimension(C1733R$dimen.assist_greeting_start_delta);
+        this.TEXT_COLOR_DARK = getResources().getColor(R.color.transcription_text_dark);
+        this.TEXT_COLOR_LIGHT = getResources().getColor(R.color.transcription_text_light);
+        this.START_DELTA = (int) getResources().getDimension(R.dimen.assist_greeting_start_delta);
         this.mMaxAlpha = (float) Color.alpha(getCurrentTextColor());
     }
 
     public void onFontSizeChanged() {
-        setTextSize(0, super.mContext.getResources().getDimension(C1733R$dimen.transcription_text_size));
+        setTextSize(0, super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
     }
 
     public void setGreeting(String str, float f) {
@@ -116,7 +115,7 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
     }
 
     private void setLayoutParams(float f, OvershootInterpolator overshootInterpolator) {
-        float convertSpToPx = (float) DisplayUtils.convertSpToPx(getResources().getDimension(C1733R$dimen.transcription_text_size), super.mContext);
+        float convertSpToPx = (float) DisplayUtils.convertSpToPx(getResources().getDimension(R.dimen.transcription_text_size), super.mContext);
         float interpolation = ((float) this.START_DELTA) * overshootInterpolator.getInterpolation(((2.0f * f) + 6.0f) / ((f * 6.0f) + 6.0f));
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (layoutParams != null) {

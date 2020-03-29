@@ -2,8 +2,8 @@ package com.google.android.systemui.assist.uihints.edgelights.mode;
 
 import android.metrics.LogMaker;
 import com.android.internal.logging.MetricsLogger;
-import com.android.systemui.assist.p003ui.EdgeLight;
-import com.android.systemui.assist.p003ui.PerimeterPathGuide;
+import com.android.systemui.assist.ui.EdgeLight;
+import com.android.systemui.assist.ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsView;
 
 public final class Gone implements EdgeLightsView.Mode {

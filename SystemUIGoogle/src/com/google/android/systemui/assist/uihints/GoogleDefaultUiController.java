@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.android.systemui.R;
-import com.android.systemui.assist.p003ui.DefaultUiController;
+import com.android.systemui.assist.ui.DefaultUiController;
 
 public class GoogleDefaultUiController extends DefaultUiController {
     /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead

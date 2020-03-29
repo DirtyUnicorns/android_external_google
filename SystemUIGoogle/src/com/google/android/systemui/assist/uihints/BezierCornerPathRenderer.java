@@ -2,7 +2,7 @@ package com.google.android.systemui.assist.uihints;
 
 import android.content.Context;
 import android.graphics.Path;
-import com.android.systemui.assist.p003ui.CornerPathRenderer;
+import com.android.systemui.assist.ui.CornerPathRenderer;
 
 public final class BezierCornerPathRenderer extends CornerPathRenderer {
     private final int mControlPointBottom;
@@ -36,30 +36,30 @@ public final class BezierCornerPathRenderer extends CornerPathRenderer {
         /* JADX WARNING: Missing exception handler attribute for start block: B:7:0x002a */
         static {
             /*
-                com.android.systemui.assist.ui.CornerPathRenderer$Corner[] r0 = com.android.systemui.assist.p003ui.CornerPathRenderer.Corner.values()
+                com.android.systemui.assist.ui.CornerPathRenderer$Corner[] r0 = com.android.systemui.assist.ui.CornerPathRenderer.Corner.values()
                 int r0 = r0.length
                 int[] r0 = new int[r0]
                 com.google.android.systemui.assist.uihints.BezierCornerPathRenderer.C15611.f79x853e7b3e = r0
                 int[] r0 = com.google.android.systemui.assist.uihints.BezierCornerPathRenderer.C15611.f79x853e7b3e     // Catch:{ NoSuchFieldError -> 0x0014 }
-                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.p003ui.CornerPathRenderer.Corner.BOTTOM_LEFT     // Catch:{ NoSuchFieldError -> 0x0014 }
+                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.ui.CornerPathRenderer.Corner.BOTTOM_LEFT     // Catch:{ NoSuchFieldError -> 0x0014 }
                 int r1 = r1.ordinal()     // Catch:{ NoSuchFieldError -> 0x0014 }
                 r2 = 1
                 r0[r1] = r2     // Catch:{ NoSuchFieldError -> 0x0014 }
             L_0x0014:
                 int[] r0 = com.google.android.systemui.assist.uihints.BezierCornerPathRenderer.C15611.f79x853e7b3e     // Catch:{ NoSuchFieldError -> 0x001f }
-                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.p003ui.CornerPathRenderer.Corner.BOTTOM_RIGHT     // Catch:{ NoSuchFieldError -> 0x001f }
+                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.ui.CornerPathRenderer.Corner.BOTTOM_RIGHT     // Catch:{ NoSuchFieldError -> 0x001f }
                 int r1 = r1.ordinal()     // Catch:{ NoSuchFieldError -> 0x001f }
                 r2 = 2
                 r0[r1] = r2     // Catch:{ NoSuchFieldError -> 0x001f }
             L_0x001f:
                 int[] r0 = com.google.android.systemui.assist.uihints.BezierCornerPathRenderer.C15611.f79x853e7b3e     // Catch:{ NoSuchFieldError -> 0x002a }
-                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.p003ui.CornerPathRenderer.Corner.TOP_LEFT     // Catch:{ NoSuchFieldError -> 0x002a }
+                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.ui.CornerPathRenderer.Corner.TOP_LEFT     // Catch:{ NoSuchFieldError -> 0x002a }
                 int r1 = r1.ordinal()     // Catch:{ NoSuchFieldError -> 0x002a }
                 r2 = 3
                 r0[r1] = r2     // Catch:{ NoSuchFieldError -> 0x002a }
             L_0x002a:
                 int[] r0 = com.google.android.systemui.assist.uihints.BezierCornerPathRenderer.C15611.f79x853e7b3e     // Catch:{ NoSuchFieldError -> 0x0035 }
-                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.p003ui.CornerPathRenderer.Corner.TOP_RIGHT     // Catch:{ NoSuchFieldError -> 0x0035 }
+                com.android.systemui.assist.ui.CornerPathRenderer$Corner r1 = com.android.systemui.assist.ui.CornerPathRenderer.Corner.TOP_RIGHT     // Catch:{ NoSuchFieldError -> 0x0035 }
                 int r1 = r1.ordinal()     // Catch:{ NoSuchFieldError -> 0x0035 }
                 r2 = 4
                 r0[r1] = r2     // Catch:{ NoSuchFieldError -> 0x0035 }

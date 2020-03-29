@@ -1,6 +1,6 @@
 package com.google.android.systemui.assist.uihints.edgelights;
 
-import com.android.systemui.assist.p003ui.EdgeLight;
+import com.android.systemui.assist.ui.EdgeLight;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsView;
 
 public interface EdgeLightsListener {

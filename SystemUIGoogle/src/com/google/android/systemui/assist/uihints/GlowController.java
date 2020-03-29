@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import com.android.systemui.R;
 import com.android.systemui.Dependency;
-import com.android.systemui.assist.p003ui.EdgeLight;
+import com.android.systemui.assist.ui.EdgeLight;
 import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.NavigationModeController;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsListener;

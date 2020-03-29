@@ -8,8 +8,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.animation.PathInterpolator;
 import com.android.systemui.R;
-import com.android.systemui.assist.p003ui.EdgeLight;
-import com.android.systemui.assist.p003ui.PerimeterPathGuide;
+import com.android.systemui.assist.ui.EdgeLight;
+import com.android.systemui.assist.ui.PerimeterPathGuide;
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsView;
 import com.google.android.systemui.assist.uihints.edgelights.mode.FulfillPerimeter;
 

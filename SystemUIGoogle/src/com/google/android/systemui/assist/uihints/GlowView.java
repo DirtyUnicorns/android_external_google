@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.android.systemui.R;
-import com.android.systemui.assist.p003ui.EdgeLight;
+import com.android.systemui.assist.ui.EdgeLight;
 import com.google.android.systemui.assist.uihints.BlurProvider;
 import java.util.ArrayList;
 import java.util.Arrays;

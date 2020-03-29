@@ -1,6 +1,6 @@
 package com.google.android.systemui.assist.uihints.edgelights;
 
-import com.android.systemui.assist.p003ui.EdgeLight;
+import com.android.systemui.assist.ui.EdgeLight;
 import java.util.function.Consumer;
 
 /* renamed from: com.google.android.systemui.assist.uihints.edgelights.-$$Lambda$EdgeLightsView$4tzYB8xooL0BcgRnRG7YnRnlnWk  reason: invalid class name */

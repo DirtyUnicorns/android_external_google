@@ -1,7 +1,7 @@
 package com.google.android.systemui.assist.uihints.edgelights;
 
 import android.animation.ValueAnimator;
-import com.android.systemui.assist.p003ui.EdgeLight;
+import com.android.systemui.assist.ui.EdgeLight;
 
 public final class EdgeLightUpdateListener implements ValueAnimator.AnimatorUpdateListener {
     private EdgeLight[] mFinalLights;

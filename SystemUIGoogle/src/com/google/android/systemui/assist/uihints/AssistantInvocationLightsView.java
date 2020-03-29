@@ -5,10 +5,10 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.MathUtils;
 import com.android.systemui.R;
-import com.android.systemui.assist.p003ui.CornerPathRenderer;
-import com.android.systemui.assist.p003ui.InvocationLightsView;
-import com.android.systemui.assist.p003ui.PathSpecCornerPathRenderer;
-import com.android.systemui.assist.p003ui.PerimeterPathGuide;
+import com.android.systemui.assist.ui.CornerPathRenderer;
+import com.android.systemui.assist.ui.InvocationLightsView;
+import com.android.systemui.assist.ui.PathSpecCornerPathRenderer;
+import com.android.systemui.assist.ui.PerimeterPathGuide;
 
 public class AssistantInvocationLightsView extends InvocationLightsView {
     private final int mColorBlue;

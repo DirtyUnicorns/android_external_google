@@ -51,7 +51,8 @@ public class AssistManagerGoogle extends AssistManager {
     }
 
     public AssistManagerGoogle(DeviceProvisionedController deviceProvisionedController, Context context) {
-        super(deviceProvisionedController, context);
+        // FIXME: Properly pass these parameters.
+        super(deviceProvisionedController, context, null, null);
         addOpaEnabledListener(this.mOpaEnabledDispatcher);
         KeyguardUpdateMonitor.getInstance(super.mContext).registerCallback(this.mUserSwitchCallback);
         this.mNgaUiController = new NgaUiController(context);

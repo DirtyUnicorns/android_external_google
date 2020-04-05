@@ -42,21 +42,19 @@ public class EdgeLightsView extends View {
     public interface Mode {
         int getSubType();
 
-        void onAudioLevelUpdate(float f, float f2) {
-        }
+        void onAudioLevelUpdate(float f, float f2);
 
-        void onConfigurationChanged() {
-        }
+        void onConfigurationChanged();
 
         void onNewModeRequest(EdgeLightsView edgeLightsView, Mode mode);
 
-        boolean preventsInvocations() {
+        default boolean preventsInvocations() {
             return false;
         }
 
         void start(EdgeLightsView edgeLightsView, PerimeterPathGuide perimeterPathGuide, Mode mode);
 
-        void logState() {
+        default void logState() {
             MetricsLogger.action(new LogMaker(1716).setType(6).setSubtype(getSubType()));
         }
 
@@ -172,18 +170,7 @@ public class EdgeLightsView extends View {
     }
 
     public void setAssistLights(EdgeLight[] edgeLightArr) {
-        post(new Runnable(edgeLightArr) {
-            /* class com.google.android.systemui.assist.uihints.edgelights.$$Lambda$EdgeLightsView$_h6pEZiEvPvqcfe85_YS1VNFuZo */
-            private final /* synthetic */ EdgeLight[] f$1;
-
-            {
-                this.f$1 = r2;
-            }
-
-            public final void run() {
-                EdgeLightsView.this.lambda$setAssistLights$1$EdgeLightsView(this.f$1);
-            }
-        });
+        post(() -> lambda$setAssistLights$1$EdgeLightsView(edgeLightArr));
     }
 
     public /* synthetic */ void lambda$setAssistLights$1$EdgeLightsView(EdgeLight[] edgeLightArr) {

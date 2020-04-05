@@ -194,7 +194,7 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
             ArrayList<EdgeLight> arrayList = this.mLights;
             edgeLight2 = arrayList.get(arrayList.indexOf(edgeLight3) - 1);
         }
-        ofFloat.addUpdateListener(valueAnimator -> lambda$animateLight$0$FulfillBottom(f5, f2, edgeLight, edgeLight2,f4, f3, f, regionWidth, valueAnimator));
+        ofFloat.addUpdateListener(valueAnimator -> lambdaAnimateLightFb(f5, f2, edgeLight, edgeLight2,f4, f3, f, regionWidth, valueAnimator));
         ofFloat.addListener(new AnimatorListenerAdapter() {
             /* class com.google.android.systemui.assist.uihints.edgelights.mode.FulfillBottom.C15721 */
             private boolean mCancelled = false;
@@ -218,7 +218,8 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
         ofFloat.start();
     }
 
-    public /* synthetic */ void lambda$animateLight$0$FulfillBottom(float f, float f2, EdgeLight edgeLight, EdgeLight edgeLight2, float f3, float f4, float f5, float f6, ValueAnimator valueAnimator) {
+    // FIXME: Maybe this thing is too huge to put in a lambda...
+    public /* synthetic */ void lambdaAnimateLightFb(float f, float f2, EdgeLight edgeLight, EdgeLight edgeLight2, float f3, float f4, float f5, float f6, ValueAnimator valueAnimator) {
         float animatedFraction = (f * valueAnimator.getAnimatedFraction()) + f2;
         if (edgeLight2 != null) {
             animatedFraction = Math.min(animatedFraction, edgeLight2.getOffset() + edgeLight2.getLength());

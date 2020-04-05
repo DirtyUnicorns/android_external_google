@@ -175,13 +175,7 @@ public class EdgeLightsView extends View {
 
     public /* synthetic */ void lambda$setAssistLights$1$EdgeLightsView(EdgeLight[] edgeLightArr) {
         this.mAssistLights = EdgeLight.copy(edgeLightArr);
-        this.mListeners.forEach(new Consumer() {
-            /* class com.google.android.systemui.assist.uihints.edgelights.$$Lambda$EdgeLightsView$Efr_d9W92hs8kZP2lk4EkoqQW7I */
-
-            public final void accept(Object obj) {
-                EdgeLightsView.this.lambda$setAssistLights$0$EdgeLightsView((EdgeLightsListener) obj);
-            }
-        });
+        mListeners.forEach(listener -> lambda$setAssistLights$0$EdgeLightsView(listener));
         invalidate();
     }
 

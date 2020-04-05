@@ -102,4 +102,16 @@ public final class HalfListening implements EdgeLightsView.Mode {
     private float getLightOffset(int i, PerimeterPathGuide perimeterPathGuide) {
         return (((float) ((i - (this.mLights.length / 2)) * this.mLightLengthPx)) / perimeterPathGuide.getPerimeterPx()) + this.mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM);
     }
+
+    @Override
+    public void onAudioLevelUpdate(float f, float f2) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onConfigurationChanged() {
+        // TODO Auto-generated method stub
+
+    }
 }

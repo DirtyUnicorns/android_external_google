@@ -53,18 +53,7 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
 
     public void show(PendingIntent pendingIntent) {
         if (pendingIntent != null) {
-            this.mZeroStateIcon.setOnClickListener(new View.OnClickListener(pendingIntent) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$ZeroStateIconView$Ro_eVnTw55klfmi_IQlu0Vl0nsk */
-                private final /* synthetic */ PendingIntent f$0;
-
-                {
-                    this.f$0 = r1;
-                }
-
-                public final void onClick(View view) {
-                    ZeroStateIconView.lambda$show$0(this.f$0, view);
-                }
-            });
+            mZeroStateIcon.setOnClickListener(view -> lambda$show$00(pendingIntent, view));
             setVisibility(0);
             return;
         }
@@ -73,7 +62,7 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
         Log.w("ZeroStateIconView", "No zerostate intent specified");
     }
 
-    static /* synthetic */ void lambda$show$0(PendingIntent pendingIntent, View view) {
+    static /* synthetic */ void lambda$show$00(PendingIntent pendingIntent, View view) {
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {

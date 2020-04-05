@@ -53,18 +53,7 @@ public class KeyboardIconView extends FrameLayout implements OverlayUiHost.Botto
 
     public void show(PendingIntent pendingIntent) {
         if (pendingIntent != null) {
-            this.mKeyboardIcon.setOnClickListener(new View.OnClickListener(pendingIntent) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$KeyboardIconView$Qneuw5YMQ57YRF428Hgp0hl7K6c */
-                private final /* synthetic */ PendingIntent f$0;
-
-                {
-                    this.f$0 = r1;
-                }
-
-                public final void onClick(View view) {
-                    KeyboardIconView.lambda$show$0(this.f$0, view);
-                }
-            });
+            mKeyboardIcon.setOnClickListener(view -> lambda$show$00(pendingIntent, view));
             setVisibility(0);
             return;
         }
@@ -73,7 +62,7 @@ public class KeyboardIconView extends FrameLayout implements OverlayUiHost.Botto
         Log.w("KeyboardIconView", "No keyboard intent specified");
     }
 
-    static /* synthetic */ void lambda$show$0(PendingIntent pendingIntent, View view) {
+    static /* synthetic */ void lambda$show$00(PendingIntent pendingIntent, View view) {
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {

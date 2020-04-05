@@ -332,7 +332,7 @@ public final class GlowController implements EdgeLightsListener {
         });
         this.mAnimator.setInterpolator(new LinearInterpolator());
         this.mAnimator.setDuration(j);
-        mAnimator.addUpdateListener(l -> lambda$animateGlowTranslationY$3$GlowController(mGlowView.getBlurRadius(), getBlurRadius(), valueAnimator));
+        mAnimator.addUpdateListener(valueAnim -> lambda$animateGlowTranslationY$3$GlowController(mGlowView.getBlurRadius(), getBlurRadius(), valueAnim));
 
         float glowWidthRatio = this.mGlowView.getGlowWidthRatio();
         this.mGlowView.setGlowWidthRatio(glowWidthRatio + ((getGlowWidthToViewWidth() - glowWidthRatio) * 1.0f));

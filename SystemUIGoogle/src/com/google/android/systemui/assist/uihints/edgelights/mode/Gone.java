@@ -23,4 +23,16 @@ public final class Gone implements EdgeLightsView.Mode {
     public void logState() {
         MetricsLogger.action(new LogMaker(1716).setType(2));
     }
+
+    @Override
+    public void onAudioLevelUpdate(float f, float f2) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onConfigurationChanged() {
+        // TODO Auto-generated method stub
+
+    }
 }

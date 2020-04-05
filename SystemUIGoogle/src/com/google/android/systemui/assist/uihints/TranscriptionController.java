@@ -110,22 +110,7 @@ public class TranscriptionController implements ConfigurationController.Configur
 
     public void setTranscription(String str, PendingIntent pendingIntent) {
         this.mOnTranscriptionTap = pendingIntent;
-        setState(State.TRANSCRIPTION, false, new Runnable(str) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$DXAs0CvUnEDrhyv80sddGx80g */
-            private final /* synthetic */ String f$1;
-
-            {
-                this.f$1 = r2;
-            }
-
-            public final void run() {
-                TranscriptionController.this.lambda$setTranscription$0$TranscriptionController(this.f$1);
-            }
-        });
-    }
-
-    public /* synthetic */ void lambda$setTranscription$0$TranscriptionController(String str) {
-        ((TranscriptionView) this.mViewMap.get(State.TRANSCRIPTION)).setTranscription(str);
+        setState(State.TRANSCRIPTION, false, () -> ((TranscriptionView) mViewMap.get(State.TRANSCRIPTION)).setTranscription(str));
     }
 
     public void setTranscriptionColor(int i) {
@@ -135,44 +120,12 @@ public class TranscriptionController implements ConfigurationController.Configur
     public void setGreeting(String str, float f, PendingIntent pendingIntent) {
         if (!TextUtils.isEmpty(str)) {
             this.mOnGreetingTap = pendingIntent;
-            setState(State.GREETING, false, new Runnable(str, f) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$HvDmbk_uZWsUlrS9JbsN9siO3I */
-                private final /* synthetic */ String f$1;
-                private final /* synthetic */ float f$2;
-
-                {
-                    this.f$1 = r2;
-                    this.f$2 = r3;
-                }
-
-                public final void run() {
-                    TranscriptionController.this.lambda$setGreeting$1$TranscriptionController(this.f$1, this.f$2);
-                }
-            });
+            setState(State.GREETING, false, () -> ((GreetingView) mViewMap.get(State.GREETING)).setGreeting(str, f));
         }
     }
 
-    public /* synthetic */ void lambda$setGreeting$1$TranscriptionController(String str, float f) {
-        ((GreetingView) this.mViewMap.get(State.GREETING)).setGreeting(str, f);
-    }
-
     public void setChips(ArrayList<Bundle> arrayList) {
-        setState(State.CHIPS, false, new Runnable(arrayList) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$oja2NVT9eV8XDWGiLumFbN6mMqk */
-            private final /* synthetic */ ArrayList f$1;
-
-            {
-                this.f$1 = r2;
-            }
-
-            public final void run() {
-                TranscriptionController.this.lambda$setChips$2$TranscriptionController(this.f$1);
-            }
-        });
-    }
-
-    public /* synthetic */ void lambda$setChips$2$TranscriptionController(ArrayList arrayList) {
-        ((ChipsContainer) this.mViewMap.get(State.CHIPS)).setChips(arrayList);
+        setState(State.CHIPS, false, () -> ((ChipsContainer) this.mViewMap.get(State.CHIPS)).setChips(arrayList));
     }
 
     public void clear(boolean z) {
@@ -220,18 +173,19 @@ public class TranscriptionController implements ConfigurationController.Configur
                     transcriptionSpaceView.show();
                 }
             } else {
-                Futures.transform(this.mViewMap.get(this.mCurrentState).hide(z), new Function(state) {
-                    /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$E_ey_UuShBBb99Dal6Fat02GRw */
-                    private final /* synthetic */ TranscriptionController.State f$1;
+            // FIXME: Not sure how to fix this thing, comment it for now.
+            //     Futures.transform(this.mViewMap.get(this.mCurrentState).hide(z), new Function(state) {
+            //         /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$E_ey_UuShBBb99Dal6Fat02GRw */
+            //         private final /* synthetic */ TranscriptionController.State f$1;
 
-                    {
-                        this.f$1 = r2;
-                    }
+            //         {
+            //             this.f$1 = r2;
+            //         }
 
-                    public final Object apply(Object obj) {
-                        return TranscriptionController.this.lambda$setState$3$TranscriptionController(this.f$1, (Void) obj);
-                    }
-                }, MoreExecutors.directExecutor());
+            //         public final Object apply(Object obj) {
+            //             return TranscriptionController.this.lambda$setState$3$TranscriptionController(this.f$1, (Void) obj);
+            //         }
+            //     }, MoreExecutors.directExecutor());
             }
             this.mCurrentState = state;
         } else {

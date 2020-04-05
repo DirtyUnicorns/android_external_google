@@ -16,21 +16,11 @@ public final class LightnessProvider {
         /* class com.google.android.systemui.assist.uihints.LightnessProvider.C15641 */
 
         public void onSampleCollected(float f) {
-            LightnessProvider.this.mUiHandler.post(new Runnable(f) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$LightnessProvider$1$XlZA6YE6nJBV8mUm2Sl59Ijw5dc */
-                private final /* synthetic */ float f$1;
-
-                {
-                    this.f$1 = r2;
-                }
-
-                public final void run() {
-                    LightnessProvider.C15641.this.lambda$onSampleCollected$0$LightnessProvider$1(this.f$1);
-                }
-            });
+            mUiHandler.post(() -> lambdaLightnessProvider(f));
         }
 
-        public /* synthetic */ void lambda$onSampleCollected$0$LightnessProvider$1(float f) {
+        // FIXME
+        public /* synthetic */ void lambdaLightnessProvider(float f) {
             if (LightnessProvider.this.mMuted) {
                 return;
             }

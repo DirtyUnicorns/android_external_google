@@ -130,7 +130,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
             return this.mHideFuture;
         }
         this.mHideFuture = SettableFuture.create();
-        final $$Lambda$TranscriptionView$Qv69LoHEhmJSkqbPe36IZfPgiA r0 = new Runnable() {
+        Runnable r0 = new Runnable() {
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionView$Qv69LoHEhmJSkqbPe36IZfPgiA */
 
             public final void run() {
@@ -368,18 +368,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
                 TranscriptionView.this.setX(floatValue);
                 TranscriptionView.this.updateColor();
             }
-            this.mSpans.forEach(new Consumer(valueAnimator) {
-                /* class com.google.android.systemui.assist.uihints.C1560xf80207a0 */
-                private final /* synthetic */ ValueAnimator f$0;
-
-                {
-                    this.f$0 = r1;
-                }
-
-                public final void accept(Object obj) {
-                    ((TranscriptionView.TranscriptionSpan) obj).setCurrentFraction(this.f$0.getAnimatedFraction());
-                }
-            });
+            mSpans.forEach(span -> span.setCurrentFraction(valueAnimator.getAnimatedFraction()));
             TranscriptionView.this.invalidate();
         }
     }

@@ -88,22 +88,11 @@ public class ChipView extends LinearLayout {
 
     private void setTapAction(PendingIntent pendingIntent) {
         if (pendingIntent != null) {
-            setOnClickListener(new View.OnClickListener(pendingIntent) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$ChipView$rZsGRy3pJJ_MHCfVghF5de5ZRg */
-                private final /* synthetic */ PendingIntent f$0;
-
-                {
-                    this.f$0 = r1;
-                }
-
-                public final void onClick(View view) {
-                    ChipView.lambda$setTapAction$0(this.f$0, view);
-                }
-            });
+            setOnClickListener(view -> lambda$setTapAction$00(pendingIntent, view));
         }
     }
 
-    static /* synthetic */ void lambda$setTapAction$0(PendingIntent pendingIntent, View view) {
+    static /* synthetic */ void lambda$setTapAction$00(PendingIntent pendingIntent, View view) {
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {

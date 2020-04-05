@@ -62,32 +62,10 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
             ofFloat.setStartDelay(z3 ? 100 : 0);
             ofFloat.setDuration(433L);
             ofFloat.setInterpolator(FULFILL_PERIMETER_INTERPOLATOR);
-            $$Lambda$FulfillPerimeter$MZtUjbRyns2SZEYMcv6IQbgrRY r11 = r0;
             EdgeLight edgeLight2 = edgeLight;
-            $$Lambda$FulfillPerimeter$MZtUjbRyns2SZEYMcv6IQbgrRY r0 = new ValueAnimator.AnimatorUpdateListener(edgeLight, makeClockwise, regionCenter, f, 0.0f, edgeLightsView) {
-                /* class com.google.android.systemui.assist.uihints.edgelights.mode.$$Lambda$FulfillPerimeter$MZtUjbRyns2SZEYMcv6IQbgrRY */
-                private final /* synthetic */ EdgeLight f$1;
-                private final /* synthetic */ float f$2;
-                private final /* synthetic */ float f$3;
-                private final /* synthetic */ float f$4;
-                private final /* synthetic */ float f$5;
-                private final /* synthetic */ EdgeLightsView f$6;
-
-                {
-                    this.f$1 = r2;
-                    this.f$2 = r3;
-                    this.f$3 = r4;
-                    this.f$4 = r5;
-                    this.f$5 = r6;
-                    this.f$6 = r7;
-                }
-
-                public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    FulfillPerimeter.this.lambda$start$0$FulfillPerimeter(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5, this.f$6, valueAnimator);
-                }
-            };
+            // FIXME: Redundancy
             ValueAnimator valueAnimator = ofFloat;
-            valueAnimator.addUpdateListener(r11);
+            ofFloat.addUpdateListener(valueAnim -> lambdaStartFp0(edgeLight, makeClockwise, regionCenter, f, 0.0f, edgeLightsView, valueAnim));
             if (!z3) {
                 animatorSet.play(valueAnimator);
             } else {
@@ -96,24 +74,7 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
                 ofFloat2.setStartDelay(valueAnimator.getStartDelay() + 100);
                 ofFloat2.setDuration(733L);
                 ofFloat2.setInterpolator(FULFILL_PERIMETER_INTERPOLATOR);
-                ofFloat2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(edgeLight2, interpolation, perimeterPathGuide, edgeLightsView) {
-                    /* class com.google.android.systemui.assist.uihints.edgelights.mode.$$Lambda$FulfillPerimeter$4qfpqiVttSOidi4h0dCycMmHzTE */
-                    private final /* synthetic */ EdgeLight f$1;
-                    private final /* synthetic */ float f$2;
-                    private final /* synthetic */ PerimeterPathGuide f$3;
-                    private final /* synthetic */ EdgeLightsView f$4;
-
-                    {
-                        this.f$1 = r2;
-                        this.f$2 = r3;
-                        this.f$3 = r4;
-                        this.f$4 = r5;
-                    }
-
-                    public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        lambda$start$1$FulfillPerimeter(this.f$1, this.f$2, this.f$3, this.f$4, valueAnimator);
-                    }
-                });
+                ofFloat2.addUpdateListener(valueAnim -> lambdaStartFp1(edgeLight2, interpolation, perimeterPathGuide, edgeLightsView, valueAnim));
                 animatorSet.play(valueAnimator);
                 animatorSet.play(ofFloat2);
             }
@@ -138,7 +99,8 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
         animatorSet.start();
     }
 
-    public /* synthetic */ void lambda$start$0$FulfillPerimeter(EdgeLight edgeLight, float f, float f2, float f3, float f4, EdgeLightsView edgeLightsView, ValueAnimator valueAnimator) {
+    // FIXME
+    public /* synthetic */ void lambdaStartFp0(EdgeLight edgeLight, float f, float f2, float f3, float f4, EdgeLightsView edgeLightsView, ValueAnimator valueAnimator) {
         float animatedFraction = valueAnimator.getAnimatedFraction();
         edgeLight.setOffset((f * animatedFraction) + f2);
         if (!this.mDisappearing) {
@@ -155,7 +117,8 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
       ClspMth{java.lang.Math.max(int, int):int}
       ClspMth{java.lang.Math.max(long, long):long}
       ClspMth{java.lang.Math.max(float, float):float} */
-    public /* synthetic */ void lambda$start$1$FulfillPerimeter(EdgeLight edgeLight, float f, PerimeterPathGuide perimeterPathGuide, EdgeLightsView edgeLightsView, ValueAnimator valueAnimator) {
+    // FIXME
+    public /* synthetic */ void lambdaStartFp1(EdgeLight edgeLight, float f, PerimeterPathGuide perimeterPathGuide, EdgeLightsView edgeLightsView, ValueAnimator valueAnimator) {
         float animatedFraction = valueAnimator.getAnimatedFraction();
         if (animatedFraction != 0.0f) {
             this.mDisappearing = true;
@@ -175,5 +138,17 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
             }
             edgeLightsView.setAssistLights(this.mLights);
         }
+    }
+
+    @Override
+    public void onAudioLevelUpdate(float f, float f2) {
+        // TODO: I couldn't find this method anywhere!
+
+    }
+
+    @Override
+    public void onConfigurationChanged() {
+        // TODO: I couldn't find this method anywhere!
+
     }
 }

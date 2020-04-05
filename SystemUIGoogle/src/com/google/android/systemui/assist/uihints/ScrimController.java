@@ -52,20 +52,8 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
         this.mFullscreenScrim.setVisibility(8);
         this.mLightnessProvider = lightnessProvider;
         this.mVisibilityListener = visibilityListener;
-        $$Lambda$ScrimController$sdFC7TSkhSEX7D4ytsO0cJbxEX0 r6 = new View.OnClickListener(runnable) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$ScrimController$sdFC7TSkhSEX7D4ytsO0cJbxEX0 */
-            private final /* synthetic */ Runnable f$0;
-
-            {
-                this.f$0 = r1;
-            }
-
-            public final void onClick(View view) {
-                this.f$0.run();
-            }
-        };
-        this.mRoot.setOnClickListener(r6);
-        this.mFullscreenScrim.setOnClickListener(r6);
+        mRoot.setOnClickListener(view -> runnable.run());
+        mFullscreenScrim.setOnClickListener(view -> runnable.run());
         this.mOverlappedElement = new OverlappedElementController(context);
         viewGroup.addView(this.mFullscreenScrim);
         viewGroup.addView(this.mRoot);

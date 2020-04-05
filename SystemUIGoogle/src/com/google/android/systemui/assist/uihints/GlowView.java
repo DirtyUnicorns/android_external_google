@@ -88,23 +88,10 @@ public final class GlowView extends FrameLayout {
         BlurProvider.BlurResult blurResult = this.mBlurProvider.get(this.mBlurRadius);
         this.mGlowImageCropRegion = blurResult.cropRegion;
         updateGlowImageMatrix();
-        this.mGlowImageViews.forEach(new Consumer(blurResult) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowView$O7UE3OJn3jgHUZXGo46cwtdzlU */
-            private final /* synthetic */ BlurProvider.BlurResult f$1;
-
-            {
-                this.f$1 = r2;
-            }
-
-            public final void accept(Object obj) {
-                GlowView.this.lambda$setBlurredImageOnViews$0$GlowView(this.f$1, (ImageView) obj);
-            }
+        mGlowImageViews.forEach(imageView -> {
+            imageView.setImageDrawable(blurResult.drawable.getConstantState().newDrawable().mutate());
+            imageView.setImageMatrix(this.mGlowImageMatrix);
         });
-    }
-
-    public /* synthetic */ void lambda$setBlurredImageOnViews$0$GlowView(BlurProvider.BlurResult blurResult, ImageView imageView) {
-        imageView.setImageDrawable(blurResult.drawable.getConstantState().newDrawable().mutate());
-        imageView.setImageMatrix(this.mGlowImageMatrix);
     }
 
     private void updateGlowImageMatrix() {
@@ -134,28 +121,13 @@ public final class GlowView extends FrameLayout {
     /* access modifiers changed from: protected */
     public void onSizeChanged(int i, int i2, int i3, int i4) {
         super.onSizeChanged(i, i2, i3, i4);
-        post(new Runnable() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowView$RsiuHu2LuX9WTQjnKF5U72DDI3M */
 
-            public final void run() {
-                GlowView.this.lambda$onSizeChanged$2$GlowView();
-            }
+        post(() -> {
+            updateGlowSizes();
+            post(() -> {
+                setGlowsY(mTranslationY, mMinimumHeightPx, mEdgeLights);
+            });
         });
-    }
-
-    public /* synthetic */ void lambda$onSizeChanged$2$GlowView() {
-        updateGlowSizes();
-        post(new Runnable() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowView$qgRYecX8Ze03PaEEB_cXpBmvLgg */
-
-            public final void run() {
-                GlowView.this.lambda$onSizeChanged$1$GlowView();
-            }
-        });
-    }
-
-    public /* synthetic */ void lambda$onSizeChanged$1$GlowView() {
-        setGlowsY(this.mTranslationY, this.mMinimumHeightPx, this.mEdgeLights);
     }
 
     public void distributeEvenly() {

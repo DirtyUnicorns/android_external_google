@@ -180,24 +180,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
     }
 
-    /* renamed from: processBundle */
-    public void lambda$processBundle$3$NgaUiController(Bundle bundle) {
+    public void processBundle(Bundle bundle) {
         this.mUiHandler.removeCallbacks(this.mSessionTimeout);
+        // TODO: Inspect a little bit more this
         if (Looper.myLooper() != this.mUiHandler.getLooper()) {
-            this.mUiHandler.post(new Runnable(bundle) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$HssoFolpjArD3oJ0eWUFveZO1o */
-                private final /* synthetic */ Bundle f$1;
-
-                {
-                    this.f$1 = r2;
-                }
-
-                public final void run() {
-                    NgaUiController.this.lambda$processBundle$3$NgaUiController(this.f$1);
-                }
-            });
+            mUiHandler.post(() -> processBundle(bundle));
             return;
         }
+
         this.mUiHandler.postDelayed(this.mSessionTimeout, SESSION_TIMEOUT_MS);
         setViewParent();
         logBundle(bundle);

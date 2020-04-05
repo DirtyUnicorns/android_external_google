@@ -328,7 +328,6 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     this.mPendingEdgeLightsBundle = bundle;
                     break;
                 }
-                break;
             case 5:
                 this.mTranscriptionController.setTranscription(bundle.getString("text"), (PendingIntent) bundle.getParcelable("tap_action"));
                 this.mTranscriptionController.setTranscriptionColor(bundle.getInt("text_color", 0));
@@ -508,13 +507,16 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 Log.e("NgaUiController", "Status bar view unavailable!");
                 return;
             }
-            $$Lambda$NgaUiController$s8lD2_RfFPDVfv1R339Z9gcn_QE r8 = new Runnable() {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$s8lD2_RfFPDVfv1R339Z9gcn_QE */
-
-                public final void run() {
-                    NgaUiController.this.lambda$setViewParent$4$NgaUiController();
+            // TODO-FIXME: Investigate whether we need to create a specific class for this or not. And eventually change name.
+            Runnable r8 = new Runnable(){
+            
+                @Override
+                public void run() {
+                    lambda$setViewParent$4$NgaUiController();
+                    
                 }
             };
+
             LayoutInflater from = LayoutInflater.from(this.mContext);
             this.mGlowController = new GlowController(this.mContext, parent, this.mLightnessProvider, new VisibilityListener() {
                 /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$xj20nN5laJ4ty8_3z7U9IZwhTC8 */
@@ -619,7 +621,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         setColorMonitoringState(z);
         if (this.mShowingAssistUi != z) {
             this.mShowingAssistUi = z;
-            ((ScreenDecorations) SysUiServiceProvider.getComponent(this.mContext, ScreenDecorations.class)).lambda$setAssistHintBlocked$2$ScreenDecorations(z);
+            ((ScreenDecorations) SysUiServiceProvider.getComponent(this.mContext, ScreenDecorations.class)).setAssistHintBlocked(z);
             if (this.mShowingAssistUi) {
                 this.mWakeLock.acquire();
                 this.mUiHost.getParent().getViewTreeObserver().addOnComputeInternalInsetsListener(this);
@@ -747,34 +749,11 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             f2 = MathUtils.constrain((-f) / 1.45f, 3.0f, 12.0f);
         }
         OvershootInterpolator overshootInterpolator = new OvershootInterpolator(f2);
-        ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(Float.valueOf(getAnimationProgress(i, this.mLastInvocationProgress)), new Function(overshootInterpolator) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$DTGvgJ_zEX1ElbXk4oyJ9NaA4_s */
-            private final /* synthetic */ OvershootInterpolator f$0;
-
-            {
-                this.f$0 = r1;
-            }
-
-            public final Object apply(Object obj) {
-                return Float.valueOf(Math.min(1.0f, this.f$0.getInterpolation(((Float) obj).floatValue())));
-            }
-        }), 1.0f);
+        
+        ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(Float.valueOf(getAnimationProgress(i, mLastInvocationProgress)), (v) -> Float.valueOf(Math.min(1.0f, overshootInterpolator.getInterpolation(v)))));
         ofFloat.setDuration(600L);
         ofFloat.setStartDelay(1);
-        ofFloat.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(i, overshootInterpolator) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$DLu8tF1pC_pvA3RuQunJD1j7czQ */
-            private final /* synthetic */ int f$1;
-            private final /* synthetic */ OvershootInterpolator f$2;
-
-            {
-                this.f$1 = r2;
-                this.f$2 = r3;
-            }
-
-            public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                NgaUiController.this.lambda$completeInvocation$7$NgaUiController(this.f$1, this.f$2, valueAnimator);
-            }
-        });
+        ofFloat.addUpdateListener(listener -> setProgress(i, overshootInterpolator.getInterpolation((Float)valueAnimator.getAnimatedValue())));
         ofFloat.addListener(new AnimatorListenerAdapter() {
             /* class com.google.android.systemui.assist.uihints.NgaUiController.C15662 */
             private boolean mCancelled = false;
@@ -798,15 +777,16 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$2$wDPTUQdfJQKhQ5xgkiBru4FbWhM */
 
                     public final void run() {
-                        NgaUiController.C15662.this.lambda$onAnimationEnd$0$NgaUiController$2();
+                        lambda$onAnimationEnd$0$NgaUiController$2();
                     }
                 });
             }
 
-            public /* synthetic */ void lambda$onAnimationEnd$0$NgaUiController$2() {
+            public void lambda$onAnimationEnd$0$NgaUiController$2() {
                 NgaUiController.this.resetInvocationProgress();
             }
         });
+
         this.mInvocationAnimator = ofFloat;
         this.mInvocationAnimator.start();
     }
@@ -862,26 +842,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         return ((float) binarySearch) * 0.005f;
     }
 
-    /* renamed from: onDozingChanged */
-    public void lambda$onDozingChanged$8$NgaUiController(boolean z) {
+    public void onDozingChanged(boolean isDozing) {
         if (Looper.myLooper() != this.mUiHandler.getLooper()) {
-            this.mUiHandler.post(new Runnable(z) {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$g6zJZxDgceWwVPUwUV8veP4ra6Y */
-                private final /* synthetic */ boolean f$1;
-
-                {
-                    this.f$1 = r2;
-                }
-
-                public final void run() {
-                    NgaUiController.this.lambda$onDozingChanged$8$NgaUiController(this.f$1);
-                }
-            });
-            return;
-        }
-        this.mGlowController.getScrimController().setIsDozing(z);
-        if (z && this.mShowingAssistUi) {
-            closeNgaUi();
+           this.mUiHandler.post(() -> onDozingChanged(isDozing));
+        } else {
+           this.mGlowController.getScrimController().setIsDozing(isDozing);
+           if (isDozing && this.mShowingAssistUi) {
+              this.closeNgaUi();
+           }
         }
     }
 

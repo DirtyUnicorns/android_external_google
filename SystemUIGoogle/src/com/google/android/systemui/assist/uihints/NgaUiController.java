@@ -507,7 +507,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 Log.e("NgaUiController", "Status bar view unavailable!");
                 return;
             }
-            // TODO-FIXME: Investigate whether we need to create a specific class for this or not. And eventually change name.
+            // TODO: Investigate whether we need to create a specific class for this or not. And eventually change name.
             Runnable r8 = new Runnable(){
             
                 @Override

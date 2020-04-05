@@ -80,18 +80,8 @@ public final class GlowController implements EdgeLightsListener {
         glowView.setGlowsY(i, i, null);
         this.mScrimController = new ScrimController(context, viewGroup, lightnessProvider, visibilityListener, runnable);
         viewGroup.addView(this.mGlowView);
-        this.mGlowView.setOnClickListener(new View.OnClickListener(runnable) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$ixkPkGyv60M5wYmEgyBLwQiO_Gg */
-            private final /* synthetic */ Runnable f$0;
 
-            {
-                this.f$0 = r1;
-            }
-
-            public final void onClick(View view) {
-                this.f$0.run();
-            }
-        });
+        mGlowView.setOnClickListener(l -> runnable.run());
         this.mGlowView.setGlowsY(getMinTranslationY(), getMinTranslationY(), null);
         this.mGlowView.setGlowWidthRatio(getGlowWidthToViewWidth());
     }
@@ -342,20 +332,8 @@ public final class GlowController implements EdgeLightsListener {
         });
         this.mAnimator.setInterpolator(new LinearInterpolator());
         this.mAnimator.setDuration(j);
-        this.mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(this.mGlowView.getBlurRadius(), getBlurRadius()) {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$C0e53S46AzBGKoKkZC0Zr8ygp3Q */
-            private final /* synthetic */ int f$1;
-            private final /* synthetic */ int f$2;
+        mAnimator.addUpdateListener(l -> lambda$animateGlowTranslationY$3$GlowController(mGlowView.getBlurRadius(), getBlurRadius(), valueAnimator));
 
-            {
-                this.f$1 = r2;
-                this.f$2 = r3;
-            }
-
-            public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                GlowController.this.lambda$animateGlowTranslationY$3$GlowController(this.f$1, this.f$2, valueAnimator);
-            }
-        });
         float glowWidthRatio = this.mGlowView.getGlowWidthRatio();
         this.mGlowView.setGlowWidthRatio(glowWidthRatio + ((getGlowWidthToViewWidth() - glowWidthRatio) * 1.0f));
         if (this.mGlowView.getVisibility() != 0) {

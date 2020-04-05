@@ -194,32 +194,7 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
             ArrayList<EdgeLight> arrayList = this.mLights;
             edgeLight2 = arrayList.get(arrayList.indexOf(edgeLight3) - 1);
         }
-        ofFloat.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(f5, f2, edgeLight, edgeLight2, f4, f3, f, regionWidth) {
-            /* class com.google.android.systemui.assist.uihints.edgelights.mode.$$Lambda$FulfillBottom$fp8ggQW3JR0UJvZuTM3dxnC8dqc */
-            private final /* synthetic */ float f$1;
-            private final /* synthetic */ float f$2;
-            private final /* synthetic */ EdgeLight f$3;
-            private final /* synthetic */ EdgeLight f$4;
-            private final /* synthetic */ float f$5;
-            private final /* synthetic */ float f$6;
-            private final /* synthetic */ float f$7;
-            private final /* synthetic */ float f$8;
-
-            {
-                this.f$1 = r2;
-                this.f$2 = r3;
-                this.f$3 = r4;
-                this.f$4 = r5;
-                this.f$5 = r6;
-                this.f$6 = r7;
-                this.f$7 = r8;
-                this.f$8 = r9;
-            }
-
-            public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                FulfillBottom.this.lambda$animateLight$0$FulfillBottom(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5, this.f$6, this.f$7, this.f$8, valueAnimator);
-            }
-        });
+        ofFloat.addUpdateListener(valueAnimator -> lambda$animateLight$0$FulfillBottom(f5, f2, edgeLight, edgeLight2,f4, f3, f, regionWidth, valueAnimator));
         ofFloat.addListener(new AnimatorListenerAdapter() {
             /* class com.google.android.systemui.assist.uihints.edgelights.mode.FulfillBottom.C15721 */
             private boolean mCancelled = false;
@@ -396,5 +371,11 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
         } else {
             return 1000;
         }
+    }
+
+    @Override
+    public void onAudioLevelUpdate(float f, float f2) {
+        // TODO: I couldn't find this method anywhere!
+
     }
 }

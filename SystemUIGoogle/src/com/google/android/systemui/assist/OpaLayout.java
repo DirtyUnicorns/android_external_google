@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -11,11 +12,14 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
@@ -25,6 +29,7 @@ import com.android.systemui.Dependency;
 import com.android.systemui.Interpolators;
 import com.android.systemui.assist.AssistManager;
 import com.android.systemui.recents.OverviewProxyService;
+import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.ButtonInterface;
 import com.android.systemui.statusbar.policy.KeyButtonDrawable;
 import com.android.systemui.statusbar.policy.KeyButtonView;
@@ -154,19 +159,9 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
         skipToStartingValue();
     }
 
+    @Override
     public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
-        this.mHome.setOnLongClickListener(new View.OnLongClickListener(onLongClickListener) {
-            /* class com.google.android.systemui.assist.$$Lambda$OpaLayout$Z3ewuWnWUI4_KJINicZNFqRIG8M */
-            private final /* synthetic */ View.OnLongClickListener f$1;
-
-            {
-                this.f$1 = r2;
-            }
-
-            public final boolean onLongClick(View view) {
-                return OpaLayout.this.lambda$setOnLongClickListener$0$OpaLayout(this.f$1, view);
-            }
-        });
+        mHome.setOnLongClickListener(onLongClickListener);
     }
 
     public /* synthetic */ boolean lambda$setOnLongClickListener$0$OpaLayout(View.OnLongClickListener onLongClickListener, View view) {
@@ -183,129 +178,71 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
         }
     }
 
-    /* JADX WARNING: Code restructure failed: missing block: B:11:0x0020, code lost:
-        if (r0 != 3) goto L_0x00da;
-     */
-    /* Code decompiled incorrectly, please refer to instructions dump. */
-    public boolean onInterceptTouchEvent(android.view.MotionEvent r9) {
-        /*
-            r8 = this;
-            boolean r0 = r8.getOpaEnabled()
-            r1 = 0
-            if (r0 == 0) goto L_0x00da
-            boolean r0 = android.animation.ValueAnimator.areAnimatorsEnabled()
-            if (r0 == 0) goto L_0x00da
-            int r0 = r8.mGestureState
-            if (r0 == 0) goto L_0x0013
-            goto L_0x00da
-        L_0x0013:
-            int r0 = r9.getAction()
-            r2 = 2
-            r3 = 1
-            if (r0 == 0) goto L_0x008e
-            if (r0 == r3) goto L_0x0051
-            if (r0 == r2) goto L_0x0024
-            r9 = 3
-            if (r0 == r9) goto L_0x0051
-            goto L_0x00da
-        L_0x0024:
-            android.content.Context r0 = r8.getContext()
-            float r0 = com.android.systemui.shared.system.QuickStepContract.getQuickStepTouchSlopPx(r0)
-            float r2 = r9.getRawX()
-            int r3 = r8.mTouchDownX
-            float r3 = (float) r3
-            float r2 = r2 - r3
-            float r2 = java.lang.Math.abs(r2)
-            int r2 = (r2 > r0 ? 1 : (r2 == r0 ? 0 : -1))
-            if (r2 > 0) goto L_0x004c
-            float r9 = r9.getRawY()
-            int r2 = r8.mTouchDownY
-            float r2 = (float) r2
-            float r9 = r9 - r2
-            float r9 = java.lang.Math.abs(r9)
-            int r9 = (r9 > r0 ? 1 : (r9 == r0 ? 0 : -1))
-            if (r9 <= 0) goto L_0x00da
-        L_0x004c:
-            r8.abortCurrentGesture()
-            goto L_0x00da
-        L_0x0051:
-            boolean r9 = r8.mDiamondAnimationDelayed
-            if (r9 == 0) goto L_0x0061
-            boolean r9 = r8.mIsPressed
-            if (r9 == 0) goto L_0x008b
-            java.lang.Runnable r9 = r8.mRetract
-            r2 = 200(0xc8, double:9.9E-322)
-            r8.postDelayed(r9, r2)
-            goto L_0x008b
-        L_0x0061:
-            int r9 = r8.mAnimationState
-            if (r9 != r3) goto L_0x0082
-            r2 = 100
-            long r4 = android.os.SystemClock.elapsedRealtime()
-            long r6 = r8.mStartTime
-            long r4 = r4 - r6
-            long r2 = r2 - r4
-            java.lang.Runnable r9 = r8.mRetract
-            r8.removeCallbacks(r9)
-            java.lang.Runnable r9 = r8.mRetract
-            r8.postDelayed(r9, r2)
-            java.lang.Runnable r9 = r8.mDiamondAnimation
-            r8.removeCallbacks(r9)
-            r8.cancelLongPress()
-            return r1
-        L_0x0082:
-            boolean r9 = r8.mIsPressed
-            if (r9 == 0) goto L_0x008b
-            java.lang.Runnable r9 = r8.mRetract
-            r9.run()
-        L_0x008b:
-            r8.mIsPressed = r1
-            goto L_0x00da
-        L_0x008e:
-            float r0 = r9.getRawX()
-            int r0 = (int) r0
-            r8.mTouchDownX = r0
-            float r9 = r9.getRawY()
-            int r9 = (int) r9
-            r8.mTouchDownY = r9
-            android.util.ArraySet<android.animation.Animator> r9 = r8.mCurrentAnimators
-            boolean r9 = r9.isEmpty()
-            if (r9 != 0) goto L_0x00ae
-            int r9 = r8.mAnimationState
-            if (r9 != r2) goto L_0x00ad
-            r8.endCurrentAnimation()
-            r9 = r3
-            goto L_0x00af
-        L_0x00ad:
-            return r1
-        L_0x00ae:
-            r9 = r1
-        L_0x00af:
-            long r4 = android.os.SystemClock.elapsedRealtime()
-            r8.mStartTime = r4
-            r8.mIsPressed = r3
-            java.lang.Runnable r0 = r8.mDiamondAnimation
-            r8.removeCallbacks(r0)
-            java.lang.Runnable r0 = r8.mRetract
-            r8.removeCallbacks(r0)
-            boolean r0 = r8.mDelayTouchFeedback
-            if (r0 == 0) goto L_0x00d5
-            if (r9 == 0) goto L_0x00c8
-            goto L_0x00d5
-        L_0x00c8:
-            r8.mDiamondAnimationDelayed = r3
-            java.lang.Runnable r9 = r8.mDiamondAnimation
-            int r0 = android.view.ViewConfiguration.getTapTimeout()
-            long r2 = (long) r0
-            r8.postDelayed(r9, r2)
-            goto L_0x00da
-        L_0x00d5:
-            r8.mDiamondAnimationDelayed = r1
-            r8.startDiamondAnimation()
-        L_0x00da:
-            return r1
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.google.android.systemui.assist.OpaLayout.onInterceptTouchEvent(android.view.MotionEvent):boolean");
+    // TODO: Clean up this code!
+    public boolean onInterceptTouchEvent(MotionEvent motionEvent) {
+        if (!this.getOpaEnabled()) return false;
+        if (!ValueAnimator.areAnimatorsEnabled()) return false;
+        if (this.mGestureState != 0) {
+            return false;
+        }
+        int n = motionEvent.getAction();
+        if (n != 0) {
+            if (n != 1) {
+                if (n != 2) {
+                    if (n != 3) {
+                        return false;
+                    }
+                } else {
+                    float f = QuickStepContract.getQuickStepTouchSlopPx(this.getContext());
+                    if (!(Math.abs(motionEvent.getRawX() - (float)this.mTouchDownX) > f)) {
+                        if (!(Math.abs(motionEvent.getRawY() - (float)this.mTouchDownY) > f)) return false;
+                    }
+                    this.abortCurrentGesture();
+                    return false;
+                }
+            }
+            if (this.mDiamondAnimationDelayed) {
+                if (this.mIsPressed) {
+                    this.postDelayed(this.mRetract, 200L);
+                }
+            } else {
+                if (this.mAnimationState == 1) {
+                    long l = SystemClock.elapsedRealtime();
+                    long l2 = this.mStartTime;
+                    this.removeCallbacks(this.mRetract);
+                    this.postDelayed(this.mRetract, 100L - (l - l2));
+                    this.removeCallbacks(this.mDiamondAnimation);
+                    this.cancelLongPress();
+                    return false;
+                }
+                if (this.mIsPressed) {
+                    this.mRetract.run();
+                }
+            }
+            this.mIsPressed = false;
+            return false;
+        }
+        this.mTouchDownX = (int)motionEvent.getRawX();
+        this.mTouchDownY = (int)motionEvent.getRawY();
+        if (!this.mCurrentAnimators.isEmpty()) {
+            if (this.mAnimationState != 2) return false;
+            this.endCurrentAnimation();
+            n = 1;
+        } else {
+            n = 0;
+        }
+        this.mStartTime = SystemClock.elapsedRealtime();
+        this.mIsPressed = true;
+        this.removeCallbacks(this.mDiamondAnimation);
+        this.removeCallbacks(this.mRetract);
+        if (this.mDelayTouchFeedback && n == 0) {
+            this.mDiamondAnimationDelayed = true;
+            this.postDelayed(this.mDiamondAnimation, (long)ViewConfiguration.getTapTimeout());
+            return false;
+        }
+        this.mDiamondAnimationDelayed = false;
+        this.startDiamondAnimation();
+        return false;
     }
 
     public void setAccessibilityDelegate(View.AccessibilityDelegate accessibilityDelegate) {

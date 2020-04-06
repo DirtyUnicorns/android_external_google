@@ -9,17 +9,21 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
+
+import com.android.internal.app.AssistUtils;
 import com.android.internal.app.IVoiceInteractionSessionListener;
 import com.android.internal.logging.MetricsLogger;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.systemui.Dependency;
+import com.android.systemui.assist.AssistHandleBehaviorController;
 import com.android.systemui.assist.AssistManager;
 import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.NavigationModeController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.google.android.systemui.assist.uihints.GoogleDefaultUiController;
 import com.google.android.systemui.assist.uihints.NgaUiController;
+
 import java.util.Objects;
 
 public class AssistManagerGoogle extends AssistManager {
@@ -27,6 +31,8 @@ public class AssistManagerGoogle extends AssistManager {
     private final GoogleDefaultUiController mDefaultUiController;
     private boolean mIsGoogleAssistant = false;
     private int mNavigationMode;
+    private DeviceProvisionedController mDeviceProvisionedController;
+
     /* access modifiers changed from: private */
     public boolean mNgaPresent = false;
     /* access modifiers changed from: private */
@@ -50,9 +56,9 @@ public class AssistManagerGoogle extends AssistManager {
         return false;
     }
 
-    public AssistManagerGoogle(DeviceProvisionedController deviceProvisionedController, Context context) {
-        // FIXME: Properly pass these parameters.
-        super(deviceProvisionedController, context, null, null);
+    public AssistManagerGoogle(DeviceProvisionedController deviceProvisionedController, Context context,
+                               AssistUtils assistUtils, AssistHandleBehaviorController assistHandleBehaviorController) {
+        super(deviceProvisionedController, context, assistUtils, assistHandleBehaviorController);
         addOpaEnabledListener(this.mOpaEnabledDispatcher);
         KeyguardUpdateMonitor.getInstance(super.mContext).registerCallback(this.mUserSwitchCallback);
         this.mNgaUiController = new NgaUiController(context);

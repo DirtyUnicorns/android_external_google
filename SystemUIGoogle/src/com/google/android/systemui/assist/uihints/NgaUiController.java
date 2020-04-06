@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -428,7 +429,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     if (string == null) {
                         obj = "NULL";
                     } else {
-                        obj = Integer.valueOf(string.length());
+                        obj = string.length();
                     }
                     objArr[0] = obj;
                     sb.append(String.format("transcription length = %s\n", objArr));
@@ -509,11 +510,11 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             }
             // TODO: Investigate whether we need to create a specific class for this or not. And eventually change name.
             Runnable r8 = new Runnable(){
-            
+
                 @Override
                 public void run() {
                     lambda$setViewParent$4$NgaUiController();
-                    
+
                 }
             };
 
@@ -670,7 +671,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (this.mDidSetParent) {
                 if (!this.mEdgeLightsController.getMode().preventsInvocations()) {
                     boolean z = this.mInvocationInProgress;
-                    int i2 = (f > 1.0f ? 1 : (f == 1.0f ? 0 : -1));
+                    int i2 = (Float.compare(f, 1.0f));
                     if (i2 < 0) {
                         this.mLastInvocationProgress = f;
                         if (!z && f > 0.0f) {
@@ -722,13 +723,15 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     private void setProgress(int i, float f) {
-        this.mInvocationLightsView.onInvocationProgress(f);
+        mInvocationLightsView.onInvocationProgress(
+                mProgressInterpolator.getInterpolation(f));
         this.mGlowController.setInvocationProgress(f);
         this.mGlowController.getScrimController().setInvocationProgress(f);
         this.mPromptView.onInvocationProgress(i, f);
         updateShowingNavBar();
         refresh();
     }
+
 
     private void completeInvocation(int i) {
         if (!this.mNgaPresent) {
@@ -749,13 +752,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             f2 = MathUtils.constrain((-f) / 1.45f, 3.0f, 12.0f);
         }
         OvershootInterpolator overshootInterpolator = new OvershootInterpolator(f2);
-        
-        ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(Float.valueOf(getAnimationProgress(i, mLastInvocationProgress)), (v) -> Float.valueOf(Math.min(1.0f, overshootInterpolator.getInterpolation(v)))));
+
+        ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(getAnimationProgress(i, mLastInvocationProgress), (v) -> Math.min(1.0f, overshootInterpolator.getInterpolation(v))));
         ofFloat.setDuration(600L);
         ofFloat.setStartDelay(1);
-        ofFloat.addUpdateListener(listener -> setProgress(i, overshootInterpolator.getInterpolation((Float)valueAnimator.getAnimatedValue())));
+        ofFloat.addUpdateListener(listener -> {
+            setProgress(i, (float) listener.getAnimatedValue());
+        });
         ofFloat.addListener(new AnimatorListenerAdapter() {
-            /* class com.google.android.systemui.assist.uihints.NgaUiController.C15662 */
             private boolean mCancelled = false;
 
             public void onAnimationCancel(Animator animator) {
@@ -774,7 +778,6 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     Bundle unused = NgaUiController.this.mPendingEdgeLightsBundle = null;
                 }
                 NgaUiController.this.mUiHandler.post(new Runnable() {
-                    /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$2$wDPTUQdfJQKhQ5xgkiBru4FbWhM */
 
                     public final void run() {
                         lambda$onAnimationEnd$0$NgaUiController$2();
@@ -792,7 +795,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     public /* synthetic */ void lambda$completeInvocation$7$NgaUiController(int i, OvershootInterpolator overshootInterpolator, ValueAnimator valueAnimator) {
-        setProgress(i, overshootInterpolator.getInterpolation(((Float) valueAnimator.getAnimatedValue()).floatValue()));
+        setProgress(i, overshootInterpolator.getInterpolation((Float) valueAnimator.getAnimatedValue()));
     }
 
     /* access modifiers changed from: private */
@@ -844,12 +847,12 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     public void onDozingChanged(boolean isDozing) {
         if (Looper.myLooper() != this.mUiHandler.getLooper()) {
-           this.mUiHandler.post(() -> onDozingChanged(isDozing));
+            this.mUiHandler.post(() -> onDozingChanged(isDozing));
         } else {
-           this.mGlowController.getScrimController().setIsDozing(isDozing);
-           if (isDozing && this.mShowingAssistUi) {
-              this.closeNgaUi();
-           }
+            this.mGlowController.getScrimController().setIsDozing(isDozing);
+            if (isDozing && this.mShowingAssistUi) {
+                this.closeNgaUi();
+            }
         }
     }
 
@@ -858,3 +861,4 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         this.mZeroStateIcon.onDensityChanged();
     }
 }
+

@@ -164,10 +164,6 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
         mHome.setOnLongClickListener(onLongClickListener);
     }
 
-    public /* synthetic */ boolean lambda$setOnLongClickListener$0$OpaLayout(View.OnLongClickListener onLongClickListener, View view) {
-        return onLongClickListener.onLongClick(this.mHome);
-    }
-
     public void setOnTouchListener(View.OnTouchListener onTouchListener) {
         this.mHome.setOnTouchListener(onTouchListener);
     }

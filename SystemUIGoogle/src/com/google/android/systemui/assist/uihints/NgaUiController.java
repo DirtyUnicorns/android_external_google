@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -50,26 +51,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class NgaUiController implements AssistManager.UiController, ViewTreeObserver.OnComputeInternalInsetsListener, StatusBarStateController.StateListener, ConfigurationController.ConfigurationListener {
-    private static final long INVOCATION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(3);
-    private static final long SESSION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10);
-    /* access modifiers changed from: private */
-    public static final boolean VERBOSE = (Build.TYPE.toLowerCase(Locale.ROOT).contains("debug") || Build.TYPE.toLowerCase(Locale.ROOT).equals("eng"));
-    private static final PathInterpolator mProgressInterpolator = new PathInterpolator(0.83f, 0.0f, 0.84f, 1.0f);
-    /* access modifiers changed from: private */
+
+    private static long INVOCATION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(3);
+
+    private static long SESSION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10);
+
+    public static boolean VERBOSE = (Build.TYPE.toLowerCase(Locale.ROOT).contains("debug") || Build.TYPE.toLowerCase(Locale.ROOT).equals("eng"));
+    private static PathInterpolator mProgressInterpolator = new PathInterpolator(0.83f, 0.0f, 0.84f, 1.0f);
     public long mColorMonitoringStart = 0;
-    /* access modifiers changed from: private */
-    public final Context mContext;
+    public Context mContext;
     private boolean mDidSetParent = false;
-    /* access modifiers changed from: private */
     public EdgeLightsController mEdgeLightsController;
     private float mFlingVelocity = 0.0f;
-    /* access modifiers changed from: private */
     public GlowController mGlowController;
     private int mGlowVisibility = 8;
     private boolean mHasDarkBackground = false;
-    /* access modifiers changed from: private */
     public boolean mHaveAccurateLuma = false;
-    private ValueAnimator mInvocationAnimator;
+    private ValueAnimator mInvocationAnimator = new ValueAnimator();
     private boolean mInvocationInProgress = false;
     private AssistantInvocationLightsView mInvocationLightsView;
     private boolean mIsMonitoringColor = false;
@@ -78,34 +76,35 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     private boolean mKeyboardRequested = false;
     private float mLastInvocationProgress = 0.0f;
     private long mLastInvocationStartTime = 0;
-    private final LightnessProvider mLightnessProvider = new LightnessProvider(new LightnessListener() {
-        /* class com.google.android.systemui.assist.uihints.NgaUiController.C15651 */
+
+    private LightnessProvider mLightnessProvider = new LightnessProvider(new LightnessListener() {
 
         public void onLightnessUpdate(float f) {
             boolean unused = NgaUiController.VERBOSE;
-            if (NgaUiController.this.mColorMonitoringStart > 0) {
-                long elapsedRealtime = SystemClock.elapsedRealtime() - NgaUiController.this.mColorMonitoringStart;
+            if (mColorMonitoringStart > 0) {
+                long elapsedRealtime = SystemClock.elapsedRealtime() - mColorMonitoringStart;
                 if (NgaUiController.VERBOSE) {
                     Log.d("NgaUiController", "Got lightness update (" + f + ") after " + elapsedRealtime + " ms");
                 }
-                long unused2 = NgaUiController.this.mColorMonitoringStart = 0;
+                long unused2 = mColorMonitoringStart = 0;
             }
             boolean z = true;
-            boolean unused3 = NgaUiController.this.mHaveAccurateLuma = true;
-            NgaUiController.this.mGlowController.setHasMedianLightness(f);
-            NgaUiController.this.mTranscriptionController.setHasAccurateBackground(true);
+            boolean unused3 = mHaveAccurateLuma = true;
+            mGlowController.setHasMedianLightness(f);
+            mTranscriptionController.setHasAccurateBackground(true);
             NgaUiController ngaUiController = NgaUiController.this;
             if (f > NgaUiController.getDarkUiThreshold()) {
                 z = false;
             }
             ngaUiController.setHasDarkBackground(z);
-            NgaUiController.this.refresh();
+            refresh();
         }
     });
-    private ValueAnimator mNavBarAlphaAnimator;
+
+    private ValueAnimator mNavBarAlphaAnimator = new ValueAnimator();
     private float mNavBarDestinationAlpha = -1.0f;
     private boolean mNgaPresent = false;
-    /* access modifiers changed from: private */
+
     public Bundle mPendingEdgeLightsBundle = null;
     private PromptView mPromptView;
     private boolean mScrimVisible = false;
@@ -118,60 +117,57 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     };
     private boolean mShowingAssistUi = false;
     private float mSpeechConfidence = 0.0f;
-    private final TaskStackNotifier mTaskStackNotifier = new TaskStackNotifier();
+    private TaskStackNotifier mTaskStackNotifier = new TaskStackNotifier();
     private PendingIntent mTouchInsidePendingIntent;
     private PendingIntent mTouchOutsidePendingIntent;
-    /* access modifiers changed from: private */
+
     public TranscriptionController mTranscriptionController;
-    /* access modifiers changed from: private */
-    public final Handler mUiHandler = new Handler(Looper.getMainLooper());
-    private final OverlayUiHost mUiHost;
+
+    public Handler mUiHandler = new Handler(Looper.getMainLooper());
+    private OverlayUiHost mUiHost;
     private PowerManager.WakeLock mWakeLock;
     private ZeroStateIconView mZeroStateIcon;
     private PendingIntent mZeroStateIntent = null;
     private boolean mZeroStateRequested = false;
 
-    public static final float getDarkUiThreshold() {
+    public static float getDarkUiThreshold() {
         return 0.4f;
     }
 
-    public /* synthetic */ void lambda$new$0$NgaUiController() {
-        if (this.mShowingAssistUi) {
+    public void lambda$new$0$NgaUiController() {
+        if (mShowingAssistUi) {
             Log.e("NgaUiController", "Timed out");
             closeNgaUi();
             MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(4));
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     public NgaUiController(Context context) {
-        this.mContext = context;
-        this.mUiHost = new OverlayUiHost(context, new Runnable() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$6Tb1SxVcajpw3wCrZyzkldewS60 */
-
+        mContext = context;
+        mUiHost = new OverlayUiHost(context, new Runnable() {
             public final void run() {
-                NgaUiController.this.lambda$new$1$NgaUiController();
+                lambda$new$1$NgaUiController();
             }
         }, new Runnable() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$PbaQdfvr1mXbXqUrwmKEuwHUT4c */
-
             public final void run() {
-                NgaUiController.this.lambda$new$2$NgaUiController();
+                lambda$new$2$NgaUiController();
             }
         });
-        this.mWakeLock = ((PowerManager) context.getSystemService("power")).newWakeLock(805306378, "Assist (NGA)");
+        mWakeLock = ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).newWakeLock(805306378, "Assist (NGA)");
         setViewParent();
-        ((StatusBarStateController) Dependency.get(StatusBarStateController.class)).addCallback(this);
-        ((ConfigurationController) Dependency.get(ConfigurationController.class)).addCallback(this);
+        Dependency.get(StatusBarStateController.class).addCallback(this);
+        Dependency.get(ConfigurationController.class).addCallback(this);
         refresh();
     }
 
-    public /* synthetic */ void lambda$new$1$NgaUiController() {
+    public void lambda$new$1$NgaUiController() {
         closeNgaUi();
         MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(3));
     }
 
-    public /* synthetic */ void lambda$new$2$NgaUiController() {
-        PendingIntent pendingIntent = this.mTouchOutsidePendingIntent;
+    public void lambda$new$2$NgaUiController() {
+        PendingIntent pendingIntent = mTouchOutsidePendingIntent;
         if (pendingIntent != null) {
             try {
                 pendingIntent.send();
@@ -182,14 +178,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     public void processBundle(Bundle bundle) {
-        this.mUiHandler.removeCallbacks(this.mSessionTimeout);
+        mUiHandler.removeCallbacks(mSessionTimeout);
         // TODO: Inspect a little bit more this
-        if (Looper.myLooper() != this.mUiHandler.getLooper()) {
+        if (Looper.myLooper() != mUiHandler.getLooper()) {
             mUiHandler.post(() -> processBundle(bundle));
             return;
         }
 
-        this.mUiHandler.postDelayed(this.mSessionTimeout, SESSION_TIMEOUT_MS);
+        mUiHandler.postDelayed(mSessionTimeout, SESSION_TIMEOUT_MS);
         setViewParent();
         logBundle(bundle);
         String string = bundle.getString("action", "");
@@ -287,88 +283,88 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 float f = bundle.getFloat("volume");
                 float f2 = bundle.getFloat("speech_confidence");
                 if (f2 > 0.0f) {
-                    this.mSpeechConfidence = f2;
+                    mSpeechConfidence = f2;
                 }
-                this.mEdgeLightsController.onAudioLevelUpdate(this.mSpeechConfidence, f);
-                this.mGlowController.onAudioLevelUpdate(this.mSpeechConfidence, f);
+                mEdgeLightsController.onAudioLevelUpdate(mSpeechConfidence, f);
+                mGlowController.onAudioLevelUpdate(mSpeechConfidence, f);
                 break;
             case 2:
                 boolean z = bundle.getBoolean("is_visible", false);
                 int i = bundle.getInt("sysui_color", 0);
                 boolean z2 = bundle.getBoolean("animate_transition", true);
                 boolean z3 = bundle.getBoolean("card_forces_scrim", false);
-                this.mGlowController.setCardVisible(z);
-                this.mGlowController.getScrimController().setCardVisible(z, z2, z3);
-                this.mLightnessProvider.setCardVisible(z, i);
-                this.mTranscriptionController.setCardVisible(z);
+                mGlowController.setCardVisible(z);
+                mGlowController.getScrimController().setCardVisible(z, z2, z3);
+                mLightnessProvider.setCardVisible(z, i);
+                mTranscriptionController.setCardVisible(z);
                 break;
             case 3:
-                boolean z4 = this.mNgaPresent;
-                this.mNgaPresent = bundle.getBoolean("is_available", false);
-                this.mTouchOutsidePendingIntent = (PendingIntent) bundle.getParcelable("touch_outside");
-                this.mTouchInsidePendingIntent = (PendingIntent) bundle.getParcelable("touch_inside");
-                this.mTaskStackNotifier.setIntent((PendingIntent) bundle.getParcelable("task_stack_changed"));
-                if (z4 && !this.mNgaPresent) {
+                boolean z4 = mNgaPresent;
+                mNgaPresent = bundle.getBoolean("is_available", false);
+                mTouchOutsidePendingIntent = bundle.getParcelable("touch_outside");
+                mTouchInsidePendingIntent = bundle.getParcelable("touch_inside");
+                mTaskStackNotifier.setIntent(bundle.getParcelable("task_stack_changed"));
+                if (z4 && !mNgaPresent) {
                     hide();
                     break;
                 }
             case 4:
-                ValueAnimator valueAnimator = this.mInvocationAnimator;
+                ValueAnimator valueAnimator = mInvocationAnimator;
                 if (valueAnimator == null || !valueAnimator.isStarted()) {
-                    if (bundle.get("state").equals("FULL_LISTENING") && !this.mShowingAssistUi) {
-                        this.mInvocationInProgress = true;
+                    if (Objects.equals(bundle.get("state"), "FULL_LISTENING") && !mShowingAssistUi) {
+                        mInvocationInProgress = true;
                         onInvocationProgress(0, 1.0f);
-                        this.mPendingEdgeLightsBundle = bundle;
+                        mPendingEdgeLightsBundle = bundle;
                         break;
                     } else {
-                        this.mPendingEdgeLightsBundle = null;
-                        this.mEdgeLightsController.setState(bundle);
+                        mPendingEdgeLightsBundle = null;
+                        mEdgeLightsController.setState(bundle);
                         break;
                     }
                 } else {
-                    this.mPendingEdgeLightsBundle = bundle;
+                    mPendingEdgeLightsBundle = bundle;
                     break;
                 }
             case 5:
-                this.mTranscriptionController.setTranscription(bundle.getString("text"), (PendingIntent) bundle.getParcelable("tap_action"));
-                this.mTranscriptionController.setTranscriptionColor(bundle.getInt("text_color", 0));
+                mTranscriptionController.setTranscription(bundle.getString("text"), bundle.getParcelable("tap_action"));
+                mTranscriptionController.setTranscriptionColor(bundle.getInt("text_color", 0));
                 break;
             case 6:
-                this.mTranscriptionController.setGreeting(bundle.getString("text"), this.mFlingVelocity, (PendingIntent) bundle.getParcelable("tap_action"));
+                mTranscriptionController.setGreeting(bundle.getString("text"), mFlingVelocity, bundle.getParcelable("tap_action"));
                 break;
             case 7:
-                this.mTranscriptionController.setChips(bundle.getParcelableArrayList("chips"));
+                mTranscriptionController.setChips(bundle.getParcelableArrayList("chips"));
                 break;
             case 8:
-                this.mTranscriptionController.clear(bundle.getBoolean("show_animation", true));
+                mTranscriptionController.clear(bundle.getBoolean("show_animation", true));
                 break;
             case 9:
-                Intent intent = (Intent) bundle.getParcelable("intent");
+                Intent intent = bundle.getParcelable("intent");
                 if (intent != null) {
-                    ((StatusBar) SysUiServiceProvider.getComponent(this.mContext, StatusBar.class)).startActivity(intent, bundle.getBoolean("dismiss_shade"));
+                    SysUiServiceProvider.getComponent(mContext, StatusBar.class).startActivity(intent, bundle.getBoolean("dismiss_shade"));
                     break;
                 } else {
                     Log.e("NgaUiController", "Null intent; cannot start activity");
                     return;
                 }
             case 10:
-                this.mKeyboardRequested = true;
-                this.mKeyboardIntent = (PendingIntent) bundle.getParcelable("tap_action");
+                mKeyboardRequested = true;
+                mKeyboardIntent = bundle.getParcelable("tap_action");
                 refresh();
                 break;
             case 11:
-                this.mKeyboardRequested = false;
-                this.mKeyboardIntent = null;
+                mKeyboardRequested = false;
+                mKeyboardIntent = null;
                 refresh();
                 break;
             case 12:
-                this.mZeroStateRequested = true;
-                this.mZeroStateIntent = (PendingIntent) bundle.getParcelable("tap_action");
+                mZeroStateRequested = true;
+                mZeroStateIntent = bundle.getParcelable("tap_action");
                 refresh();
                 break;
             case 13:
-                this.mZeroStateRequested = false;
-                this.mZeroStateIntent = null;
+                mZeroStateRequested = false;
+                mZeroStateIntent = null;
                 refresh();
                 break;
             default:
@@ -376,7 +372,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 break;
         }
         if (!"config".equals(string)) {
-            this.mNgaPresent = true;
+            mNgaPresent = true;
         }
         refresh();
     }
@@ -388,10 +384,9 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
         return true;
     }
-
-    /* access modifiers changed from: private */
+    
     public void refresh() {
-        if (this.mDidSetParent) {
+        if (mDidSetParent) {
             updateShowingKeyboard();
             updateShowingZeroState();
             updateShowingAssistUi();
@@ -400,18 +395,18 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     private void updateShowingKeyboard() {
-        if (!this.mKeyboardRequested) {
-            this.mKeyboardIcon.hide();
-        } else if (this.mHaveAccurateLuma) {
-            this.mKeyboardIcon.show(this.mKeyboardIntent);
+        if (!mKeyboardRequested) {
+            mKeyboardIcon.hide();
+        } else if (mHaveAccurateLuma) {
+            mKeyboardIcon.show(mKeyboardIntent);
         }
     }
 
     private void updateShowingZeroState() {
-        if (!this.mZeroStateRequested) {
-            this.mZeroStateIcon.hide();
-        } else if (this.mHaveAccurateLuma) {
-            this.mZeroStateIcon.show(this.mZeroStateIntent);
+        if (!mZeroStateRequested) {
+            mZeroStateIcon.hide();
+        } else if (mHaveAccurateLuma) {
+            mZeroStateIcon.show(mZeroStateIntent);
         }
     }
 
@@ -437,9 +432,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     sb.append(String.format("%s =\n", "chips"));
                     ArrayList parcelableArrayList = bundle.getParcelableArrayList("chips");
                     if (parcelableArrayList != null) {
-                        Iterator it = parcelableArrayList.iterator();
-                        while (it.hasNext()) {
-                            Bundle bundle2 = (Bundle) it.next();
+                        for (Object o : parcelableArrayList) {
+                            Bundle bundle2 = (Bundle) o;
                             for (String next2 : bundle2.keySet()) {
                                 sb.append(String.format("\t%s = %s\n", next2, bundle2.get(next2)));
                             }
@@ -451,7 +445,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 }
             }
             sb.append("</UiHintsBundle>");
-            if (!"transcription".equals(bundle.get("action")) || !this.mTranscriptionController.isTranscribing()) {
+            if (!"transcription".equals(bundle.get("action")) || !mTranscriptionController.isTranscribing()) {
                 Log.i("NgaUiController", sb.toString());
             } else {
                 Log.v("NgaUiController", sb.toString());
@@ -459,15 +453,15 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
     }
 
-    /* access modifiers changed from: private */
+    
     public void setHasDarkBackground(boolean z) {
         String str = "dark";
-        if (this.mHasDarkBackground != z) {
-            this.mHasDarkBackground = z;
+        if (mHasDarkBackground != z) {
+            mHasDarkBackground = z;
             if (VERBOSE) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("switching to ");
-                if (!this.mHasDarkBackground) {
+                if (!mHasDarkBackground) {
                     str = "light";
                 }
                 sb.append(str);
@@ -486,64 +480,50 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     private void dispatchHasDarkBackground() {
-        if (this.mDidSetParent) {
-            this.mTranscriptionController.setHasDarkBackground(this.mHasDarkBackground);
-            this.mKeyboardIcon.setHasDarkBackground(this.mHasDarkBackground);
-            this.mPromptView.setHasDarkBackground(this.mHasDarkBackground);
-            this.mKeyboardIcon.setHasDarkBackground(this.mHasDarkBackground);
-            this.mZeroStateIcon.setHasDarkBackground(this.mHasDarkBackground);
+        if (mDidSetParent) {
+            mTranscriptionController.setHasDarkBackground(mHasDarkBackground);
+            mKeyboardIcon.setHasDarkBackground(mHasDarkBackground);
+            mPromptView.setHasDarkBackground(mHasDarkBackground);
+            mKeyboardIcon.setHasDarkBackground(mHasDarkBackground);
+            mZeroStateIcon.setHasDarkBackground(mHasDarkBackground);
         }
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View}
-     arg types: [int, android.view.ViewGroup, int]
-     candidates:
-      ClspMth{android.view.LayoutInflater.inflate(org.xmlpull.v1.XmlPullParser, android.view.ViewGroup, boolean):android.view.View}
-      ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
     private void setViewParent() {
-        if (!this.mDidSetParent) {
-            ViewGroup parent = this.mUiHost.getParent();
+        if (!mDidSetParent) {
+            ViewGroup parent = mUiHost.getParent();
             if (parent == null) {
                 Log.e("NgaUiController", "Status bar view unavailable!");
                 return;
             }
-            // TODO: Investigate whether we need to create a specific class for this or not. And eventually change name.
-            Runnable r8 = new Runnable(){
+            // TODO: Investigate whether we need to create a specific class for or not. And eventually change name.
+            Runnable r8 = () -> lambda$setViewParent$4$NgaUiController();
 
-                @Override
-                public void run() {
-                    lambda$setViewParent$4$NgaUiController();
+            LayoutInflater from = LayoutInflater.from(mContext);
+            mGlowController = new GlowController(mContext, parent, mLightnessProvider, new VisibilityListener() {
 
-                }
-            };
-
-            LayoutInflater from = LayoutInflater.from(this.mContext);
-            this.mGlowController = new GlowController(this.mContext, parent, this.mLightnessProvider, new VisibilityListener() {
-                /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$xj20nN5laJ4ty8_3z7U9IZwhTC8 */
-
-                public final void onVisibilityChanged(int i) {
-                    NgaUiController.this.lambda$setViewParent$5$NgaUiController(i);
+                public void onVisibilityChanged(int i) {
+                    lambda$setViewParent$5$NgaUiController(i);
                 }
             }, r8);
-            this.mInvocationLightsView = (AssistantInvocationLightsView) from.inflate(R.layout.invocation_lights, parent, false);
-            this.mInvocationLightsView.setGoogleAssistant(true);
-            parent.addView(this.mInvocationLightsView);
-            this.mEdgeLightsController = new EdgeLightsController(this.mContext, parent);
-            this.mEdgeLightsController.addListener(this.mGlowController);
-            this.mTranscriptionController = new TranscriptionController(this.mContext, parent, r8);
-            this.mTranscriptionController.setListener(this.mGlowController.getScrimController());
-            this.mKeyboardIcon = (KeyboardIconView) from.inflate(R.layout.keyboard_icon, parent, false);
-            parent.addView(this.mKeyboardIcon);
-            this.mZeroStateIcon = (ZeroStateIconView) LayoutInflater.from(this.mContext).inflate(R.layout.zerostate_icon, parent, false);
-            parent.addView(this.mZeroStateIcon);
-            this.mPromptView = (PromptView) from.inflate(R.layout.assist_prompt, parent, false);
-            parent.addView(this.mPromptView);
-            this.mUiHost.addMarginListener(this.mTranscriptionController);
-            this.mUiHost.addMarginListener(this.mKeyboardIcon);
-            this.mUiHost.addMarginListener(this.mZeroStateIcon);
-            this.mUiHost.addMarginListener(this.mPromptView);
-            this.mDidSetParent = true;
+            mInvocationLightsView = (AssistantInvocationLightsView) from.inflate(R.layout.invocation_lights, parent, false);
+            mInvocationLightsView.setGoogleAssistant(true);
+            parent.addView(mInvocationLightsView);
+            mEdgeLightsController = new EdgeLightsController(mContext, parent);
+            mEdgeLightsController.addListener(mGlowController);
+            mTranscriptionController = new TranscriptionController(mContext, parent, r8);
+            mTranscriptionController.setListener(mGlowController.getScrimController());
+            mKeyboardIcon = (KeyboardIconView) from.inflate(R.layout.keyboard_icon, parent, false);
+            parent.addView(mKeyboardIcon);
+            mZeroStateIcon = (ZeroStateIconView) LayoutInflater.from(mContext).inflate(R.layout.zerostate_icon, parent, false);
+            parent.addView(mZeroStateIcon);
+            mPromptView = (PromptView) from.inflate(R.layout.assist_prompt, parent, false);
+            parent.addView(mPromptView);
+            mUiHost.addMarginListener(mTranscriptionController);
+            mUiHost.addMarginListener(mKeyboardIcon);
+            mUiHost.addMarginListener(mZeroStateIcon);
+            mUiHost.addMarginListener(mPromptView);
+            mDidSetParent = true;
             dispatchHasDarkBackground();
             if (VERBOSE) {
                 Log.v("NgaUiController", "Added UI");
@@ -551,8 +531,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
     }
 
-    public /* synthetic */ void lambda$setViewParent$4$NgaUiController() {
-        PendingIntent pendingIntent = this.mTouchInsidePendingIntent;
+    public void lambda$setViewParent$4$NgaUiController() {
+        PendingIntent pendingIntent = mTouchInsidePendingIntent;
         if (pendingIntent != null) {
             try {
                 pendingIntent.send();
@@ -566,96 +546,100 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(2));
     }
 
-    public /* synthetic */ void lambda$setViewParent$5$NgaUiController(int i) {
-        boolean isScrimVisible = this.mGlowController.isScrimVisible();
-        if (this.mScrimVisible != isScrimVisible) {
-            this.mScrimVisible = isScrimVisible;
+    public void lambda$setViewParent$5$NgaUiController(int i) {
+        boolean isScrimVisible = mGlowController.isScrimVisible();
+        if (mScrimVisible != isScrimVisible) {
+            mScrimVisible = isScrimVisible;
             refresh();
         }
-        if (this.mGlowVisibility != i) {
-            this.mGlowVisibility = i;
+        if (mGlowVisibility != i) {
+            mGlowVisibility = i;
             refresh();
         }
     }
 
     private void closeNgaUi() {
-        ((AssistManager) Dependency.get(AssistManager.class)).hideAssist();
+        Dependency.get(AssistManager.class).hideAssist();
         hide();
     }
 
     public void hide() {
-        ValueAnimator valueAnimator = this.mInvocationAnimator;
+        ValueAnimator valueAnimator = mInvocationAnimator;
         if (valueAnimator != null && valueAnimator.isStarted()) {
-            this.mInvocationAnimator.cancel();
+            mInvocationAnimator.cancel();
         }
-        this.mInvocationInProgress = false;
-        this.mTranscriptionController.clear(false);
-        this.mEdgeLightsController.setState(new Gone());
-        this.mPendingEdgeLightsBundle = null;
-        this.mPromptView.disable();
-        this.mZeroStateRequested = false;
-        this.mKeyboardRequested = false;
+        mInvocationInProgress = false;
+        mTranscriptionController.clear(false);
+        mEdgeLightsController.setState(new Gone());
+        mPendingEdgeLightsBundle = null;
+        mPromptView.disable();
+        mZeroStateRequested = false;
+        mKeyboardRequested = false;
         refresh();
     }
 
     private void setColorMonitoringState(boolean z) {
-        if (this.mIsMonitoringColor != z) {
-            if (!z || this.mGlowController.getScrimSurfaceControllerHandle() != null) {
-                this.mIsMonitoringColor = z;
-                if (this.mIsMonitoringColor) {
-                    int rotatedHeight = (DisplayUtils.getRotatedHeight(this.mContext) - ((int) this.mContext.getResources().getDimension(R.dimen.transcription_space_bottom_margin))) - DisplayUtils.convertSpToPx(20.0f, this.mContext);
-                    Rect rect = new Rect(0, rotatedHeight - DisplayUtils.convertDpToPx(160.0f, this.mContext), DisplayUtils.getRotatedWidth(this.mContext), rotatedHeight);
-                    this.mColorMonitoringStart = SystemClock.elapsedRealtime();
-                    this.mLightnessProvider.enableColorMonitoring(true, rect, this.mGlowController.getScrimSurfaceControllerHandle());
+        if (mIsMonitoringColor != z) {
+            if (!z || mGlowController.getScrimSurfaceControllerHandle() != null) {
+                mIsMonitoringColor = z;
+                if (mIsMonitoringColor) {
+                    int rotatedHeight = (DisplayUtils.getRotatedHeight(mContext) -
+                            ((int) mContext.getResources().getDimension(R.dimen.transcription_space_bottom_margin))) -
+                            DisplayUtils.convertSpToPx(20.0f, mContext);
+                    Rect rect = new Rect(0, rotatedHeight - DisplayUtils.convertDpToPx(160.0f, mContext), DisplayUtils.getRotatedWidth(mContext), rotatedHeight);
+                    mColorMonitoringStart = SystemClock.elapsedRealtime();
+                    mLightnessProvider.enableColorMonitoring(true, rect, mGlowController.getScrimSurfaceControllerHandle());
                     return;
                 }
-                this.mLightnessProvider.enableColorMonitoring(false, null, null);
-                this.mHaveAccurateLuma = false;
-                this.mGlowController.getScrimController().onLightnessInvalidated();
-                this.mTranscriptionController.setHasAccurateBackground(false);
+                mLightnessProvider.enableColorMonitoring(false, null, null);
+                mHaveAccurateLuma = false;
+                mGlowController.getScrimController().onLightnessInvalidated();
+                mTranscriptionController.setHasAccurateBackground(false);
             }
         }
     }
 
     private void updateShowingAssistUi() {
-        boolean z = !(this.mEdgeLightsController.getMode() instanceof Gone) || this.mGlowController.isVisible() || this.mInvocationInProgress || this.mKeyboardIcon.getVisibility() == 0 || this.mZeroStateIcon.getVisibility() == 0;
+        boolean z = !(mEdgeLightsController.getMode() instanceof Gone) || mGlowController.isVisible()
+                || mInvocationInProgress || mKeyboardIcon.getVisibility() == View.VISIBLE || mZeroStateIcon.getVisibility() == View.VISIBLE;
         setColorMonitoringState(z);
-        if (this.mShowingAssistUi != z) {
-            this.mShowingAssistUi = z;
-            ((ScreenDecorations) SysUiServiceProvider.getComponent(this.mContext, ScreenDecorations.class)).setAssistHintBlocked(z);
-            if (this.mShowingAssistUi) {
-                this.mWakeLock.acquire();
-                this.mUiHost.getParent().getViewTreeObserver().addOnComputeInternalInsetsListener(this);
+        if (mShowingAssistUi != z) {
+            mShowingAssistUi = z;
+            SysUiServiceProvider.getComponent(mContext, ScreenDecorations.class).setAssistHintBlocked(z);
+            if (mShowingAssistUi) {
+                mWakeLock.acquire();
+                mUiHost.getParent().getViewTreeObserver().addOnComputeInternalInsetsListener(this);
             } else {
-                this.mWakeLock.release();
-                this.mUiHost.getParent().getViewTreeObserver().removeOnComputeInternalInsetsListener(this);
-                ValueAnimator valueAnimator = this.mInvocationAnimator;
+                mWakeLock.release();
+                mUiHost.getParent().getViewTreeObserver().removeOnComputeInternalInsetsListener(this);
+                ValueAnimator valueAnimator = mInvocationAnimator;
                 if (valueAnimator != null && valueAnimator.isStarted()) {
-                    this.mInvocationAnimator.cancel();
+                    mInvocationAnimator.cancel();
                 }
             }
         }
-        this.mUiHost.setAssistState(this.mShowingAssistUi, this.mEdgeLightsController.getMode() instanceof FullListening);
+        mEdgeLightsController.getMode();
+        mUiHost.setAssistState( mShowingAssistUi, false);
     }
 
     private void updateShowingNavBar() {
-        EdgeLightsView.Mode mode = this.mEdgeLightsController.getMode();
-        boolean z = !this.mInvocationInProgress && ((mode instanceof Gone) || (mode instanceof HalfListening));
+        EdgeLightsView.Mode mode = mEdgeLightsController.getMode();
+        boolean z = !mInvocationInProgress && ((mode instanceof Gone) || (mode instanceof HalfListening));
         float f = z ? 1.0f : 0.0f;
-        NavigationBarView defaultNavigationBarView = ((NavigationBarController) Dependency.get(NavigationBarController.class)).getDefaultNavigationBarView();
+        NavigationBarView defaultNavigationBarView = Dependency.get(NavigationBarController.class).getDefaultNavigationBarView();
         if (defaultNavigationBarView != null) {
             float alpha = defaultNavigationBarView.getAlpha();
-            if (f != alpha && f != this.mNavBarDestinationAlpha) {
-                this.mNavBarDestinationAlpha = f;
-                ValueAnimator valueAnimator = this.mNavBarAlphaAnimator;
+            if (f != alpha && f != mNavBarDestinationAlpha) {
+                mNavBarDestinationAlpha = f;
+                ValueAnimator valueAnimator = mNavBarAlphaAnimator;
                 if (valueAnimator != null) {
                     valueAnimator.cancel();
                 }
-                this.mNavBarAlphaAnimator = ObjectAnimator.ofFloat(defaultNavigationBarView, View.ALPHA, alpha, f).setDuration((long) Math.abs((f - alpha) * 80.0f));
+                mNavBarAlphaAnimator = ObjectAnimator.ofFloat(defaultNavigationBarView, View.ALPHA, alpha, f).setDuration((long) Math.abs((f - alpha) * 80.0f));
                 if (z) {
-                    this.mNavBarAlphaAnimator.setStartDelay(80);
+                    mNavBarAlphaAnimator.setStartDelay(80);
                 }
-                this.mNavBarAlphaAnimator.start();
+                mNavBarAlphaAnimator.start();
             }
         }
     }
@@ -664,36 +648,36 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         return i == 2 ? f * 0.95f : mProgressInterpolator.getInterpolation(f * 0.8f);
     }
 
-    public void onInvocationProgress(int i, float f) {
-        ValueAnimator valueAnimator = this.mInvocationAnimator;
+    public void onInvocationProgress(int type, float progress) {
+        ValueAnimator valueAnimator = mInvocationAnimator;
         if (valueAnimator == null || !valueAnimator.isStarted()) {
             setViewParent();
-            if (this.mDidSetParent) {
-                if (!this.mEdgeLightsController.getMode().preventsInvocations()) {
-                    boolean z = this.mInvocationInProgress;
-                    int i2 = (Float.compare(f, 1.0f));
+            if (mDidSetParent) {
+                if (!mEdgeLightsController.getMode().preventsInvocations()) {
+                    boolean z = mInvocationInProgress;
+                    int i2 = (Float.compare(progress, 1.0f));
                     if (i2 < 0) {
-                        this.mLastInvocationProgress = f;
-                        if (!z && f > 0.0f) {
-                            this.mLastInvocationStartTime = SystemClock.uptimeMillis();
+                        mLastInvocationProgress = progress;
+                        if (!z && progress > 0.0f) {
+                            mLastInvocationStartTime = SystemClock.uptimeMillis();
                         }
-                        this.mInvocationInProgress = f > 0.0f && i2 < 0;
-                        if (!this.mInvocationInProgress) {
-                            this.mPromptView.disable();
-                        } else if (f < 0.9f && SystemClock.uptimeMillis() - this.mLastInvocationStartTime > 200) {
-                            this.mPromptView.enable();
+                        mInvocationInProgress = progress > 0.0f;
+                        if (!mInvocationInProgress) {
+                            mPromptView.disable();
+                        } else if (progress < 0.9f && SystemClock.uptimeMillis() - mLastInvocationStartTime > 200) {
+                            mPromptView.enable();
                         }
-                        setProgress(i, getAnimationProgress(i, f));
+                        setProgress(type, getAnimationProgress(type, progress));
                     } else {
-                        ValueAnimator valueAnimator2 = this.mInvocationAnimator;
+                        ValueAnimator valueAnimator2 = mInvocationAnimator;
                         if (valueAnimator2 == null || !valueAnimator2.isStarted()) {
-                            this.mFlingVelocity = 0.0f;
-                            completeInvocation(i);
+                            mFlingVelocity = 0.0f;
+                            completeInvocation(type);
                         }
                     }
-                    logInvocationProgressMetrics(i, f, z);
+                    logInvocationProgressMetrics(type, progress, z);
                 } else if (VERBOSE) {
-                    Log.v("NgaUiController", "ignoring invocation; mode is " + this.mEdgeLightsController.getMode().getClass().getSimpleName());
+                    Log.v("NgaUiController", "ignoring invocation; mode is " + mEdgeLightsController.getMode().getClass().getSimpleName());
                 }
             }
         } else {
@@ -703,50 +687,54 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     private static void logInvocationProgressMetrics(int i, float f, boolean z) {
         if (!z && f > 0.0f) {
-            MetricsLogger.action(new LogMaker(1716).setType(4).setSubtype(((AssistManager) Dependency.get(AssistManager.class)).toLoggingSubType(i)));
+            MetricsLogger.action(new LogMaker(1716).setType(4).setSubtype(Dependency.get(AssistManager.class).toLoggingSubType(i)));
         }
         if (z && f == 0.0f) {
             MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(1));
         }
     }
 
-    public void onGestureCompletion(float f) {
+    public void onGestureCompletion(float velocity) {
         setViewParent();
-        if (this.mDidSetParent) {
-            if (!this.mEdgeLightsController.getMode().preventsInvocations()) {
-                this.mFlingVelocity = f;
+        if (mDidSetParent) {
+            if (!mEdgeLightsController.getMode().preventsInvocations()) {
+                mFlingVelocity = velocity;
                 completeInvocation(1);
             } else if (VERBOSE) {
-                Log.v("NgaUiController", "ignoring invocation; mode is " + this.mEdgeLightsController.getMode().getClass().getSimpleName());
+                Log.v("NgaUiController", "ignoring invocation; mode is " + mEdgeLightsController.getMode().getClass().getSimpleName());
             }
         }
     }
 
-    private void setProgress(int i, float f) {
+    private void setProgress(int type, float progress) {
         mInvocationLightsView.onInvocationProgress(
-                mProgressInterpolator.getInterpolation(f));
-        this.mGlowController.setInvocationProgress(f);
-        this.mGlowController.getScrimController().setInvocationProgress(f);
-        this.mPromptView.onInvocationProgress(i, f);
+                mProgressInterpolator.getInterpolation(progress));
+        mGlowController.setInvocationProgress(progress);
+        mGlowController.getScrimController().setInvocationProgress(progress);
+        mPromptView.onInvocationProgress(type, progress);
         updateShowingNavBar();
         refresh();
     }
 
 
+    public void lambda$completeInvocation$7$NgaUiController(int i, OvershootInterpolator overshootInterpolator, ValueAnimator valueAnimator) {
+        setProgress(i, overshootInterpolator.getInterpolation((Float) valueAnimator.getAnimatedValue()));
+    }
+
     private void completeInvocation(int i) {
-        if (!this.mNgaPresent) {
+        if (!mNgaPresent) {
             setProgress(i, 0.0f);
             resetInvocationProgress();
             return;
         }
-        this.mUiHandler.removeCallbacks(this.mSessionTimeout);
-        this.mUiHandler.postDelayed(this.mSessionTimeout, INVOCATION_TIMEOUT_MS);
-        this.mPromptView.disable();
-        ValueAnimator valueAnimator = this.mInvocationAnimator;
+        mUiHandler.removeCallbacks(mSessionTimeout);
+        mUiHandler.postDelayed(mSessionTimeout, INVOCATION_TIMEOUT_MS);
+        mPromptView.disable();
+        ValueAnimator valueAnimator = mInvocationAnimator;
         if (valueAnimator != null && valueAnimator.isStarted()) {
-            this.mInvocationAnimator.cancel();
+            mInvocationAnimator.cancel();
         }
-        float f = this.mFlingVelocity;
+        float f = mFlingVelocity;
         float f2 = 3.0f;
         if (f != 0.0f) {
             f2 = MathUtils.constrain((-f) / 1.45f, 3.0f, 12.0f);
@@ -754,74 +742,65 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         OvershootInterpolator overshootInterpolator = new OvershootInterpolator(f2);
 
         ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(getAnimationProgress(i, mLastInvocationProgress), (v) -> Math.min(1.0f, overshootInterpolator.getInterpolation(v))));
-        ofFloat.setDuration(600L);
+        ofFloat.setDuration(600);
         ofFloat.setStartDelay(1);
         ofFloat.addUpdateListener(listener -> {
-            setProgress(i, (float) listener.getAnimatedValue());
+            setProgress(i, overshootInterpolator.getInterpolation((Float) listener.getAnimatedValue()));
         });
         ofFloat.addListener(new AnimatorListenerAdapter() {
             private boolean mCancelled = false;
 
             public void onAnimationCancel(Animator animator) {
                 super.onAnimationCancel(animator);
-                this.mCancelled = true;
+                mCancelled = true;
             }
 
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                if (!this.mCancelled) {
-                    if (NgaUiController.this.mPendingEdgeLightsBundle != null) {
-                        NgaUiController.this.mEdgeLightsController.setState(NgaUiController.this.mPendingEdgeLightsBundle);
+                if (!mCancelled) {
+                    if (mPendingEdgeLightsBundle != null) {
+                        mEdgeLightsController.setState(mPendingEdgeLightsBundle);
                     } else {
-                        NgaUiController.this.mEdgeLightsController.setState(new FullListening(NgaUiController.this.mContext));
+                        mEdgeLightsController.setState(new FullListening(mContext));
                     }
-                    Bundle unused = NgaUiController.this.mPendingEdgeLightsBundle = null;
+                    Bundle unused = mPendingEdgeLightsBundle = null;
                 }
-                NgaUiController.this.mUiHandler.post(new Runnable() {
-
-                    public final void run() {
-                        lambda$onAnimationEnd$0$NgaUiController$2();
-                    }
-                });
+                mUiHandler.post(() -> lambda$onAnimationEnd$0$NgaUiController$2());
             }
 
             public void lambda$onAnimationEnd$0$NgaUiController$2() {
-                NgaUiController.this.resetInvocationProgress();
+                resetInvocationProgress();
             }
         });
 
-        this.mInvocationAnimator = ofFloat;
-        this.mInvocationAnimator.start();
+        mInvocationAnimator = ofFloat;
+        mInvocationAnimator.start();
     }
 
-    public /* synthetic */ void lambda$completeInvocation$7$NgaUiController(int i, OvershootInterpolator overshootInterpolator, ValueAnimator valueAnimator) {
-        setProgress(i, overshootInterpolator.getInterpolation((Float) valueAnimator.getAnimatedValue()));
-    }
-
-    /* access modifiers changed from: private */
+    
     public void resetInvocationProgress() {
-        this.mInvocationInProgress = false;
-        this.mInvocationLightsView.hide();
-        this.mLastInvocationProgress = 0.0f;
-        this.mGlowController.getScrimController().setInvocationProgress(0.0f);
+        mInvocationInProgress = false;
+        mInvocationLightsView.hide();
+        mLastInvocationProgress = 0.0f;
+        mGlowController.getScrimController().setInvocationProgress(0.0f);
         refresh();
     }
 
     public void onComputeInternalInsets(ViewTreeObserver.InternalInsetsInfo internalInsetsInfo) {
         internalInsetsInfo.setTouchableInsets(3);
         Region region = new Region();
-        if (this.mKeyboardIcon.getVisibility() == 0) {
+        if (mKeyboardIcon.getVisibility() == View.VISIBLE) {
             Rect rect = new Rect();
-            this.mKeyboardIcon.getBoundsOnScreen(rect);
+            mKeyboardIcon.getBoundsOnScreen(rect);
             region.union(rect);
         }
-        if (this.mZeroStateIcon.getVisibility() == 0) {
+        if (mZeroStateIcon.getVisibility() == View.VISIBLE) {
             Rect rect2 = new Rect();
-            this.mZeroStateIcon.getBoundsOnScreen(rect2);
+            mZeroStateIcon.getBoundsOnScreen(rect2);
             region.union(rect2);
         }
-        Rect touchableRegion = this.mGlowController.getTouchableRegion();
-        Rect touchableRegion2 = this.mTranscriptionController.getTouchableRegion();
+        Rect touchableRegion = mGlowController.getTouchableRegion();
+        Rect touchableRegion2 = mTranscriptionController.getTouchableRegion();
         if (touchableRegion != null && touchableRegion2 != null) {
             touchableRegion.top = Integer.min(touchableRegion.top, touchableRegion2.top);
             region.union(touchableRegion);
@@ -846,19 +825,19 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     public void onDozingChanged(boolean isDozing) {
-        if (Looper.myLooper() != this.mUiHandler.getLooper()) {
-            this.mUiHandler.post(() -> onDozingChanged(isDozing));
+        if (Looper.myLooper() != mUiHandler.getLooper()) {
+            mUiHandler.post(() -> onDozingChanged(isDozing));
         } else {
-            this.mGlowController.getScrimController().setIsDozing(isDozing);
-            if (isDozing && this.mShowingAssistUi) {
-                this.closeNgaUi();
+            mGlowController.getScrimController().setIsDozing(isDozing);
+            if (isDozing && mShowingAssistUi) {
+                closeNgaUi();
             }
         }
     }
 
     public void onDensityOrFontScaleChanged() {
-        this.mKeyboardIcon.onDensityChanged();
-        this.mZeroStateIcon.onDensityChanged();
+        mKeyboardIcon.onDensityChanged();
+        mZeroStateIcon.onDensityChanged();
     }
 }
 

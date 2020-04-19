@@ -18,11 +18,11 @@ public class ScreenStateAdjustment extends Adjustment {
         }
 
         public void onFinishedGoingToSleep(int i) {
-            ScreenStateAdjustment.this.onSensitivityChanged();
+            onSensitivityChanged();
         }
 
         public void onStartedWakingUp() {
-            ScreenStateAdjustment.this.onSensitivityChanged();
+            onSensitivityChanged();
         }
     }
 

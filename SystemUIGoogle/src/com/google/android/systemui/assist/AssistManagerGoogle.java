@@ -48,7 +48,7 @@ public class AssistManagerGoogle extends AssistManager {
         /* class com.google.android.systemui.assist.AssistManagerGoogle.C15411 */
 
         public void onUserSwitching(int i) {
-            AssistManagerGoogle.this.mOpaEnabledReceiver.onUserSwitching(i);
+            mOpaEnabledReceiver.onUserSwitching(i);
         }
     };
 
@@ -68,7 +68,7 @@ public class AssistManagerGoogle extends AssistManager {
             /* class com.google.android.systemui.assist.$$Lambda$AssistManagerGoogle$k2PE_qPUIsmOHQ2_0jIJz3IebA */
 
             public final void onNavigationModeChanged(int i) {
-                AssistManagerGoogle.this.lambda$new$0$AssistManagerGoogle(i);
+                lambda$new$0$AssistManagerGoogle(i);
             }
         });
     }
@@ -93,11 +93,11 @@ public class AssistManagerGoogle extends AssistManager {
             }
 
             public void onSetUiHints(Bundle bundle) {
-                if (AssistManagerGoogle.this.mNgaUiController.extractNga(bundle) != AssistManagerGoogle.this.mNgaPresent) {
-                    AssistManagerGoogle.this.checkAssistantStatus(bundle);
+                if (mNgaUiController.extractNga(bundle) != mNgaPresent) {
+                    checkAssistantStatus(bundle);
                 }
-                if (AssistManagerGoogle.this.mNgaPresent) {
-                    AssistManagerGoogle.this.mUiController.processBundle(bundle);
+                if (mNgaPresent) {
+                    mUiController.processBundle(bundle);
                 } else {
                     Log.e("AssistManagerGoogle", "Got a uiHints bundle, but NGA is not active");
                 }

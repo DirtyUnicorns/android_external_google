@@ -15,11 +15,11 @@ public class PowerState extends Gate {
         }
 
         public void onFinishedGoingToSleep(int i) {
-            PowerState.this.notifyListener();
+            notifyListener();
         }
 
         public void onStartedWakingUp() {
-            PowerState.this.notifyListener();
+            notifyListener();
         }
     }
 

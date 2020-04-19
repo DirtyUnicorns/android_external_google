@@ -75,10 +75,10 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
                 /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15431 */
 
                 public void onAnimationEnd(Animator animator) {
-                    int unused = LockscreenOpaLayout.this.mGestureState = 1;
+                    int unused = mGestureState = 1;
                     LockscreenOpaLayout lockscreenOpaLayout = LockscreenOpaLayout.this;
                     AnimatorSet unused2 = lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
-                    LockscreenOpaLayout.this.mGestureAnimatorSet.setCurrentPlayTime(0);
+                    mGestureAnimatorSet.setCurrentPlayTime(0);
                 }
             });
             this.mGestureAnimatorSet.start();
@@ -132,10 +132,10 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
             /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15442 */
 
             public void onAnimationEnd(Animator animator) {
-                LockscreenOpaLayout.this.mCurrentAnimators.clear();
-                LockscreenOpaLayout.this.skipToStartingValue();
-                int unused = LockscreenOpaLayout.this.mGestureState = 0;
-                AnimatorSet unused2 = LockscreenOpaLayout.this.mGestureAnimatorSet = null;
+                mCurrentAnimators.clear();
+                skipToStartingValue();
+                int unused = mGestureState = 0;
+                AnimatorSet unused2 = mGestureAnimatorSet = null;
             }
         });
         return arraySet;
@@ -151,10 +151,10 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
             /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15453 */
 
             public void onAnimationEnd(Animator animator) {
-                LockscreenOpaLayout.this.mCurrentAnimators.clear();
-                AnimatorSet unused = LockscreenOpaLayout.this.mGestureAnimatorSet = null;
-                int unused2 = LockscreenOpaLayout.this.mGestureState = 0;
-                LockscreenOpaLayout.this.skipToStartingValue();
+                mCurrentAnimators.clear();
+                AnimatorSet unused = mGestureAnimatorSet = null;
+                int unused2 = mGestureState = 0;
+                skipToStartingValue();
             }
         });
         return arraySet;
@@ -180,7 +180,7 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
                         /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15464 */
 
                         public void onAnimationEnd(Animator animator) {
-                            LockscreenOpaLayout.this.startRetractAnimation();
+                            startRetractAnimation();
                         }
                     });
                     return;
@@ -238,15 +238,15 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
                     public void onAnimationEnd(Animator animator) {
                         LockscreenOpaLayout lockscreenOpaLayout = LockscreenOpaLayout.this;
                         AnimatorSet unused = lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
-                        LockscreenOpaLayout.this.mGestureAnimatorSet.removeAllListeners();
-                        LockscreenOpaLayout.this.mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
+                        mGestureAnimatorSet.removeAllListeners();
+                        mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
                             /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15475.C15481 */
 
                             public void onAnimationEnd(Animator animator) {
-                                LockscreenOpaLayout.this.startCollapseAnimation();
+                                startCollapseAnimation();
                             }
                         });
-                        LockscreenOpaLayout.this.mGestureAnimatorSet.end();
+                        mGestureAnimatorSet.end();
                     }
                 });
                 return;
@@ -259,7 +259,7 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
                     /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15496 */
 
                     public void onAnimationEnd(Animator animator) {
-                        LockscreenOpaLayout.this.startCollapseAnimation();
+                        startCollapseAnimation();
                     }
                 });
                 if (!this.mGestureAnimatorSet.isStarted()) {

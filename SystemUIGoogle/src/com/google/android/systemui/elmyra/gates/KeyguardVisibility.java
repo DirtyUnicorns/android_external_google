@@ -15,7 +15,7 @@ public class KeyguardVisibility extends Gate {
         }
 
         public void onKeyguardShowingChanged() {
-            KeyguardVisibility.this.notifyListener();
+            notifyListener();
         }
     }
 

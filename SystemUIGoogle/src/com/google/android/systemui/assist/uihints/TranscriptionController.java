@@ -183,7 +183,7 @@ public class TranscriptionController implements ConfigurationController.Configur
             //         }
 
             //         public final Object apply(Object obj) {
-            //             return TranscriptionController.this.lambda$setState$3$TranscriptionController(this.f$1, (Void) obj);
+            //             return lambda$setState$3$TranscriptionController(this.f$1, (Void) obj);
             //         }
             //     }, MoreExecutors.directExecutor());
             }
@@ -217,7 +217,7 @@ public class TranscriptionController implements ConfigurationController.Configur
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$KKdRQ8kRnXrWPunS0MBIwBRXepo */
 
             public final void onClick(View view) {
-                TranscriptionController.this.lambda$setUpViews$4$TranscriptionController(view);
+                lambda$setUpViews$4$TranscriptionController(view);
             }
         });
         this.mViewMap.put(State.TRANSCRIPTION, transcriptionView);
@@ -226,7 +226,7 @@ public class TranscriptionController implements ConfigurationController.Configur
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionController$DHMbRsTm4tBz9fnxjeGTYGOM9tg */
 
             public final void onClick(View view) {
-                TranscriptionController.this.lambda$setUpViews$5$TranscriptionController(view);
+                lambda$setUpViews$5$TranscriptionController(view);
             }
         });
         this.mViewMap.put(State.GREETING, greetingView);

@@ -15,10 +15,10 @@ public class TelephonyActivity extends Gate {
         }
 
         public void onCallStateChanged(int i, String str) {
-            boolean access$000 = TelephonyActivity.this.isCallBlocked(i);
-            if (access$000 != TelephonyActivity.this.mIsCallBlocked) {
-                TelephonyActivity.this.mIsCallBlocked = access$000;
-                TelephonyActivity.this.notifyListener();
+            boolean access$000 = isCallBlocked(i);
+            if (access$000 != mIsCallBlocked) {
+                mIsCallBlocked = access$000;
+                notifyListener();
             }
         }
     }

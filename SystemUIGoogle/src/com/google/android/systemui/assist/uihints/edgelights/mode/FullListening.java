@@ -225,11 +225,11 @@ public final class FullListening implements EdgeLightsView.Mode {
 
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                if (FullListening.this.mAnimator == animator) {
-                    Animator unused = FullListening.this.mAnimator = null;
+                if (mAnimator == animator) {
+                    Animator unused = mAnimator = null;
                 }
                 if (!this.mCancelled) {
-                    FullListening.this.updateStateAndAnimation();
+                    updateStateAndAnimation();
                 }
             }
         };

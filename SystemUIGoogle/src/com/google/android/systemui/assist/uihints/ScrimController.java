@@ -194,8 +194,8 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
                 public void onAnimationEnd(Animator animator) {
                     super.onAnimationEnd(animator);
                     if (!this.mCancelled) {
-                        ScrimController.this.mLightnessProvider.setMuted(false);
-                        ScrimController.this.setVisibility(8);
+                        mLightnessProvider.setMuted(false);
+                        setVisibility(8);
                     }
                 }
             });
@@ -241,7 +241,7 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
             /* class com.google.android.systemui.assist.uihints.$$Lambda$ScrimController$55tqo6T7cBCnmVcDXpkt5aUf8 */
 
             public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                ScrimController.this.lambda$createRelativeAlphaAnimator$1$ScrimController(valueAnimator);
+                lambda$createRelativeAlphaAnimator$1$ScrimController(valueAnimator);
             }
         });
         return duration;
@@ -265,7 +265,7 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
 
                 public void onAnimationEnd(Animator animator) {
                     super.onAnimationEnd(animator);
-                    ScrimController.this.setAlphaAnimator(null);
+                    setAlphaAnimator(null);
                 }
             });
             this.mAlphaAnimator.start();

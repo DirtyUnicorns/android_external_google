@@ -22,8 +22,8 @@ public class PowerSaveState extends Gate {
         }
 
         public void onReceive(Context context, Intent intent) {
-            PowerSaveState.this.refreshStatus();
-            PowerSaveState.this.notifyListener();
+            refreshStatus();
+            notifyListener();
         }
     }
 

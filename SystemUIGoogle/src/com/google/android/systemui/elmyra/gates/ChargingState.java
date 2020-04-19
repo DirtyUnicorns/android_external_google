@@ -15,7 +15,7 @@ public class ChargingState extends TransientGate {
         }
 
         public void onReceive(Context context, Intent intent) {
-            ChargingState.this.block();
+            block();
         }
     }
 

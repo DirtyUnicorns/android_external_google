@@ -17,9 +17,9 @@ public class SystemKeyPress extends TransientGate {
         }
 
         public void handleSystemKey(int i) {
-            for (int i2 : SystemKeyPress.this.mBlockingKeys) {
+            for (int i2 : mBlockingKeys) {
                 if (i2 == i) {
-                    SystemKeyPress.this.block();
+                    block();
                     return;
                 }
             }

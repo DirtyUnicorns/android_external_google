@@ -47,14 +47,14 @@ final class OverlappedElementController {
                 /* class com.google.android.systemui.assist.uihints.C1559xc48e7d7 */
 
                 public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    OverlappedElementController.this.lambda$setAlpha$0$OverlappedElementController(valueAnimator);
+                    lambda$setAlpha$0$OverlappedElementController(valueAnimator);
                 }
             });
             this.mAnimator.addListener(new AnimatorListenerAdapter() {
                 /* class com.google.android.systemui.assist.uihints.OverlappedElementController.C15671 */
 
                 public void onAnimationEnd(Animator animator) {
-                    ValueAnimator unused = OverlappedElementController.this.mAnimator = null;
+                    ValueAnimator unused = mAnimator = null;
                 }
             });
             this.mAnimator.start();

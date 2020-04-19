@@ -50,13 +50,13 @@ public class OpaEnabledReceiver {
                 Settings.Secure.putIntForUser(context.getContentResolver(), "systemui.google.opa_enabled", intent.getBooleanExtra("OPA_ENABLED", false) ? 1 : 0, -2);
             } else if (intent.getAction().equals("com.google.android.systemui.OPA_USER_ENABLED")) {
                 try {
-                    OpaEnabledReceiver.this.mLockSettings.setBoolean("systemui.google.opa_user_enabled", intent.getBooleanExtra("OPA_USER_ENABLED", false), -2);
+                    mLockSettings.setBoolean("systemui.google.opa_user_enabled", intent.getBooleanExtra("OPA_USER_ENABLED", false), -2);
                 } catch (RemoteException e) {
                     Log.e("OpaEnabledReceiver", "RemoteException on OPA_USER_ENABLED", e);
                 }
             }
-            OpaEnabledReceiver.this.updateOpaEnabledState(context);
-            OpaEnabledReceiver.this.dispatchOpaEnabledState(context);
+            updateOpaEnabledState(context);
+            dispatchOpaEnabledState(context);
         }
     }
 

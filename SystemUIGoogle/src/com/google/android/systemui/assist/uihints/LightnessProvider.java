@@ -21,11 +21,11 @@ public final class LightnessProvider {
 
         // FIXME
         public /* synthetic */ void lambdaLightnessProvider(float f) {
-            if (LightnessProvider.this.mMuted) {
+            if (mMuted) {
                 return;
             }
-            if (!LightnessProvider.this.mCardVisible || LightnessProvider.this.mColorMode == 0) {
-                LightnessProvider.this.mListener.onLightnessUpdate(f);
+            if (!mCardVisible || mColorMode == 0) {
+                mListener.onLightnessUpdate(f);
             }
         }
     };

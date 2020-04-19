@@ -18,9 +18,9 @@ public class VrMode extends Gate {
         }
 
         public void onVrStateChanged(boolean z) {
-            if (z != VrMode.this.mInVrMode) {
-                VrMode.this.mInVrMode = z;
-                VrMode.this.notifyListener();
+            if (z != mInVrMode) {
+                mInVrMode = z;
+                notifyListener();
             }
         }
     }

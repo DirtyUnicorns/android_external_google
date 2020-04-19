@@ -40,7 +40,7 @@ public class AwareDialogPreferenceBase extends CustomDialogPreferenceCompat {
     private void init() {
         setWidgetLayoutResource(R.layout.preference_widget_info);
         (mHelper = new AwareHelper(getContext())).register( uri ->
-                AwareDialogPreferenceBase.this.updatePreference() );
+                updatePreference() );
     }
 
     protected boolean isAvailable() {

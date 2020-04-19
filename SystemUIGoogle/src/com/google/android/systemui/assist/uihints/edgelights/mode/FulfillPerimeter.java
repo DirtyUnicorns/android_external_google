@@ -87,10 +87,10 @@ public final class FulfillPerimeter implements EdgeLightsView.Mode {
 
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                if (FulfillPerimeter.this.mNextMode == null) {
-                    boolean unused = FulfillPerimeter.this.mDisappearing = false;
+                if (mNextMode == null) {
+                    boolean unused = mDisappearing = false;
                     animatorSet.start();
-                } else if (FulfillPerimeter.this.mNextMode != null) {
+                } else if (mNextMode != null) {
                     // FIXME: Wrong approach on handler(s)
                     new Handler().postDelayed(() -> edgeLightsView2.commitModeTransition(mNextMode), 500);
                 }

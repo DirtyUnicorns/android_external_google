@@ -71,7 +71,7 @@ public final class GlowController implements EdgeLightsListener {
             /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$pRUOKgBpKNbCOCs2BtGayinrRI */
 
             public final void onNavigationModeChanged(int i) {
-                GlowController.this.lambda$new$0$GlowController(i);
+                lambda$new$0$GlowController(i);
             }
         });
         this.mGlowView = (GlowView) LayoutInflater.from(context).inflate(R.layout.glow_view, viewGroup, false);
@@ -315,18 +315,18 @@ public final class GlowController implements EdgeLightsListener {
             /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$KJ4xLkdL203Fm1c4oyb2UQ5GB5Y */
 
             public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                GlowController.this.lambda$animateGlowTranslationY$2$GlowController(valueAnimator);
+                lambda$animateGlowTranslationY$2$GlowController(valueAnimator);
             }
         });
         this.mAnimator.addListener(new AnimatorListenerAdapter() {
             /* class com.google.android.systemui.assist.uihints.GlowController.C15621 */
 
             public void onAnimationEnd(Animator animator) {
-                ValueAnimator unused = GlowController.this.mAnimator = null;
-                if (GlowState.GONE.equals(GlowController.this.getState())) {
-                    GlowController.this.removeGlow();
+                ValueAnimator unused = mAnimator = null;
+                if (GlowState.GONE.equals(getState())) {
+                    removeGlow();
                 } else {
-                    GlowController.this.maybeAnimateForSpeechConfidence();
+                    maybeAnimateForSpeechConfidence();
                 }
             }
         });

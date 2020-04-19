@@ -97,22 +97,22 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.OpaLayout.C15511 */
 
             public void run() {
-                OpaLayout.this.cancelCurrentAnimation();
-                OpaLayout.this.startRetractAnimation();
+                cancelCurrentAnimation();
+                startRetractAnimation();
             }
         };
         this.mOverviewProxyListener = new OverviewProxyService.OverviewProxyListener() {
             /* class com.google.android.systemui.assist.OpaLayout.C15522 */
 
             public void onConnectionChanged(boolean z) {
-                OpaLayout.this.updateOpaLayout();
+                updateOpaLayout();
             }
         };
         this.mDiamondAnimation = new Runnable() {
             /* class com.google.android.systemui.assist.$$Lambda$OpaLayout$FW1rmJcZbiemVKFJwNyO1Lz2ero */
 
             public final void run() {
-                OpaLayout.this.lambda$new$1$OpaLayout();
+                lambda$new$1$OpaLayout();
             }
         };
     }
@@ -278,7 +278,7 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.$$Lambda$qadRDAXGXctZjQfVlEtWjxSCCE */
 
             public final void run() {
-                OpaLayout.this.getOpaEnabled();
+                getOpaEnabled();
             }
         });
     }
@@ -372,11 +372,11 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.OpaLayout.C15533 */
 
             public void onAnimationCancel(Animator animator) {
-                OpaLayout.this.mCurrentAnimators.clear();
+                mCurrentAnimators.clear();
             }
 
             public void onAnimationEnd(Animator animator) {
-                OpaLayout.this.startLineAnimation();
+                startLineAnimation();
             }
         });
         return arraySet;
@@ -411,8 +411,8 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.OpaLayout.C15544 */
 
             public void onAnimationEnd(Animator animator) {
-                OpaLayout.this.mCurrentAnimators.clear();
-                OpaLayout.this.skipToStartingValue();
+                mCurrentAnimators.clear();
+                skipToStartingValue();
             }
         });
         return arraySet;
@@ -481,8 +481,8 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.OpaLayout.C15555 */
 
             public void onAnimationEnd(Animator animator) {
-                OpaLayout.this.mCurrentAnimators.clear();
-                OpaLayout.this.skipToStartingValue();
+                mCurrentAnimators.clear();
+                skipToStartingValue();
             }
         });
         return arraySet;
@@ -515,11 +515,11 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
             /* class com.google.android.systemui.assist.OpaLayout.C15566 */
 
             public void onAnimationEnd(Animator animator) {
-                OpaLayout.this.startCollapseAnimation();
+                startCollapseAnimation();
             }
 
             public void onAnimationCancel(Animator animator) {
-                OpaLayout.this.mCurrentAnimators.clear();
+                mCurrentAnimators.clear();
             }
         });
         return arraySet;
@@ -730,7 +730,7 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
                 /* class com.google.android.systemui.assist.OpaLayout.C15577 */
 
                 public void onAnimationEnd(Animator animator) {
-                    OpaLayout.this.startCollapseAnimation();
+                    startCollapseAnimation();
                 }
             });
             this.mGestureLineSet.play(translationObjectAnimatorY).with(scaleObjectAnimator3).with(OpaUtils.getTranslationObjectAnimatorY(this.mBlue, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_bg), this.mBlue.getY() + OpaUtils.getDeltaDiamondPositionBottomY(this.mResources), 350)).with(OpaUtils.getTranslationObjectAnimatorY(this.mYellow, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_ry), this.mYellow.getY() + OpaUtils.getDeltaDiamondPositionRightY(), 350)).with(OpaUtils.getTranslationObjectAnimatorY(this.mGreen, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_bg), this.mGreen.getY() + OpaUtils.getDeltaDiamondPositionTopY(this.mResources), 350));
@@ -740,7 +740,7 @@ public class OpaLayout extends FrameLayout implements ButtonInterface, FeedbackE
                 /* class com.google.android.systemui.assist.OpaLayout.C15588 */
 
                 public void onAnimationEnd(Animator animator) {
-                    OpaLayout.this.startCollapseAnimation();
+                    startCollapseAnimation();
                 }
             });
             this.mGestureLineSet.play(translationObjectAnimatorX).with(scaleObjectAnimator).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_bg), this.mBlue.getX() + OpaUtils.getDeltaDiamondPositionLeftX(this.mResources), 350)).with(OpaUtils.getTranslationObjectAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_ry), this.mYellow.getX() + OpaUtils.getDeltaDiamondPositionBottomX(), 350)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_line_x_trans_bg), this.mGreen.getX() + OpaUtils.getDeltaDiamondPositionRightX(this.mResources), 350));

@@ -17,9 +17,9 @@ public class UsbState extends TransientGate {
 
         public void onReceive(Context context, Intent intent) {
             boolean booleanExtra = intent.getBooleanExtra("connected", false);
-            if (booleanExtra != UsbState.this.mUsbConnected) {
-                UsbState.this.mUsbConnected = booleanExtra;
-                UsbState.this.block();
+            if (booleanExtra != mUsbConnected) {
+                mUsbConnected = booleanExtra;
+                block();
             }
         }
     }

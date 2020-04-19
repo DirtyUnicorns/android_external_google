@@ -13,11 +13,11 @@ public class TaskStackNotifier {
         /* class com.google.android.systemui.assist.uihints.TaskStackNotifier.C15701 */
 
         public void onTaskMovedToFront(ActivityManager.RunningTaskInfo runningTaskInfo) {
-            TaskStackNotifier.this.sendIntent();
+            sendIntent();
         }
 
         public void onTaskCreated(int i, ComponentName componentName) {
-            TaskStackNotifier.this.sendIntent();
+            sendIntent();
         }
     };
     private boolean mListenerRegistered = false;

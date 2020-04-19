@@ -38,7 +38,7 @@ public class KeyguardProximity extends Gate {
 
         public void onSensorChanged(SensorEvent sensorEvent) {
             boolean z = false;
-            if (sensorEvent.values[0] < KeyguardProximity.this.mProximityThreshold) {
+            if (sensorEvent.values[0] < mProximityThreshold) {
                 z = true;
             }
             if (mIsListening && z != mProximityBlocked) {

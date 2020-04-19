@@ -157,7 +157,7 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
         public void updateDrawState(TextPaint textPaint) {
             textPaint.baselineShift -= this.mShift;
             textPaint.setAlpha(this.mAlpha);
-            GreetingView.this.invalidate();
+            invalidate();
         }
 
         /* access modifiers changed from: package-private */
@@ -168,7 +168,7 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
                 /* class com.google.android.systemui.assist.uihints.$$Lambda$GreetingView$StaggeredSpan$22yc2yUxbFF2pvbaLdFyZnZnGH4 */
 
                 public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    GreetingView.StaggeredSpan.this.lambda$initAnimator$0$GreetingView$StaggeredSpan(valueAnimator);
+                    lambda$initAnimator$0$GreetingView$StaggeredSpan(valueAnimator);
                 }
             });
             ofFloat.setDuration(400L);
@@ -179,7 +179,7 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
                 /* class com.google.android.systemui.assist.uihints.$$Lambda$GreetingView$StaggeredSpan$EPImxE3HXNOzfVNqeE9slHPh5Ys */
 
                 public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    GreetingView.StaggeredSpan.this.lambda$initAnimator$1$GreetingView$StaggeredSpan(valueAnimator);
+                    lambda$initAnimator$1$GreetingView$StaggeredSpan(valueAnimator);
                 }
             });
             ofFloat2.setDuration(100L);
@@ -188,11 +188,11 @@ public class GreetingView extends TextView implements TranscriptionController.Tr
         }
 
         public /* synthetic */ void lambda$initAnimator$0$GreetingView$StaggeredSpan(ValueAnimator valueAnimator) {
-            this.mShift = (int) (((float) GreetingView.this.START_DELTA) * ((Float) valueAnimator.getAnimatedValue()).floatValue());
+            this.mShift = (int) (((float) START_DELTA) * ((Float) valueAnimator.getAnimatedValue()).floatValue());
         }
 
         public /* synthetic */ void lambda$initAnimator$1$GreetingView$StaggeredSpan(ValueAnimator valueAnimator) {
-            this.mAlpha = (int) (((Float) valueAnimator.getAnimatedValue()).floatValue() * GreetingView.this.mMaxAlpha);
+            this.mAlpha = (int) (((Float) valueAnimator.getAnimatedValue()).floatValue() * mMaxAlpha);
         }
     }
 }

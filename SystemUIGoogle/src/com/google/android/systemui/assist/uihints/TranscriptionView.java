@@ -134,7 +134,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
             /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionView$Qv69LoHEhmJSkqbPe36IZfPgiA */
 
             public final void run() {
-                TranscriptionView.this.lambda$hide$0$TranscriptionView();
+                lambda$hide$0$TranscriptionView();
             }
         };
         if (!z) {
@@ -348,12 +348,12 @@ public class TranscriptionView extends TextView implements TranscriptionControll
 
         /* access modifiers changed from: package-private */
         public ValueAnimator createAnimator() {
-            float measureText = TranscriptionView.this.getPaint().measureText(TranscriptionView.this.mTranscriptionBuilder.toString());
-            this.mStartX = TranscriptionView.this.getX();
-            this.mDistance = TranscriptionView.this.getFullyVisibleDistance(measureText) - this.mStartX;
-            TranscriptionView.this.updateColor();
-            long adaptiveDuration = TranscriptionView.this.getAdaptiveDuration(Math.abs(this.mDistance), (float) TranscriptionView.this.mDisplayWidthPx);
-            long access$500 = measureText > ((float) TranscriptionView.this.mDisplayWidthPx) - TranscriptionView.this.getX() ? TranscriptionView.this.getFadeInDurationMs() + adaptiveDuration : adaptiveDuration;
+            float measureText = getPaint().measureText(mTranscriptionBuilder.toString());
+            this.mStartX = getX();
+            this.mDistance = getFullyVisibleDistance(measureText) - this.mStartX;
+            updateColor();
+            long adaptiveDuration = getAdaptiveDuration(Math.abs(this.mDistance), (float) mDisplayWidthPx);
+            long access$500 = measureText > ((float) mDisplayWidthPx) - getX() ? getFadeInDurationMs() + adaptiveDuration : adaptiveDuration;
             float f = this.mDistance * (((float) access$500) / ((float) adaptiveDuration));
             float f2 = this.mStartX;
             ValueAnimator duration = ValueAnimator.ofFloat(f2, f2 + f).setDuration(access$500);
@@ -365,11 +365,11 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         public void onAnimationUpdate(ValueAnimator valueAnimator) {
             float floatValue = ((Float) valueAnimator.getAnimatedValue()).floatValue();
             if (Math.abs(floatValue - this.mStartX) < Math.abs(this.mDistance)) {
-                TranscriptionView.this.setX(floatValue);
-                TranscriptionView.this.updateColor();
+                setX(floatValue);
+                updateColor();
             }
             mSpans.forEach(span -> span.setCurrentFraction(valueAnimator.getAnimatedFraction()));
-            TranscriptionView.this.invalidate();
+            invalidate();
         }
     }
 
@@ -385,7 +385,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         }
 
         public int getSize(Paint paint, CharSequence charSequence, int i, int i2, Paint.FontMetricsInt fontMetricsInt) {
-            return (int) Math.ceil((double) TranscriptionView.this.getPaint().measureText(charSequence, 0, charSequence.length()));
+            return (int) Math.ceil((double) getPaint().measureText(charSequence, 0, charSequence.length()));
         }
 
         public void draw(Canvas canvas, CharSequence charSequence, int i, int i2, float f, int i3, int i4, int i5, Paint paint) {

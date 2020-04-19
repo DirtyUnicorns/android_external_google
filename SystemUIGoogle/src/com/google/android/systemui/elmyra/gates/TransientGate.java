@@ -15,8 +15,8 @@ abstract class TransientGate extends Gate {
         }
 
         public void run() {
-            TransientGate.this.mIsBlocking = false;
-            TransientGate.this.notifyListener();
+            mIsBlocking = false;
+            notifyListener();
         }
     }
 

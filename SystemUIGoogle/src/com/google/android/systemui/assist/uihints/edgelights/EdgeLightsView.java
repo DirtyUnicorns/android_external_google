@@ -202,7 +202,7 @@ public class EdgeLightsView extends View {
             /* class com.google.android.systemui.assist.uihints.edgelights.$$Lambda$EdgeLightsView$VdVujPZ2gFciRhgbRZTMFCQZNQ */
 
             public final void accept(Object obj) {
-                EdgeLightsView.this.lambda$commitModeTransition$2$EdgeLightsView((EdgeLightsListener) obj);
+                lambda$commitModeTransition$2$EdgeLightsView((EdgeLightsListener) obj);
             }
         });
         this.mAssistInvocationLights.forEach($$Lambda$EdgeLightsView$4tzYB8xooL0BcgRnRG7YnRnlnWk.INSTANCE);

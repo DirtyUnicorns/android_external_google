@@ -18,12 +18,12 @@ public class ElmyraServiceProxy extends Service {
         }
 
         public void registerGestureListener(IBinder iBinder, IBinder iBinder2) {
-            ElmyraServiceProxy.this.checkPermission();
+            checkPermission();
             try {
-                for (int size = ElmyraServiceProxy.this.mElmyraServiceListeners.size() - 1; size >= 0; size--) {
-                    IElmyraServiceListener listener = ((ElmyraServiceListener) ElmyraServiceProxy.this.mElmyraServiceListeners.get(size)).getListener();
+                for (int size = mElmyraServiceListeners.size() - 1; size >= 0; size--) {
+                    IElmyraServiceListener listener = ((ElmyraServiceListener) mElmyraServiceListeners.get(size)).getListener();
                     if (listener == null) {
-                        ElmyraServiceProxy.this.mElmyraServiceListeners.remove(size);
+                        mElmyraServiceListeners.remove(size);
                     } else {
                         listener.setListener(iBinder, iBinder2);
                     }
@@ -32,33 +32,33 @@ public class ElmyraServiceProxy extends Service {
         }
 
         public void registerServiceListener(IBinder iBinder, IBinder iBinder2) {
-            ElmyraServiceProxy.this.checkPermission();
+            checkPermission();
             if (iBinder2 == null) {
                 int i = 0;
                 while (true) {
                     int i2 = i;
-                    if (i2 >= ElmyraServiceProxy.this.mElmyraServiceListeners.size()) {
+                    if (i2 >= mElmyraServiceListeners.size()) {
                         return;
                     }
-                    if (iBinder.equals(((ElmyraServiceListener) ElmyraServiceProxy.this.mElmyraServiceListeners.get(i2)).getToken())) {
-                        ((ElmyraServiceListener) ElmyraServiceProxy.this.mElmyraServiceListeners.get(i2)).unlinkToDeath();
-                        ElmyraServiceProxy.this.mElmyraServiceListeners.remove(i2);
+                    if (iBinder.equals(((ElmyraServiceListener) mElmyraServiceListeners.get(i2)).getToken())) {
+                        ((ElmyraServiceListener) mElmyraServiceListeners.get(i2)).unlinkToDeath();
+                        mElmyraServiceListeners.remove(i2);
                         return;
                     }
                     i = i2 + 1;
                 }
             } else {
-                ElmyraServiceProxy.this.mElmyraServiceListeners.add(new ElmyraServiceListener(iBinder, IElmyraServiceListener.Stub.asInterface(iBinder2)));
+                mElmyraServiceListeners.add(new ElmyraServiceListener(iBinder, IElmyraServiceListener.Stub.asInterface(iBinder2)));
             }
         }
 
         public void triggerAction() {
-            ElmyraServiceProxy.this.checkPermission();
+            checkPermission();
             try {
-                for (int size = ElmyraServiceProxy.this.mElmyraServiceListeners.size() - 1; size >= 0; size--) {
-                    IElmyraServiceListener listener = ((ElmyraServiceListener) ElmyraServiceProxy.this.mElmyraServiceListeners.get(size)).getListener();
+                for (int size = mElmyraServiceListeners.size() - 1; size >= 0; size--) {
+                    IElmyraServiceListener listener = ((ElmyraServiceListener) mElmyraServiceListeners.get(size)).getListener();
                     if (listener == null) {
-                        ElmyraServiceProxy.this.mElmyraServiceListeners.remove(size);
+                        mElmyraServiceListeners.remove(size);
                     } else {
                         listener.triggerAction();
                     }

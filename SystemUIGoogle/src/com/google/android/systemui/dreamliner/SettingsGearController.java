@@ -28,7 +28,7 @@ public class SettingsGearController extends SimpleOnGestureListener implements O
     GestureDetector mGestureDetector;
     private final Runnable mHideGearRunnable = new Runnable() {
         public final void run() {
-            SettingsGearController.this.hideGear();
+            hideGear();
         }
     };
     @VisibleForTesting
@@ -46,7 +46,7 @@ public class SettingsGearController extends SimpleOnGestureListener implements O
         this.mSettingsGear = imageView;
         this.mSettingsGear.setOnClickListener(new OnClickListener() {
             public final void onClick(View view) {
-                SettingsGearController.this.lambda$new$0$SettingsGearController(view);
+                lambda$new$0$SettingsGearController(view);
             }
         });
         this.mKeyguardUpdateMonitor = keyguardUpdateMonitor;
@@ -123,7 +123,7 @@ public class SettingsGearController extends SimpleOnGestureListener implements O
             this.mSettingsGear.removeCallbacks(this.mHideGearRunnable);
             this.mSettingsGear.animate().setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN).alpha(0.0f).withEndAction(new Runnable() {
                 public final void run() {
-                    SettingsGearController.this.lambda$hideGear$1$SettingsGearController();
+                    lambda$hideGear$1$SettingsGearController();
                 }
             }).start();
         }

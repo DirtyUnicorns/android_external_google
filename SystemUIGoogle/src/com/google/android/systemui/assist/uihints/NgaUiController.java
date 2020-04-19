@@ -112,7 +112,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         /* class com.google.android.systemui.assist.uihints.$$Lambda$NgaUiController$SvtRUSOonqfg0GbAnB7121JGCls */
 
         public final void run() {
-            NgaUiController.this.lambda$new$0$NgaUiController();
+            lambda$new$0$NgaUiController();
         }
     };
     private boolean mShowingAssistUi = false;

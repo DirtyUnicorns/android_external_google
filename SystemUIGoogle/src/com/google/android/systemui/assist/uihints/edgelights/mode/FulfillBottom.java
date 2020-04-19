@@ -206,9 +206,9 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
 
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                FulfillBottom.this.mLightAnimators.remove(ofFloat);
+                mLightAnimators.remove(ofFloat);
                 if (!this.mCancelled) {
-                    FulfillBottom.this.animateLight(edgeLight3, !z2, 0.0f);
+                    animateLight(edgeLight3, !z2, 0.0f);
                 }
             }
         });
@@ -271,9 +271,9 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
 
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
-                FulfillBottom.this.mEdgeLightsView.setVisibility(8);
-                if (FulfillBottom.this.mNextMode != null && !this.mCancelled) {
-                    FulfillBottom.this.mEdgeLightsView.commitModeTransition(FulfillBottom.this.mNextMode);
+                mEdgeLightsView.setVisibility(8);
+                if (mNextMode != null && !this.mCancelled) {
+                    mEdgeLightsView.commitModeTransition(mNextMode);
                 }
             }
 
@@ -294,15 +294,15 @@ public final class FulfillBottom implements EdgeLightsView.Mode {
             /* class com.google.android.systemui.assist.uihints.edgelights.mode.$$Lambda$FulfillBottom$wORCirM__9ie4nYAWvSBrm9e_A */
 
             public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                FulfillBottom.this.lambda$createFadeOutAnimator$1$FulfillBottom(valueAnimator);
+                lambda$createFadeOutAnimator$1$FulfillBottom(valueAnimator);
             }
         });
         ofFloat.addListener(new AnimatorListenerAdapter() {
             /* class com.google.android.systemui.assist.uihints.edgelights.mode.FulfillBottom.C15743 */
 
             public void onAnimationEnd(Animator animator) {
-                FulfillBottom.this.mEdgeLightsView.setAssistLights(new EdgeLight[0]);
-                FulfillBottom.this.mEdgeLightsView.setAlpha(1.0f);
+                mEdgeLightsView.setAssistLights(new EdgeLight[0]);
+                mEdgeLightsView.setAlpha(1.0f);
             }
         });
         return ofFloat;

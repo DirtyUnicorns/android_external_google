@@ -7,6 +7,7 @@ import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.statusbar.phone.StatusBar;
 import java.util.ArrayList;
 
+// FIXME: Bloody decompiler and its z-booleans.
 public class OpaEnabledDispatcher implements OpaEnabledListener {
     public void onOpaEnabledReceived(Context context, boolean z, boolean z2, boolean z3) {
         dispatchUnchecked(context, (z && z2) || UserManager.isDeviceInDemoMode(context));
@@ -16,8 +17,10 @@ public class OpaEnabledDispatcher implements OpaEnabledListener {
         StatusBar statusBar = (StatusBar) SysUiServiceProvider.getComponent(context, StatusBar.class);
         if (statusBar != null && statusBar.getNavigationBarView() != null) {
             ArrayList<View> views = statusBar.getNavigationBarView().getHomeButton().getViews();
-            for (int i = 0; i < views.size(); i++) {
-                ((OpaLayout) views.get(i)).setOpaEnabled(z);
+            for (View v: views) {
+                if (v instanceof OpaLayout) {
+                    ((OpaLayout) v).setOpaEnabled(z);
+                }
             }
         }
     }

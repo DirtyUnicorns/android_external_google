@@ -506,6 +506,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     lambda$setViewParent$5$NgaUiController(i);
                 }
             }, r8);
+
             mInvocationLightsView = (AssistantInvocationLightsView) from.inflate(R.layout.invocation_lights, parent, false);
             mInvocationLightsView.setGoogleAssistant(true);
             parent.addView(mInvocationLightsView);
@@ -649,33 +650,35 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     public void onInvocationProgress(int type, float progress) {
-        ValueAnimator valueAnimator = mInvocationAnimator;
-        if (valueAnimator == null || !valueAnimator.isStarted()) {
+        if (mInvocationAnimator == null || !mInvocationAnimator.isStarted()) {
             setViewParent();
             if (mDidSetParent) {
+                // If animation is allowed
                 if (!mEdgeLightsController.getMode().preventsInvocations()) {
-                    boolean z = mInvocationInProgress;
-                    int i2 = (Float.compare(progress, 1.0f));
-                    if (i2 < 0) {
+                    if (Float.compare(progress, 1.0f) < 0) {
+                        // Set current progress
                         mLastInvocationProgress = progress;
-                        if (!z && progress > 0.0f) {
+                        if (!mInvocationInProgress && progress > 0.0f) {
                             mLastInvocationStartTime = SystemClock.uptimeMillis();
                         }
+                        // Is invocation in progress?
                         mInvocationInProgress = progress > 0.0f;
+
                         if (!mInvocationInProgress) {
                             mPromptView.disable();
                         } else if (progress < 0.9f && SystemClock.uptimeMillis() - mLastInvocationStartTime > 200) {
                             mPromptView.enable();
                         }
+
                         setProgress(type, getAnimationProgress(type, progress));
                     } else {
                         ValueAnimator valueAnimator2 = mInvocationAnimator;
-                        if (valueAnimator2 == null || !valueAnimator2.isStarted()) {
+                        if (mInvocationAnimator == null || !mInvocationAnimator.isStarted()) {
                             mFlingVelocity = 0.0f;
                             completeInvocation(type);
                         }
                     }
-                    logInvocationProgressMetrics(type, progress, z);
+                    logInvocationProgressMetrics(type, progress, mInvocationInProgress);
                 } else if (VERBOSE) {
                     Log.v("NgaUiController", "ignoring invocation; mode is " + mEdgeLightsController.getMode().getClass().getSimpleName());
                 }
@@ -707,8 +710,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     private void setProgress(int type, float progress) {
-        mInvocationLightsView.onInvocationProgress(
-                mProgressInterpolator.getInterpolation(progress));
+        mInvocationLightsView.onInvocationProgress(progress);
         mGlowController.setInvocationProgress(progress);
         mGlowController.getScrimController().setInvocationProgress(progress);
         mPromptView.onInvocationProgress(type, progress);
@@ -763,13 +765,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     } else {
                         mEdgeLightsController.setState(new FullListening(mContext));
                     }
-                    Bundle unused = mPendingEdgeLightsBundle = null;
                 }
-                mUiHandler.post(() -> lambda$onAnimationEnd$0$NgaUiController$2());
-            }
-
-            public void lambda$onAnimationEnd$0$NgaUiController$2() {
-                resetInvocationProgress();
+                mUiHandler.post(() -> resetInvocationProgress());
             }
         });
 

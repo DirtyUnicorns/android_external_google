@@ -19,7 +19,7 @@ package com.google.android.systemui;
 import android.content.Context;
 
 import com.android.internal.app.AssistUtils;
-import com.android.systemui.SysUiServiceProvider;
+import com.android.systemui.SystemUIApplication;
 import com.android.systemui.SystemUIRootComponent;
 import com.android.systemui.assist.AssistHandleBehaviorController;
 import com.android.systemui.assist.AssistManager;
@@ -98,7 +98,7 @@ abstract class SystemUIGoogleModule {
     @Singleton
     @Provides
     static ShadeController provideShadeController(Context context) {
-        return SysUiServiceProvider.getComponent(context, StatusBar.class);
+        return ((SystemUIApplication) context.getApplicationContext()).getComponent(StatusBar.class);
     }
 
     @Singleton

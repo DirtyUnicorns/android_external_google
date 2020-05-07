@@ -9,12 +9,13 @@ public final class EdgeLightUpdateListener implements ValueAnimator.AnimatorUpda
     private EdgeLight[] mLights;
     private EdgeLightsView mView;
 
-    public EdgeLightUpdateListener(EdgeLight[] edgeLightArr, EdgeLight[] edgeLightArr2, EdgeLight[] edgeLightArr3, EdgeLightsView edgeLightsView) {
+    public EdgeLightUpdateListener(EdgeLight[] edgeLightArr, EdgeLight[] edgeLightArr2,
+            EdgeLight[] edgeLightArr3, EdgeLightsView edgeLightsView) {
         if (edgeLightArr.length == edgeLightArr2.length && edgeLightArr3.length == edgeLightArr2.length) {
-            this.mFinalLights = edgeLightArr2;
-            this.mInitialLights = edgeLightArr;
-            this.mLights = edgeLightArr3;
-            this.mView = edgeLightsView;
+            mFinalLights = edgeLightArr2;
+            mInitialLights = edgeLightArr;
+            mLights = edgeLightArr3;
+            mView = edgeLightsView;
             return;
         }
         throw new IllegalArgumentException("Lights arrays must be the same length");
@@ -24,15 +25,15 @@ public final class EdgeLightUpdateListener implements ValueAnimator.AnimatorUpda
         float animatedFraction = valueAnimator.getAnimatedFraction();
         int i = 0;
         while (true) {
-            EdgeLight[] edgeLightArr = this.mLights;
+            EdgeLight[] edgeLightArr = mLights;
             if (i < edgeLightArr.length) {
-                float length = this.mInitialLights[i].getLength();
-                this.mLights[i].setLength(((this.mFinalLights[i].getLength() - length) * animatedFraction) + length);
-                float offset = this.mInitialLights[i].getOffset();
-                this.mLights[i].setOffset(((this.mFinalLights[i].getOffset() - offset) * animatedFraction) + offset);
+                float length = mInitialLights[i].getLength();
+                mLights[i].setLength(((mFinalLights[i].getLength() - length) * animatedFraction) + length);
+                float offset = mInitialLights[i].getOffset();
+                mLights[i].setOffset(((mFinalLights[i].getOffset() - offset) * animatedFraction) + offset);
                 i++;
             } else {
-                this.mView.setAssistLights(edgeLightArr);
+                mView.setAssistLights(edgeLightArr);
                 return;
             }
         }

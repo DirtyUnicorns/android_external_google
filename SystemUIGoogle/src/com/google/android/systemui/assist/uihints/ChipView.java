@@ -35,55 +35,53 @@ public class ChipView extends LinearLayout {
         super(context, attributeSet, i, i2);
     }
 
-    /* access modifiers changed from: protected */
-    public void onFinishInflate() {
-        ImageView imageView = (ImageView) findViewById(R.id.chip_icon);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        ImageView imageView = findViewById(R.id.chip_icon);
         Preconditions.checkNotNull(imageView);
-        this.mIconView = imageView;
-        TextView textView = (TextView) findViewById(R.id.chip_label);
+        mIconView = imageView;
+        TextView textView = findViewById(R.id.chip_label);
         Preconditions.checkNotNull(textView);
-        this.mLabelView = textView;
-        Space space = (Space) findViewById(R.id.chip_element_padding);
+        mLabelView = textView;
+        Space space = findViewById(R.id.chip_element_padding);
         Preconditions.checkNotNull(space);
-        this.mSpaceView = space;
+        mSpaceView = space;
     }
 
-    /* access modifiers changed from: package-private */
-    public boolean setChip(Bundle bundle) {
-        Icon icon = (Icon) bundle.getParcelable("icon");
+    boolean setChip(Bundle bundle) {
+        Icon icon = bundle.getParcelable("icon");
         String string = bundle.getString("label");
         if (icon == null && (string == null || string.length() == 0)) {
             Log.w("ChipView", "Neither icon nor label provided");
             return false;
         }
         if (icon == null) {
-            this.mIconView.setVisibility(8);
-            this.mSpaceView.setVisibility(8);
-            this.mLabelView.setText(string);
-            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) this.mLabelView.getLayoutParams();
+            mIconView.setVisibility(8);
+            mSpaceView.setVisibility(8);
+            mLabelView.setText(string);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) mLabelView.getLayoutParams();
             layoutParams.setMargins(layoutParams.rightMargin, layoutParams.topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
         } else if (string == null || string.length() == 0) {
-            this.mLabelView.setVisibility(8);
-            this.mSpaceView.setVisibility(8);
-            this.mIconView.setImageIcon(icon);
-            LinearLayout.LayoutParams layoutParams2 = (LinearLayout.LayoutParams) this.mIconView.getLayoutParams();
+            mLabelView.setVisibility(8);
+            mSpaceView.setVisibility(8);
+            mIconView.setImageIcon(icon);
+            LinearLayout.LayoutParams layoutParams2 = (LinearLayout.LayoutParams) mIconView.getLayoutParams();
             layoutParams2.setMargins(layoutParams2.leftMargin, layoutParams2.topMargin, layoutParams2.leftMargin, layoutParams2.bottomMargin);
         } else {
-            this.mIconView.setImageIcon(icon);
-            this.mLabelView.setText(string);
+            mIconView.setImageIcon(icon);
+            mLabelView.setText(string);
         }
-        setTapAction((PendingIntent) bundle.getParcelable("tap_action"));
+        setTapAction(bundle.getParcelable("tap_action"));
         return true;
     }
 
-    /* access modifiers changed from: package-private */
-    public void setLabelColor(int i) {
-        this.mLabelView.setTextColor(i);
+    void setLabelColor(int i) {
+        mLabelView.setTextColor(i);
     }
 
-    /* access modifiers changed from: package-private */
-    public void updateTextSize(float f) {
-        this.mLabelView.setTextSize(0, f);
+    void updateTextSize(float f) {
+        mLabelView.setTextSize(0, f);
     }
 
     private void setTapAction(PendingIntent pendingIntent) {

@@ -28,13 +28,13 @@ public final class BlurProvider {
         return i;
     }
 
-    public class BlurResult {
+    public static class BlurResult {
         public final RectF cropRegion;
         public final Drawable drawable;
 
         BlurResult(Drawable drawable2, RectF rectF) {
-            this.drawable = drawable2;
-            this.cropRegion = rectF;
+            drawable = drawable2;
+            cropRegion = rectF;
         }
 
         BlurResult(BlurProvider blurProvider, Drawable drawable2) {
@@ -43,33 +43,32 @@ public final class BlurProvider {
     }
 
     public BlurProvider(Context context, Drawable drawable) {
-        this.mResources = context.getResources();
-        this.mImageSource = new SourceDownsampler(drawable);
-        this.mBlurKernel = new BlurKernel(context);
+        mResources = context.getResources();
+        mImageSource = new SourceDownsampler(drawable);
+        mBlurKernel = new BlurKernel(context);
     }
 
     public void clearCaches() {
-        this.mBuffer = null;
-        this.mBlurKernel.clearCaches();
+        mBuffer = null;
+        mBlurKernel.clearCaches();
     }
 
     public BlurResult get(int i) {
-        if (this.mBuffer == null) {
-            this.mBuffer = this.mImageSource.createBitmapBuffer(0);
+        if (mBuffer == null) {
+            mBuffer = mImageSource.createBitmapBuffer(0);
         }
-        Bitmap bitmap = this.mBuffer;
-        return blur((float) i, bitmap, bitmap);
+        return blur((float) i, mBuffer, mBuffer);
     }
 
     private BlurResult blur(float f, Bitmap bitmap, Bitmap bitmap2) {
         float constrain = MathUtils.constrain(f, 0.0f, 1000.0f);
         if (constrain <= 1.0f) {
-            return new BlurResult(this, this.mImageSource.getDrawable());
+            return new BlurResult(this, mImageSource.getDrawable());
         }
         int numDownsampleStepsForEffectiveRadius = getNumDownsampleStepsForEffectiveRadius(constrain);
-        this.mImageSource.rasterize(bitmap, numDownsampleStepsForEffectiveRadius);
-        this.mBlurKernel.blur(bitmap, bitmap2, constrain * SourceDownsampler.getDownsampleScaleFactor(numDownsampleStepsForEffectiveRadius));
-        return new BlurResult(new BitmapDrawable(this.mResources, bitmap2), getBitmapVisibleRegion(bitmap2, this.mImageSource.getDownsampledWidth(numDownsampleStepsForEffectiveRadius), this.mImageSource.getDownsampledHeight(numDownsampleStepsForEffectiveRadius)));
+        mImageSource.rasterize(bitmap, numDownsampleStepsForEffectiveRadius);
+        mBlurKernel.blur(bitmap, bitmap2, constrain * SourceDownsampler.getDownsampleScaleFactor(numDownsampleStepsForEffectiveRadius));
+        return new BlurResult(new BitmapDrawable(mResources, bitmap2), getBitmapVisibleRegion(bitmap2, mImageSource.getDownsampledWidth(numDownsampleStepsForEffectiveRadius), mImageSource.getDownsampledHeight(numDownsampleStepsForEffectiveRadius)));
     }
 
     private static RectF getBitmapVisibleRegion(Bitmap bitmap, int i, int i2) {
@@ -141,11 +140,11 @@ public final class BlurProvider {
         }
 
         public SourceDownsampler(Drawable drawable) {
-            this.mDrawable = drawable;
+            mDrawable = drawable;
         }
 
         public Drawable getDrawable() {
-            return this.mDrawable;
+            return mDrawable;
         }
 
         public void rasterize(Bitmap bitmap, int i) {
@@ -173,7 +172,7 @@ public final class BlurProvider {
         }
 
         private static int getSideLength(float f, int i) {
-            return (int) Math.ceil((double) ((f * getDownsampleScaleFactor(i)) + 50.0f));
+            return (int) Math.ceil((f * getDownsampleScaleFactor(i)) + 50.0f);
         }
     }
 
@@ -186,18 +185,18 @@ public final class BlurProvider {
         private Bitmap mLastOutputBitmap;
 
         public BlurKernel(Context context) {
-            this.mBlurRenderScript = RenderScript.create(context);
-            RenderScript renderScript = this.mBlurRenderScript;
-            this.mBlurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+            mBlurRenderScript = RenderScript.create(context);
+            RenderScript renderScript = mBlurRenderScript;
+            mBlurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
         }
 
         public void blur(Bitmap bitmap, Bitmap bitmap2, float f) {
             prepareInputAllocation(bitmap);
             prepareOutputAllocation(bitmap2);
-            this.mBlurScript.setRadius(MathUtils.constrain(f, 0.0f, 25.0f));
-            this.mBlurScript.setInput(this.mLastInputAllocation);
-            this.mBlurScript.forEach(this.mLastOutputAllocation);
-            this.mLastOutputAllocation.copyTo(bitmap2);
+            mBlurScript.setRadius(MathUtils.constrain(f, 0.0f, 25.0f));
+            mBlurScript.setInput(mLastInputAllocation);
+            mBlurScript.forEach(mLastOutputAllocation);
+            mLastOutputAllocation.copyTo(bitmap2);
         }
 
         public void clearCaches() {
@@ -206,37 +205,34 @@ public final class BlurProvider {
         }
 
         private void prepareInputAllocation(Bitmap bitmap) {
-            boolean canShareAllocations = canShareAllocations(this.mLastInputBitmap, bitmap);
-            this.mLastInputBitmap = bitmap;
+            boolean canShareAllocations = canShareAllocations(mLastInputBitmap, bitmap);
+            mLastInputBitmap = bitmap;
             if (canShareAllocations) {
-                this.mLastInputAllocation.copyFrom(bitmap);
+                mLastInputAllocation.copyFrom(bitmap);
                 return;
             }
-            Allocation allocation = this.mLastInputAllocation;
-            if (allocation != null) {
-                allocation.destroy();
-                this.mLastInputAllocation = null;
+            if (mLastInputAllocation != null) {
+                mLastInputAllocation.destroy();
+                mLastInputAllocation = null;
             }
-            Bitmap bitmap2 = this.mLastInputBitmap;
-            if (bitmap2 != null) {
-                this.mLastInputAllocation = createAllocationForBitmap(bitmap2);
+            if (mLastInputBitmap != null) {
+                mLastInputAllocation = createAllocationForBitmap(mLastInputBitmap);
             }
         }
 
         private void prepareOutputAllocation(Bitmap bitmap) {
-            if (this.mLastOutputAllocation != null && !canShareAllocations(this.mLastOutputBitmap, bitmap)) {
-                this.mLastOutputAllocation.destroy();
-                this.mLastOutputAllocation = null;
+            if (mLastOutputAllocation != null && !canShareAllocations(mLastOutputBitmap, bitmap)) {
+                mLastOutputAllocation.destroy();
+                mLastOutputAllocation = null;
             }
-            this.mLastOutputBitmap = bitmap;
-            Bitmap bitmap2 = this.mLastOutputBitmap;
-            if (bitmap2 != null && this.mLastOutputAllocation == null) {
-                this.mLastOutputAllocation = createAllocationForBitmap(bitmap2);
+            mLastOutputBitmap = bitmap;
+            if (mLastOutputBitmap != null && mLastOutputAllocation == null) {
+                mLastOutputAllocation = createAllocationForBitmap(mLastOutputBitmap);
             }
         }
 
         private Allocation createAllocationForBitmap(Bitmap bitmap) {
-            return Allocation.createFromBitmap(this.mBlurRenderScript, bitmap, Allocation.MipmapControl.MIPMAP_NONE, 1);
+            return Allocation.createFromBitmap(mBlurRenderScript, bitmap, Allocation.MipmapControl.MIPMAP_NONE, 1);
         }
 
         private static boolean canShareAllocations(Bitmap bitmap, Bitmap bitmap2) {

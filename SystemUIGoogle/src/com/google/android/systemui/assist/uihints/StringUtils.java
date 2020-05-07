@@ -9,19 +9,19 @@ final class StringUtils {
         final String unstable;
 
         StringStabilityInfo(String str, String str2) {
-            this.stable = str == null ? "" : str;
-            this.unstable = str2 == null ? "" : str2;
+            stable = str == null ? "" : str;
+            unstable = str2 == null ? "" : str2;
         }
 
         StringStabilityInfo(String str, int i) {
             if (i >= str.length()) {
-                this.stable = str;
-                this.unstable = "";
+                stable = str;
+                unstable = "";
                 return;
             }
             int i2 = i + 1;
-            this.stable = str.substring(0, i2);
-            this.unstable = str.substring(i2);
+            stable = str.substring(0, i2);
+            unstable = str.substring(i2);
         }
     }
 

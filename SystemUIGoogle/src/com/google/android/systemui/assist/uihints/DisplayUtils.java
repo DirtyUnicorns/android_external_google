@@ -12,7 +12,7 @@ public class DisplayUtils {
         Display defaultDisplay = getDefaultDisplay(context);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         defaultDisplay.getRealMetrics(displayMetrics);
-        return (int) Math.ceil((double) (f * displayMetrics.density));
+        return (int) Math.ceil(f * displayMetrics.density);
     }
 
     public static int convertSpToPx(float f, Context context) {

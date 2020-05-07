@@ -25,7 +25,6 @@ import com.android.systemui.R;
 import com.android.systemui.assist.PhenotypeHelper;
 import com.google.android.systemui.assist.uihints.StringUtils;
 import com.google.android.systemui.assist.uihints.TranscriptionController;
-import com.google.android.systemui.assist.uihints.TranscriptionView;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -34,8 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class TranscriptionView extends TextView implements TranscriptionController.TranscriptionSpaceView {
-    /* access modifiers changed from: private */
-    public static final PathInterpolator INTERPOLATOR_SCROLL = new PathInterpolator(0.17f, 0.17f, 0.67f, 1.0f);
+    private static final PathInterpolator INTERPOLATOR_SCROLL;
     private final float BUMPER_DISTANCE_END_PX;
     private final float BUMPER_DISTANCE_START_PX;
     private final float FADE_DISTANCE_END_PX;
@@ -43,8 +41,7 @@ public class TranscriptionView extends TextView implements TranscriptionControll
     private final int TEXT_COLOR_DARK;
     private final int TEXT_COLOR_LIGHT;
     private boolean mCardVisible;
-    /* access modifiers changed from: private */
-    public int mDisplayWidthPx;
+    private int mDisplayWidthPx;
     private boolean mHasDarkBackground;
     private SettableFuture<Void> mHideFuture;
     private Matrix mMatrix;
@@ -53,13 +50,11 @@ public class TranscriptionView extends TextView implements TranscriptionControll
     private float[] mStops;
     private ValueAnimator mTranscriptionAnimation;
     private TranscriptionAnimator mTranscriptionAnimator;
-    /* access modifiers changed from: private */
-    public SpannableStringBuilder mTranscriptionBuilder;
+    private SpannableStringBuilder mTranscriptionBuilder;
     private AnimatorSet mVisibilityAnimators;
 
-    @VisibleForTesting
-    static float interpolate(long j, long j2, float f) {
-        return (((float) (j2 - j)) * f) + ((float) j);
+    static {
+        INTERPOLATOR_SCROLL = new PathInterpolator(0.17f, 0.17f, 0.67f, 1.0f);
     }
 
     public TranscriptionView(Context context) {
@@ -76,190 +71,180 @@ public class TranscriptionView extends TextView implements TranscriptionControll
 
     public TranscriptionView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
-        this.mTranscriptionBuilder = new SpannableStringBuilder();
-        this.mVisibilityAnimators = new AnimatorSet();
-        this.mHideFuture = null;
-        this.mHasDarkBackground = false;
-        this.mCardVisible = false;
-        this.mRequestedTextColor = 0;
-        this.mMatrix = new Matrix();
-        this.mDisplayWidthPx = 0;
-        this.mTranscriptionAnimator = new TranscriptionAnimator();
+        mTranscriptionBuilder = new SpannableStringBuilder();
+        mVisibilityAnimators = new AnimatorSet();
+        mHideFuture = null;
+        mHasDarkBackground = false;
+        mCardVisible = false;
+        mRequestedTextColor = 0;
+        mMatrix = new Matrix();
+        mDisplayWidthPx = 0;
+        mTranscriptionAnimator = new TranscriptionAnimator();
         initializePhenotypeHelper(new PhenotypeHelper());
-        this.BUMPER_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_left_margin) + context.getResources().getDimension(R.dimen.zerostate_icon_tap_padding);
-        this.BUMPER_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_right_margin) + context.getResources().getDimension(R.dimen.keyboard_icon_tap_padding);
-        this.FADE_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_size);
-        this.FADE_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_size) / 2.0f;
-        this.TEXT_COLOR_DARK = context.getResources().getColor(R.color.transcription_text_dark);
-        this.TEXT_COLOR_LIGHT = context.getResources().getColor(R.color.transcription_text_light);
+        BUMPER_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_left_margin) + context.getResources().getDimension(R.dimen.zerostate_icon_tap_padding);
+        BUMPER_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_right_margin) + context.getResources().getDimension(R.dimen.keyboard_icon_tap_padding);
+        FADE_DISTANCE_START_PX = context.getResources().getDimension(R.dimen.zerostate_icon_size);
+        FADE_DISTANCE_END_PX = context.getResources().getDimension(R.dimen.keyboard_icon_size) / 2.0f;
+        TEXT_COLOR_DARK = context.getResources().getColor(R.color.transcription_text_dark);
+        TEXT_COLOR_LIGHT = context.getResources().getColor(R.color.transcription_text_light);
         updateDisplayWidth();
-        setHasDarkBackground(!this.mHasDarkBackground);
+        setHasDarkBackground(!mHasDarkBackground);
     }
 
-    /* access modifiers changed from: package-private */
     @VisibleForTesting
-    public long getAdaptiveDuration(float f, float f2) {
+    static float interpolate(long j, long j2, float f) {
+        return (((float) (j2 - j)) * f) + ((float) j);
+    }
+
+    @VisibleForTesting
+    long getAdaptiveDuration(float f, float f2) {
         return Math.min(getDurationMaxMs(), Math.max(getDurationMinMs(), (long) (f * interpolate(getDurationRegularMs(), getDurationFastMs(), f / f2))));
     }
 
-    /* access modifiers changed from: package-private */
     @VisibleForTesting
-    public void initializePhenotypeHelper(PhenotypeHelper phenotypeHelper) {
-        this.mPhenotypeHelper = phenotypeHelper;
+    void initializePhenotypeHelper(PhenotypeHelper phenotypeHelper) {
+        mPhenotypeHelper = phenotypeHelper;
     }
 
     private void updateDisplayWidth() {
-        this.mDisplayWidthPx = DisplayUtils.getRotatedWidth(super.mContext);
-        float f = this.BUMPER_DISTANCE_START_PX;
-        int i = this.mDisplayWidthPx;
-        this.mStops = new float[]{f / ((float) i), (f + this.FADE_DISTANCE_START_PX) / ((float) i), ((((float) i) - this.FADE_DISTANCE_END_PX) - this.BUMPER_DISTANCE_END_PX) / ((float) i), 1.0f};
+        mDisplayWidthPx = DisplayUtils.getRotatedWidth(mContext);
+        float f = BUMPER_DISTANCE_START_PX;
+        int i = mDisplayWidthPx;
+        mStops = new float[]{f / ((float) i), (f + FADE_DISTANCE_START_PX) / ((float) i), ((((float) i) - FADE_DISTANCE_END_PX) - BUMPER_DISTANCE_END_PX) / ((float) i), 1.0f};
         updateColor();
     }
 
-    /* access modifiers changed from: protected */
-    public void onConfigurationChanged(Configuration configuration) {
+    @Override
+    protected void onConfigurationChanged(Configuration configuration) {
         super.onConfigurationChanged(configuration);
-        String spannableStringBuilder = this.mTranscriptionBuilder.toString();
+        String string = mTranscriptionBuilder.toString();
         resetTranscription();
-        setTranscription(spannableStringBuilder);
+        setTranscription(string);
     }
 
     public ListenableFuture<Void> hide(boolean z) {
-        SettableFuture<Void> settableFuture = this.mHideFuture;
+        SettableFuture<Void> settableFuture = mHideFuture;
         if (settableFuture != null && !settableFuture.isDone()) {
-            return this.mHideFuture;
+            return mHideFuture;
         }
-        this.mHideFuture = SettableFuture.create();
-        Runnable r0 = new Runnable() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$TranscriptionView$Qv69LoHEhmJSkqbPe36IZfPgiA */
-
-            public final void run() {
-                lambda$hide$0$TranscriptionView();
-            }
+        mHideFuture = SettableFuture.create();
+        Runnable r0 = () -> {
+            setVisibility(8);
+            setAlpha(0.0f);
+            resetTranscription();
+            mVisibilityAnimators = null;
+            mHideFuture.set(null);
         };
         if (!z) {
-            AnimatorSet animatorSet = this.mVisibilityAnimators;
-            if (animatorSet != null) {
-                animatorSet.end();
+            if (mVisibilityAnimators != null) {
+                mVisibilityAnimators.end();
             } else {
                 r0.run();
             }
             return Futures.immediateFuture(null);
         }
-        this.mVisibilityAnimators = new AnimatorSet();
-        this.mVisibilityAnimators.play(ObjectAnimator.ofFloat(this, View.ALPHA, getAlpha(), 0.0f).setDuration(400L));
-        if (!this.mCardVisible) {
-            this.mVisibilityAnimators.play(ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, getTranslationY(), (float) (getHeight() * -1)).setDuration(700L));
+        mVisibilityAnimators = new AnimatorSet();
+        mVisibilityAnimators.play(ObjectAnimator.ofFloat(this, View.ALPHA, getAlpha(), 0.0f).setDuration(400));
+        if (!mCardVisible) {
+            mVisibilityAnimators.play(ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, getTranslationY(), (float) (getHeight() * -1)).setDuration(700));
         }
-        this.mVisibilityAnimators.addListener(new AnimatorListenerAdapter() {
-            /* class com.google.android.systemui.assist.uihints.TranscriptionView.C15711 */
-
+        mVisibilityAnimators.addListener(new AnimatorListenerAdapter() {
             public void onAnimationEnd(Animator animator) {
                 super.onAnimationEnd(animator);
                 r0.run();
             }
         });
-        this.mVisibilityAnimators.start();
-        return this.mHideFuture;
-    }
-
-    public /* synthetic */ void lambda$hide$0$TranscriptionView() {
-        setVisibility(8);
-        setAlpha(1.0f);
-        resetTranscription();
-        this.mVisibilityAnimators = null;
-        this.mHideFuture.set(null);
+        mVisibilityAnimators.start();
+        return mHideFuture;
     }
 
     public void setHasDarkBackground(boolean z) {
-        if (z != this.mHasDarkBackground) {
-            this.mHasDarkBackground = z;
+        if (z != mHasDarkBackground) {
+            mHasDarkBackground = z;
             updateColor();
         }
     }
 
     public void setCardVisible(boolean z) {
-        this.mCardVisible = z;
+        mCardVisible = z;
     }
 
     public void onFontSizeChanged() {
-        setTextSize(0, super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
+        setTextSize(0, mContext.getResources().getDimension(R.dimen.transcription_text_size));
     }
 
-    /* access modifiers changed from: package-private */
-    public void setTranscription(String str) {
+    void setTranscription(String str) {
         updateDisplayWidth();
-        ValueAnimator valueAnimator = this.mTranscriptionAnimation;
-        boolean z = valueAnimator != null && valueAnimator.isRunning();
-        if (z) {
-            this.mTranscriptionAnimation.cancel();
+        boolean isAnimationRunning = mTranscriptionAnimation != null && mTranscriptionAnimation.isRunning();
+        if (isAnimationRunning) {
+            mTranscriptionAnimation.cancel();
         }
-        boolean isEmpty = this.mTranscriptionBuilder.toString().isEmpty();
-        StringUtils.StringStabilityInfo calculateStringStabilityInfo = StringUtils.calculateStringStabilityInfo(this.mTranscriptionBuilder.toString(), str);
-        this.mTranscriptionBuilder.clear();
-        this.mTranscriptionBuilder.append((CharSequence) calculateStringStabilityInfo.stable);
-        this.mTranscriptionBuilder.append((CharSequence) calculateStringStabilityInfo.unstable);
-        int ceil = (int) Math.ceil((double) getPaint().measureText(this.mTranscriptionBuilder.toString()));
+        boolean empty = mTranscriptionBuilder.toString().isEmpty();
+        StringUtils.StringStabilityInfo calculateStringStabilityInfo = StringUtils.calculateStringStabilityInfo(mTranscriptionBuilder.toString(), str);
+        mTranscriptionBuilder.clear();
+        mTranscriptionBuilder.append(calculateStringStabilityInfo.stable);
+        mTranscriptionBuilder.append(calculateStringStabilityInfo.unstable);
+        int width = (int) Math.ceil(getPaint().measureText(mTranscriptionBuilder.toString()));
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (layoutParams != null) {
-            layoutParams.width = ceil;
+            layoutParams.width = width;
             setLayoutParams(layoutParams);
         }
         updateColor();
-        TranscriptionSpan transcriptionSpan = null;
-        if (isEmpty || calculateStringStabilityInfo.stable.isEmpty()) {
+        if (!empty && !calculateStringStabilityInfo.stable.isEmpty()) {
+            int length = calculateStringStabilityInfo.stable.length();
+            TranscriptionSpan transcriptionSpan = null;
+            if (isAnimationRunning) {
+                if (!calculateStringStabilityInfo.stable.endsWith(" ")) {
+                    if (!calculateStringStabilityInfo.unstable.startsWith(" ")) {
+                        final String[] split = calculateStringStabilityInfo.stable.split("\\s+");
+                        if (split.length > 0) {
+                            length = length - split[split.length - 1].length();
+                        }
+                        final List<TranscriptionSpan> spans = mTranscriptionAnimator.getSpans();
+                        if (!spans.isEmpty()) {
+                            transcriptionSpan = spans.get(spans.size() - 1);
+                        }
+                    }
+                }
+            }
+            setUpSpans(length, transcriptionSpan);
+            (mTranscriptionAnimation = mTranscriptionAnimator.createAnimator()).start();
+        } else {
             setUpSpans(calculateStringStabilityInfo.stable.length() + calculateStringStabilityInfo.unstable.length(), null);
-            setX(getFullyVisibleDistance((float) ceil));
+            setX(getFullyVisibleDistance((float) width));
             updateColor();
-            return;
         }
-        int length = calculateStringStabilityInfo.stable.length();
-        if (z && !calculateStringStabilityInfo.stable.endsWith(" ") && !calculateStringStabilityInfo.unstable.startsWith(" ")) {
-            String[] split = calculateStringStabilityInfo.stable.split("\\s+");
-            if (split.length > 0) {
-                length -= split[split.length - 1].length();
-            }
-            List<TranscriptionSpan> spans = this.mTranscriptionAnimator.getSpans();
-            if (!spans.isEmpty()) {
-                transcriptionSpan = spans.get(spans.size() - 1);
-            }
-        }
-        setUpSpans(length, transcriptionSpan);
-        this.mTranscriptionAnimation = this.mTranscriptionAnimator.createAnimator();
-        this.mTranscriptionAnimation.start();
     }
 
-    private void setUpSpans(int i, TranscriptionSpan transcriptionSpan) {
-        TranscriptionSpan transcriptionSpan2;
-        this.mTranscriptionAnimator.clearSpans();
-        String spannableStringBuilder = this.mTranscriptionBuilder.toString();
-        String substring = spannableStringBuilder.substring(i);
+    private void setUpSpans(int length, TranscriptionSpan transcriptionSpan) {
+        mTranscriptionAnimator.clearSpans();
+        final String string = mTranscriptionBuilder.toString();
+        final String substring = string.substring(length);
         if (substring.length() > 0) {
-            int indexOf = spannableStringBuilder.indexOf(substring, i);
-            int length = substring.length() + indexOf;
+            final int index = string.indexOf(substring, length);
+            length = substring.length();
             if (transcriptionSpan == null) {
-                transcriptionSpan2 = new TranscriptionSpan();
+                transcriptionSpan = new TranscriptionSpan();
             } else {
-                transcriptionSpan2 = new TranscriptionSpan(transcriptionSpan);
+                transcriptionSpan = new TranscriptionSpan(transcriptionSpan);
             }
-            this.mTranscriptionBuilder.setSpan(transcriptionSpan2, indexOf, length, 33);
-            this.mTranscriptionAnimator.addSpan(transcriptionSpan2);
+            mTranscriptionBuilder.setSpan(transcriptionSpan, index, length + index, 33);
+            mTranscriptionAnimator.addSpan(transcriptionSpan);
         }
-        setText(this.mTranscriptionBuilder, TextView.BufferType.SPANNABLE);
+        setText(mTranscriptionBuilder, TextView.BufferType.SPANNABLE);
         updateColor();
     }
 
-    /* access modifiers changed from: package-private */
-    public void setTranscriptionColor(int i) {
-        this.mRequestedTextColor = i;
+    void setTranscriptionColor(int i) {
+        mRequestedTextColor = i;
         updateColor();
     }
 
     public void show() {
-        AnimatorSet animatorSet = this.mVisibilityAnimators;
-        if (animatorSet != null) {
-            animatorSet.cancel();
-            this.mVisibilityAnimators = null;
+        if (mVisibilityAnimators != null) {
+            mVisibilityAnimators.cancel();
+            mVisibilityAnimators = null;
         }
         updateDisplayWidth();
         setAlpha(1.0f);
@@ -267,59 +252,51 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         setVisibility(0);
     }
 
-    /* access modifiers changed from: private */
-    public float getFullyVisibleDistance(float f) {
-        int i = this.mDisplayWidthPx;
-        float f2 = this.BUMPER_DISTANCE_END_PX;
-        float f3 = this.FADE_DISTANCE_END_PX;
-        return f < ((float) i) - (((this.BUMPER_DISTANCE_START_PX + f2) + f3) + this.FADE_DISTANCE_START_PX) ? (((float) i) - f) / 2.0f : ((((float) i) - f) - f3) - f2;
+    private float getFullyVisibleDistance(float f) {
+        final float n2 = (float) mDisplayWidthPx;
+        final float bumper_DISTANCE_END_PX = BUMPER_DISTANCE_END_PX;
+        final float fade_DISTANCE_END_PX = FADE_DISTANCE_END_PX;
+        if (f < n2 - (BUMPER_DISTANCE_START_PX + bumper_DISTANCE_END_PX + fade_DISTANCE_END_PX + FADE_DISTANCE_START_PX)) {
+            return (mDisplayWidthPx - f) / 2.0f;
+        }
+        return mDisplayWidthPx - f - fade_DISTANCE_END_PX - bumper_DISTANCE_END_PX;
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{android.graphics.LinearGradient.<init>(float, float, float, float, int[], float[], android.graphics.Shader$TileMode):void}
-     arg types: [int, int, float, int, int[], float[], android.graphics.Shader$TileMode]
-     candidates:
-      ClspMth{android.graphics.LinearGradient.<init>(float, float, float, float, long, long, android.graphics.Shader$TileMode):void}
-      ClspMth{android.graphics.LinearGradient.<init>(float, float, float, float, long[], float[], android.graphics.Shader$TileMode):void}
-      ClspMth{android.graphics.LinearGradient.<init>(float, float, float, float, int, int, android.graphics.Shader$TileMode):void}
-      ClspMth{android.graphics.LinearGradient.<init>(float, float, float, float, int[], float[], android.graphics.Shader$TileMode):void} */
-    /* access modifiers changed from: private */
     public void updateColor() {
-        int i = this.mRequestedTextColor;
+        int i = mRequestedTextColor;
         if (i == 0) {
-            i = this.mHasDarkBackground ? this.TEXT_COLOR_DARK : this.TEXT_COLOR_LIGHT;
+            i = mHasDarkBackground ? TEXT_COLOR_DARK : TEXT_COLOR_LIGHT;
         }
-        LinearGradient linearGradient = new LinearGradient(0.0f, 0.0f, (float) this.mDisplayWidthPx, 0.0f, new int[]{0, i, i, 0}, this.mStops, Shader.TileMode.CLAMP);
-        this.mMatrix.setTranslate(-getTranslationX(), 0.0f);
-        linearGradient.setLocalMatrix(this.mMatrix);
+        LinearGradient linearGradient = new LinearGradient(0.0f, 0.0f, (float) mDisplayWidthPx, 0.0f, new int[]{0, i, i, 0}, mStops, Shader.TileMode.CLAMP);
+        mMatrix.setTranslate(-getTranslationX(), 0.0f);
+        linearGradient.setLocalMatrix(mMatrix);
         getPaint().setShader(linearGradient);
         invalidate();
     }
 
     private void resetTranscription() {
         setTranscription("");
-        this.mTranscriptionAnimator = new TranscriptionAnimator();
+        mTranscriptionAnimator = new TranscriptionAnimator();
     }
 
     private long getDurationRegularMs() {
-        return this.mPhenotypeHelper.getLong("assist_transcription_duration_per_px_regular", 4);
+        return mPhenotypeHelper.getLong("assist_transcription_duration_per_px_regular", 4);
     }
 
     private long getDurationFastMs() {
-        return this.mPhenotypeHelper.getLong("assist_transcription_duration_per_px_fast", 3);
+        return mPhenotypeHelper.getLong("assist_transcription_duration_per_px_fast", 3);
     }
 
     private long getDurationMaxMs() {
-        return this.mPhenotypeHelper.getLong("assist_transcription_max_duration", 400);
+        return mPhenotypeHelper.getLong("assist_transcription_max_duration", 400);
     }
 
     private long getDurationMinMs() {
-        return this.mPhenotypeHelper.getLong("assist_transcription_min_duration", 20);
+        return mPhenotypeHelper.getLong("assist_transcription_min_duration", 20);
     }
 
-    /* access modifiers changed from: private */
-    public long getFadeInDurationMs() {
-        return this.mPhenotypeHelper.getLong("assist_transcription_fade_in_duration", 50);
+    private long getFadeInDurationMs() {
+        return mPhenotypeHelper.getLong("assist_transcription_fade_in_duration", 50);
     }
 
     private class TranscriptionAnimator implements ValueAnimator.AnimatorUpdateListener {
@@ -328,43 +305,43 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         private float mStartX;
 
         private TranscriptionAnimator() {
-            this.mSpans = new ArrayList();
+            mSpans = new ArrayList<>();
         }
 
-        /* access modifiers changed from: package-private */
-        public void addSpan(TranscriptionSpan transcriptionSpan) {
-            this.mSpans.add(transcriptionSpan);
+        void addSpan(TranscriptionSpan transcriptionSpan) {
+            mSpans.add(transcriptionSpan);
         }
 
-        /* access modifiers changed from: package-private */
-        public List<TranscriptionSpan> getSpans() {
-            return this.mSpans;
+        List<TranscriptionSpan> getSpans() {
+            return mSpans;
         }
 
-        /* access modifiers changed from: package-private */
-        public void clearSpans() {
-            this.mSpans.clear();
+        void clearSpans() {
+            mSpans.clear();
         }
 
-        /* access modifiers changed from: package-private */
-        public ValueAnimator createAnimator() {
+        ValueAnimator createAnimator() {
             float measureText = getPaint().measureText(mTranscriptionBuilder.toString());
-            this.mStartX = getX();
-            this.mDistance = getFullyVisibleDistance(measureText) - this.mStartX;
+            mStartX = getX();
+            mDistance = getFullyVisibleDistance(measureText) - mStartX;
             updateColor();
-            long adaptiveDuration = getAdaptiveDuration(Math.abs(this.mDistance), (float) mDisplayWidthPx);
-            long access$500 = measureText > ((float) mDisplayWidthPx) - getX() ? getFadeInDurationMs() + adaptiveDuration : adaptiveDuration;
-            float f = this.mDistance * (((float) access$500) / ((float) adaptiveDuration));
-            float f2 = this.mStartX;
-            ValueAnimator duration = ValueAnimator.ofFloat(f2, f2 + f).setDuration(access$500);
-            duration.setInterpolator(TranscriptionView.INTERPOLATOR_SCROLL);
-            duration.addUpdateListener(this);
-            return duration;
+            long adaptiveDuration = getAdaptiveDuration(Math.abs(mDistance), (float) mDisplayWidthPx);
+            long duration;
+            if (measureText > mDisplayWidthPx - getX()) {
+                duration = getFadeInDurationMs() + adaptiveDuration;
+            } else {
+                duration = adaptiveDuration;
+            }
+            final float n = duration / (float) adaptiveDuration;
+            final ValueAnimator setDuration = ValueAnimator.ofFloat(mStartX, mStartX + mDistance * n).setDuration(duration);
+            setDuration.setInterpolator(INTERPOLATOR_SCROLL);
+            setDuration.addUpdateListener(this);
+            return setDuration;
         }
 
         public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            float floatValue = ((Float) valueAnimator.getAnimatedValue()).floatValue();
-            if (Math.abs(floatValue - this.mStartX) < Math.abs(this.mDistance)) {
+            float floatValue = (Float) valueAnimator.getAnimatedValue();
+            if (Math.abs(floatValue - mStartX) < Math.abs(mDistance)) {
                 setX(floatValue);
                 updateColor();
             }
@@ -380,36 +357,32 @@ public class TranscriptionView extends TextView implements TranscriptionControll
         TranscriptionSpan() {
         }
 
-        TranscriptionSpan(TranscriptionSpan transcriptionSpan) {
-            this.mStartFraction = MathUtils.clamp(transcriptionSpan.getCurrentFraction(), 0.0f, 1.0f);
-        }
-
-        public int getSize(Paint paint, CharSequence charSequence, int i, int i2, Paint.FontMetricsInt fontMetricsInt) {
-            return (int) Math.ceil((double) getPaint().measureText(charSequence, 0, charSequence.length()));
-        }
-
-        public void draw(Canvas canvas, CharSequence charSequence, int i, int i2, float f, int i3, int i4, int i5, Paint paint) {
-            Paint paint2 = paint;
-            paint2.setAlpha((int) Math.ceil((double) (getAlpha() * 255.0f)));
-            canvas.drawText(charSequence, i, i2, f, (float) i4, paint2);
+        TranscriptionSpan(final TranscriptionSpan transcriptionSpan) {
+            mStartFraction = MathUtils.clamp(transcriptionSpan.getCurrentFraction(), 0.0f, 1.0f);
         }
 
         private float getAlpha() {
-            float f = this.mStartFraction;
-            if (f == 1.0f) {
+            if (mStartFraction == 1.0f) {
                 return 1.0f;
             }
-            return MathUtils.clamp((((1.0f - f) / 1.0f) * this.mCurrentFraction) + f, 0.0f, 1.0f);
+            return MathUtils.clamp((1.0f - mStartFraction) / 1.0f * mCurrentFraction + mStartFraction, 0.0f, 1.0f);
         }
 
-        /* access modifiers changed from: package-private */
-        public float getCurrentFraction() {
-            return this.mCurrentFraction;
+        public void draw(Canvas canvas, CharSequence charSequence, int n, int n2, float n3, int n4, int n5, int n6, Paint paint) {
+            paint.setAlpha((int)Math.ceil(getAlpha() * 255.0f));
+            canvas.drawText(charSequence, n, n2, n3, (float)n5, paint);
         }
 
-        /* access modifiers changed from: package-private */
-        public void setCurrentFraction(float f) {
-            this.mCurrentFraction = f;
+        float getCurrentFraction() {
+            return mCurrentFraction;
+        }
+
+        public int getSize(Paint paint, CharSequence charSequence, int n, int n2, Paint.FontMetricsInt fontMetricsInt) {
+            return (int)Math.ceil(getPaint().measureText(charSequence, 0, charSequence.length()));
+        }
+
+        void setCurrentFraction(float currentFraction) {
+            mCurrentFraction = currentFraction;
         }
     }
 }

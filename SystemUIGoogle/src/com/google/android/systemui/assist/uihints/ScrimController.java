@@ -28,8 +28,7 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
     private boolean mInFullListening = false;
     private float mInvocationProgress = 0.0f;
     private boolean mIsDozing = false;
-    /* access modifiers changed from: private */
-    public final LightnessProvider mLightnessProvider;
+    private final LightnessProvider mLightnessProvider;
     private float mMedianLightness;
     private final OverlappedElementController mOverlappedElement;
     private final PhenotypeHelper mPhenotypeHelper = new PhenotypeHelper();
@@ -37,45 +36,39 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
     private boolean mTranscriptionVisible = false;
     private final VisibilityListener mVisibilityListener;
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View}
-     arg types: [int, android.view.ViewGroup, int]
-     candidates:
-      ClspMth{android.view.LayoutInflater.inflate(org.xmlpull.v1.XmlPullParser, android.view.ViewGroup, boolean):android.view.View}
-      ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
     public ScrimController(Context context, ViewGroup viewGroup, LightnessProvider lightnessProvider, VisibilityListener visibilityListener, Runnable runnable) {
-        this.mRoot = LayoutInflater.from(context).inflate(R.layout.scrim_view, viewGroup, false);
-        this.mRoot.setBackgroundTintBlendMode(BlendMode.SRC_IN);
-        this.mFullscreenScrim = new View(context);
-        this.mFullscreenScrim.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-        this.mFullscreenScrim.setContentDescription(context.getString(R.string.assistant_scrim_label));
-        this.mFullscreenScrim.setVisibility(8);
-        this.mLightnessProvider = lightnessProvider;
-        this.mVisibilityListener = visibilityListener;
+        mRoot = LayoutInflater.from(context).inflate(R.layout.scrim_view, viewGroup, false);
+        mRoot.setBackgroundTintBlendMode(BlendMode.SRC_IN);
+        mFullscreenScrim = new View(context);
+        mFullscreenScrim.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+        mFullscreenScrim.setContentDescription(context.getString(R.string.assistant_scrim_label));
+        mFullscreenScrim.setVisibility(8);
+        mLightnessProvider = lightnessProvider;
+        mVisibilityListener = visibilityListener;
         mRoot.setOnClickListener(view -> runnable.run());
         mFullscreenScrim.setOnClickListener(view -> runnable.run());
-        this.mOverlappedElement = new OverlappedElementController(context);
-        viewGroup.addView(this.mFullscreenScrim);
-        viewGroup.addView(this.mRoot);
+        mOverlappedElement = new OverlappedElementController(context);
+        viewGroup.addView(mFullscreenScrim);
+        viewGroup.addView(mRoot);
     }
 
     public Rect getTouchableRegion() {
         Rect rect = new Rect();
-        if (this.mFullscreenScrim.getVisibility() == 0) {
-            this.mFullscreenScrim.getBoundsOnScreen(rect);
+        if (mFullscreenScrim.getVisibility() == 0) {
+            mFullscreenScrim.getBoundsOnScreen(rect);
         } else {
-            this.mRoot.getBoundsOnScreen(rect);
-            rect.top = rect.bottom - this.mRoot.getContext().getResources().getDimensionPixelSize(R.dimen.scrim_touchable_height);
+            mRoot.getBoundsOnScreen(rect);
+            rect.top = rect.bottom - mRoot.getContext().getResources().getDimensionPixelSize(R.dimen.scrim_touchable_height);
         }
         return rect;
     }
 
     public boolean isVisible() {
-        return this.mRoot.getVisibility() == 0;
+        return mRoot.getVisibility() == 0;
     }
 
     public IBinder getSurfaceControllerHandle() {
-        View view = this.mFullscreenScrim.getVisibility() == 0 ? this.mFullscreenScrim : this.mRoot;
+        View view = mFullscreenScrim.getVisibility() == 0 ? mFullscreenScrim : mRoot;
         if (view.getViewRootImpl() == null) {
             return null;
         }
@@ -84,73 +77,64 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
 
     public void onStateChanged(TranscriptionController.State state, TranscriptionController.State state2) {
         boolean z = state2 != TranscriptionController.State.NONE;
-        if (this.mTranscriptionVisible != z) {
-            this.mTranscriptionVisible = z;
+        if (mTranscriptionVisible != z) {
+            mTranscriptionVisible = z;
             refresh();
         }
     }
 
     public void setCardVisible(boolean z, boolean z2, boolean z3) {
-        this.mCardVisible = z;
-        this.mCardTransitionAnimated = z2;
-        this.mCardForcesScrimGone = z3;
+        mCardVisible = z;
+        mCardTransitionAnimated = z2;
+        mCardForcesScrimGone = z3;
         refresh();
     }
 
     public void setInvocationProgress(float f) {
         float constrain = MathUtils.constrain(f, 0.0f, 1.0f);
-        if (this.mInvocationProgress != constrain) {
-            this.mInvocationProgress = constrain;
+        if (mInvocationProgress != constrain) {
+            mInvocationProgress = constrain;
             refresh();
         }
     }
 
     public void setInFullListening(boolean z) {
-        this.mInFullListening = z;
+        mInFullListening = z;
         refresh();
-        this.mRoot.sendAccessibilityEvent(8);
+        mRoot.sendAccessibilityEvent(8);
     }
 
     public void setIsDozing(boolean z) {
-        this.mIsDozing = z;
+        mIsDozing = z;
         refresh();
     }
 
     public void setMedianLightness(float f) {
-        this.mHaveAccurateLightness = true;
-        this.mMedianLightness = f;
+        mHaveAccurateLightness = true;
+        mMedianLightness = f;
         refresh();
     }
 
     public void onLightnessInvalidated() {
-        this.mHaveAccurateLightness = false;
+        mHaveAccurateLightness = false;
         refresh();
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{java.lang.Math.min(float, float):float}
-     arg types: [int, float]
-     candidates:
-      ClspMth{java.lang.Math.min(double, double):double}
-      ClspMth{java.lang.Math.min(long, long):long}
-      ClspMth{java.lang.Math.min(int, int):int}
-      ClspMth{java.lang.Math.min(float, float):float} */
-    /* access modifiers changed from: package-private */
-    public void refresh() {
-        if (!this.mHaveAccurateLightness || this.mIsDozing) {
+    void refresh() {
+        if (!mHaveAccurateLightness || mIsDozing) {
             setRelativeAlpha(0.0f, false);
-        } else if (this.mCardVisible && this.mCardForcesScrimGone) {
-            setRelativeAlpha(0.0f, this.mCardTransitionAnimated);
-        } else if (this.mInFullListening || this.mTranscriptionVisible) {
-            if (!this.mCardVisible || isVisible()) {
+        } else if (mCardVisible && mCardForcesScrimGone) {
+            setRelativeAlpha(0.0f, mCardTransitionAnimated);
+        } else if (mInFullListening || mTranscriptionVisible) {
+            if (!mCardVisible || isVisible()) {
                 setRelativeAlpha(1.0f, false);
             } else {
-                setRelativeAlpha(0.0f, this.mCardTransitionAnimated);
+                setRelativeAlpha(0.0f, mCardTransitionAnimated);
             }
-        } else if (this.mCardVisible) {
-            setRelativeAlpha(0.0f, this.mCardTransitionAnimated);
+        } else if (mCardVisible) {
+            setRelativeAlpha(0.0f, mCardTransitionAnimated);
         } else {
-            float f = this.mInvocationProgress;
+            float f = mInvocationProgress;
             if (f > 0.0f) {
                 setRelativeAlpha(Math.min(1.0f, f), false);
             } else {
@@ -160,18 +144,17 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
     }
 
     public boolean isDark() {
-        return this.mMedianLightness <= NgaUiController.getDarkUiThreshold();
+        return mMedianLightness <= NgaUiController.getDarkUiThreshold();
     }
 
-    /* access modifiers changed from: protected */
-    public void setRelativeAlpha(float f, boolean z) {
+    protected void setRelativeAlpha(float f, boolean z) {
         setAlphaAnimator(null);
-        if (!this.mHaveAccurateLightness && f > 0.0f) {
+        if (!mHaveAccurateLightness && f > 0.0f) {
             return;
         }
         if (f > 0.0f) {
-            if (this.mRoot.getVisibility() != 0) {
-                this.mLightnessProvider.setMuted(true);
+            if (mRoot.getVisibility() != 0) {
+                mLightnessProvider.setMuted(true);
                 updateColor();
                 setVisibility(0);
             }
@@ -183,17 +166,16 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
         } else if (z) {
             ValueAnimator createRelativeAlphaAnimator = createRelativeAlphaAnimator(f);
             createRelativeAlphaAnimator.addListener(new AnimatorListenerAdapter() {
-                /* class com.google.android.systemui.assist.uihints.ScrimController.C15681 */
                 private boolean mCancelled = false;
 
                 public void onAnimationCancel(Animator animator) {
                     super.onAnimationCancel(animator);
-                    this.mCancelled = true;
+                    mCancelled = true;
                 }
 
                 public void onAnimationEnd(Animator animator) {
                     super.onAnimationEnd(animator);
-                    if (!this.mCancelled) {
+                    if (!mCancelled) {
                         mLightnessProvider.setMuted(false);
                         setVisibility(8);
                     }
@@ -202,77 +184,60 @@ public class ScrimController implements TranscriptionController.TranscriptionSpa
             setAlphaAnimator(createRelativeAlphaAnimator);
         } else {
             setAlpha(f);
-            this.mLightnessProvider.setMuted(false);
+            mLightnessProvider.setMuted(false);
             setVisibility(8);
         }
     }
 
     private boolean shouldShowFullScreenScrim() {
-        return !this.mPhenotypeHelper.getBoolean("assist_tap_passthrough", true);
+        return !mPhenotypeHelper.getBoolean("assist_tap_passthrough", true);
     }
 
-    /* access modifiers changed from: private */
-    public void setVisibility(int i) {
-        if (i != this.mRoot.getVisibility()) {
-            this.mRoot.setVisibility(i);
+    private void setVisibility(int i) {
+        if (i != mRoot.getVisibility()) {
+            mRoot.setVisibility(i);
             if (shouldShowFullScreenScrim() || i == 8) {
-                this.mFullscreenScrim.setVisibility(i);
+                mFullscreenScrim.setVisibility(i);
             }
-            this.mVisibilityListener.onVisibilityChanged(this.mRoot.getVisibility());
+            mVisibilityListener.onVisibilityChanged(mRoot.getVisibility());
             if (i != 0) {
-                this.mOverlappedElement.setAlpha(1.0f, false);
+                mOverlappedElement.setAlpha(1.0f, false);
                 refresh();
             }
-            View view = this.mRoot;
-            view.setBackground(view.getVisibility() == 0 ? this.mRoot.getContext().getDrawable(R.drawable.scrim_strip) : null);
+            mRoot.setBackground(mRoot.getVisibility() == 0 ? mRoot.getContext().getDrawable(R.drawable.scrim_strip) : null);
         }
     }
 
     private void setAlpha(float f) {
-        this.mRoot.setAlpha(f);
-        this.mFullscreenScrim.setAlpha(f);
-        this.mOverlappedElement.setAlpha(1.0f - f, false);
+        mRoot.setAlpha(f);
+        mFullscreenScrim.setAlpha(f);
+        mOverlappedElement.setAlpha(1.0f - f, false);
     }
 
     private ValueAnimator createRelativeAlphaAnimator(float f) {
-        ValueAnimator duration = ValueAnimator.ofFloat(this.mRoot.getAlpha(), f * 1.0f).setDuration((long) ((Math.abs(f - this.mRoot.getAlpha()) / 1.0f) * 300.0f));
+        ValueAnimator duration = ValueAnimator.ofFloat(mRoot.getAlpha(), f * 1.0f).setDuration((long) ((Math.abs(f - mRoot.getAlpha()) / 1.0f) * 300.0f));
         duration.setInterpolator(ALPHA_INTERPOLATOR);
-        duration.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$ScrimController$55tqo6T7cBCnmVcDXpkt5aUf8 */
-
-            public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                lambda$createRelativeAlphaAnimator$1$ScrimController(valueAnimator);
-            }
-        });
+        duration.addUpdateListener(valueAnimator -> setAlpha((Float) valueAnimator.getAnimatedValue()));
         return duration;
     }
 
-    public /* synthetic */ void lambda$createRelativeAlphaAnimator$1$ScrimController(ValueAnimator valueAnimator) {
-        setAlpha(((Float) valueAnimator.getAnimatedValue()).floatValue());
-    }
-
-    /* access modifiers changed from: private */
-    public void setAlphaAnimator(ValueAnimator valueAnimator) {
-        ValueAnimator valueAnimator2 = this.mAlphaAnimator;
-        if (valueAnimator2 != null && valueAnimator2.isRunning()) {
-            this.mAlphaAnimator.cancel();
+    private void setAlphaAnimator(ValueAnimator valueAnimator) {
+        if (mAlphaAnimator != null && mAlphaAnimator.isRunning()) {
+            mAlphaAnimator.cancel();
         }
-        this.mAlphaAnimator = valueAnimator;
-        ValueAnimator valueAnimator3 = this.mAlphaAnimator;
-        if (valueAnimator3 != null) {
-            valueAnimator3.addListener(new AnimatorListenerAdapter() {
-                /* class com.google.android.systemui.assist.uihints.ScrimController.C15692 */
-
+        mAlphaAnimator = valueAnimator;
+        if (mAlphaAnimator != null) {
+            mAlphaAnimator.addListener(new AnimatorListenerAdapter() {
                 public void onAnimationEnd(Animator animator) {
                     super.onAnimationEnd(animator);
                     setAlphaAnimator(null);
                 }
             });
-            this.mAlphaAnimator.start();
+            mAlphaAnimator.start();
         }
     }
 
     private void updateColor() {
-        this.mRoot.setBackgroundTintList(ColorStateList.valueOf(isDark() ? -16777216 : -1));
+        mRoot.setBackgroundTintList(ColorStateList.valueOf(isDark() ? -16777216 : -1));
     }
 }

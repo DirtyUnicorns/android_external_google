@@ -32,23 +32,24 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
 
     public ZeroStateIconView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
-        this.COLOR_DARK_BACKGROUND = getResources().getColor(R.color.transcription_icon_dark);
-        this.COLOR_LIGHT_BACKGROUND = getResources().getColor(R.color.transcription_icon_light);
-        this.mMargin = getResources().getDimensionPixelSize(R.dimen.zerostate_icon_bottom_margin);
+        COLOR_DARK_BACKGROUND = getResources().getColor(R.color.transcription_icon_dark);
+        COLOR_LIGHT_BACKGROUND = getResources().getColor(R.color.transcription_icon_light);
+        mMargin = getResources().getDimensionPixelSize(R.dimen.zerostate_icon_bottom_margin);
     }
 
     public void onBottomMarginChanged(int i) {
-        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = i + this.mMargin;
+        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = i + mMargin;
         requestLayout();
     }
 
-    /* access modifiers changed from: protected */
-    public void onFinishInflate() {
-        this.mZeroStateIcon = (ImageView) findViewById(R.id.zerostate_icon_image);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mZeroStateIcon = findViewById(R.id.zerostate_icon_image);
     }
 
     public void setHasDarkBackground(boolean z) {
-        this.mZeroStateIcon.setImageTintList(ColorStateList.valueOf(z ? this.COLOR_DARK_BACKGROUND : this.COLOR_LIGHT_BACKGROUND));
+        mZeroStateIcon.setImageTintList(ColorStateList.valueOf(z ? COLOR_DARK_BACKGROUND : COLOR_LIGHT_BACKGROUND));
     }
 
     public void show(PendingIntent pendingIntent) {
@@ -57,7 +58,7 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
             setVisibility(0);
             return;
         }
-        this.mZeroStateIcon.setOnClickListener(null);
+        mZeroStateIcon.setOnClickListener(null);
         setVisibility(8);
         Log.w("ZeroStateIconView", "No zerostate intent specified");
     }
@@ -74,8 +75,7 @@ public class ZeroStateIconView extends FrameLayout implements OverlayUiHost.Bott
         setVisibility(8);
     }
 
-    /* access modifiers changed from: package-private */
-    public void onDensityChanged() {
-        this.mZeroStateIcon.setImageDrawable(getContext().getDrawable(R.drawable.ic_explore));
+    void onDensityChanged() {
+        mZeroStateIcon.setImageDrawable(getContext().getDrawable(R.drawable.ic_explore));
     }
 }

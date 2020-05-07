@@ -16,16 +16,17 @@ import android.util.Log;
 import com.android.internal.widget.ILockSettings;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OpaEnabledReceiver {
-    private BroadcastReceiver mBroadcastReceiver = new OpaEnabledBroadcastReceiver();
+    private BroadcastReceiver mBroadcastReceiver;
     private ContentObserver mContentObserver;
     private ContentResolver mContentResolver;
     public Context mContext;
     private boolean mIsAGSAAssistant;
     private boolean mIsOpaEligible;
     private boolean mIsOpaEnabled;
-    private List<OpaEnabledListener> mListeners = new ArrayList();
+    private List<OpaEnabledListener> mListeners;
     public ILockSettings mLockSettings;
 
     private class AssistantContentObserver extends ContentObserver {
@@ -34,10 +35,9 @@ public class OpaEnabledReceiver {
         }
 
         public void onChange(boolean z, Uri uri) {
-            OpaEnabledReceiver opaEnabledReceiver = OpaEnabledReceiver.this;
+            final OpaEnabledReceiver opaEnabledReceiver = OpaEnabledReceiver.this;
             opaEnabledReceiver.updateOpaEnabledState(opaEnabledReceiver.mContext);
-            OpaEnabledReceiver opaEnabledReceiver2 = OpaEnabledReceiver.this;
-            opaEnabledReceiver2.dispatchOpaEnabledState(opaEnabledReceiver2.mContext);
+            opaEnabledReceiver.dispatchOpaEnabledState(opaEnabledReceiver.mContext);
         }
     }
 
@@ -46,9 +46,9 @@ public class OpaEnabledReceiver {
         }
 
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("com.google.android.systemui.OPA_ENABLED")) {
+            if (Objects.equals(intent.getAction(), "com.google.android.systemui.OPA_ENABLED")) {
                 Settings.Secure.putIntForUser(context.getContentResolver(), "systemui.google.opa_enabled", intent.getBooleanExtra("OPA_ENABLED", false) ? 1 : 0, -2);
-            } else if (intent.getAction().equals("com.google.android.systemui.OPA_USER_ENABLED")) {
+            } else if (Objects.equals(intent.getAction(), "com.google.android.systemui.OPA_USER_ENABLED")) {
                 try {
                     mLockSettings.setBoolean("systemui.google.opa_user_enabled", intent.getBooleanExtra("OPA_USER_ENABLED", false), -2);
                 } catch (RemoteException e) {
@@ -61,6 +61,8 @@ public class OpaEnabledReceiver {
     }
 
     public OpaEnabledReceiver(Context context) {
+        mBroadcastReceiver = new OpaEnabledBroadcastReceiver();
+        mListeners = new ArrayList<>();
         mContext = context;
         mContentResolver = mContext.getContentResolver();
         mContentObserver = new AssistantContentObserver(mContext);
@@ -88,7 +90,7 @@ public class OpaEnabledReceiver {
         if (Settings.Secure.getIntForUser(context.getContentResolver(), "systemui.google.opa_enabled", 0, -2) != 0) {
             return true;
         }
-        return true;
+        return false;
     }
 
     private boolean isOpaEnabled(Context context) {
@@ -111,16 +113,15 @@ public class OpaEnabledReceiver {
     }
 
     private void dispatchOpaEnabledState(Context context) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Dispatching OPA eligble = ");
-        sb.append(mIsOpaEligible);
-        sb.append("; AGSA = ");
-        sb.append(mIsAGSAAssistant);
-        sb.append("; OPA enabled = ");
-        sb.append(mIsOpaEnabled);
-        Log.i("OpaEnabledReceiver", sb.toString());
-        for (int i = 0; i < this.mListeners.size(); ++i) {
-            this.mListeners.get(i).onOpaEnabledReceived(context, mIsOpaEligible, mIsAGSAAssistant, mIsOpaEnabled);
+        String sb = "Dispatching OPA eligble = " +
+                mIsOpaEligible +
+                "; AGSA = " +
+                mIsAGSAAssistant +
+                "; OPA enabled = " +
+                mIsOpaEnabled;
+        Log.i("OpaEnabledReceiver", sb);
+        for (int i = 0; i < mListeners.size(); ++i) {
+            mListeners.get(i).onOpaEnabledReceived(context, mIsOpaEligible, mIsAGSAAssistant, mIsOpaEnabled);
         }
     }
 

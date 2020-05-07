@@ -85,8 +85,8 @@ public final class OpaUtils {
     static ObjectAnimator getAlphaObjectAnimator(View view, float f, int i, int i2, Interpolator interpolator) {
         ObjectAnimator ofFloat = ObjectAnimator.ofFloat(view, View.ALPHA, f);
         ofFloat.setInterpolator(interpolator);
-        ofFloat.setDuration((long) i);
-        ofFloat.setStartDelay((long) i2);
+        ofFloat.setDuration(i);
+        ofFloat.setStartDelay(i2);
         return ofFloat;
     }
 
@@ -104,21 +104,23 @@ public final class OpaUtils {
     }
 
     static Animator getLongestAnim(ArraySet<Animator> arraySet) {
-        long j = Long.MIN_VALUE;
+        long l = Long.MIN_VALUE;
         Animator animator = null;
-        for (int size = arraySet.size() - 1; size >= 0; size--) {
-            Animator valueAt = arraySet.valueAt(size);
-            if (valueAt.getTotalDuration() > j) {
-                j = valueAt.getTotalDuration();
-                animator = valueAt;
+        for (int i = arraySet.size() - 1; i >= 0; --i) {
+            Animator animator2 = arraySet.valueAt(i);
+            long l2 = l;
+            if (animator2.getTotalDuration() > l) {
+                l2 = animator2.getTotalDuration();
+                animator = animator2;
             }
+            l = l2;
         }
         return animator;
     }
 
     static ObjectAnimator getScaleObjectAnimator(View view, float f, int i, Interpolator interpolator) {
         ObjectAnimator ofPropertyValuesHolder = ObjectAnimator.ofPropertyValuesHolder(view, PropertyValuesHolder.ofFloat(View.SCALE_X, f), PropertyValuesHolder.ofFloat(View.SCALE_Y, f));
-        ofPropertyValuesHolder.setDuration((long) i);
+        ofPropertyValuesHolder.setDuration(i);
         ofPropertyValuesHolder.setInterpolator(interpolator);
         return ofPropertyValuesHolder;
     }
@@ -126,14 +128,14 @@ public final class OpaUtils {
     static ObjectAnimator getTranslationObjectAnimatorY(View view, Interpolator interpolator, float f, float f2, int i) {
         ObjectAnimator ofFloat = ObjectAnimator.ofFloat(view, View.Y, f2, f2 + f);
         ofFloat.setInterpolator(interpolator);
-        ofFloat.setDuration((long) i);
+        ofFloat.setDuration(i);
         return ofFloat;
     }
 
     static ObjectAnimator getTranslationObjectAnimatorX(View view, Interpolator interpolator, float f, float f2, int i) {
         ObjectAnimator ofFloat = ObjectAnimator.ofFloat(view, View.X, f2, f2 + f);
         ofFloat.setInterpolator(interpolator);
-        ofFloat.setDuration((long) i);
+        ofFloat.setDuration(i);
         return ofFloat;
     }
 

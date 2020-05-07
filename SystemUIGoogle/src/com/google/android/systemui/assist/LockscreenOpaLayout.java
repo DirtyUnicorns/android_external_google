@@ -24,12 +24,9 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
     private final ArrayList<View> mAnimatedViews = new ArrayList<>();
     private View mBlue;
     private AnimatorSet mCannedAnimatorSet;
-    /* access modifiers changed from: private */
-    public final ArraySet<Animator> mCurrentAnimators = new ArraySet<>();
-    /* access modifiers changed from: private */
-    public AnimatorSet mGestureAnimatorSet;
-    /* access modifiers changed from: private */
-    public int mGestureState = 0;
+    private final ArraySet<Animator> mCurrentAnimators = new ArraySet<>();
+    private AnimatorSet mGestureAnimatorSet;
+    private int mGestureState = 0;
     private View mGreen;
     private AnimatorSet mLineAnimatorSet;
     private View mRed;
@@ -52,65 +49,60 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
         super(context, attributeSet, i);
     }
 
-    /* access modifiers changed from: protected */
-    public void onFinishInflate() {
+    @Override
+    protected void onFinishInflate() {
         super.onFinishInflate();
-        this.mResources = getResources();
-        this.mBlue = findViewById(R.id.blue);
-        this.mRed = findViewById(R.id.red);
-        this.mYellow = findViewById(R.id.yellow);
-        this.mGreen = findViewById(R.id.green);
-        this.mAnimatedViews.add(this.mBlue);
-        this.mAnimatedViews.add(this.mRed);
-        this.mAnimatedViews.add(this.mYellow);
-        this.mAnimatedViews.add(this.mGreen);
+        mResources = getResources();
+        mBlue = findViewById(R.id.blue);
+        mRed = findViewById(R.id.red);
+        mYellow = findViewById(R.id.yellow);
+        mGreen = findViewById(R.id.green);
+        mAnimatedViews.add(mBlue);
+        mAnimatedViews.add(mRed);
+        mAnimatedViews.add(mYellow);
+        mAnimatedViews.add(mGreen);
     }
 
     private void startCannedAnimation() {
         if (isAttachedToWindow()) {
             skipToStartingValue();
-            this.mGestureState = 3;
-            this.mGestureAnimatorSet = getCannedAnimatorSet();
-            this.mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
-                /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15431 */
-
+            mGestureState = 3;
+            mGestureAnimatorSet = getCannedAnimatorSet();
+            mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
                 public void onAnimationEnd(Animator animator) {
-                    int unused = mGestureState = 1;
+                    mGestureState = 1;
                     LockscreenOpaLayout lockscreenOpaLayout = LockscreenOpaLayout.this;
-                    AnimatorSet unused2 = lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
+                    lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
                     mGestureAnimatorSet.setCurrentPlayTime(0);
                 }
             });
-            this.mGestureAnimatorSet.start();
+            mGestureAnimatorSet.start();
             return;
         }
         skipToStartingValue();
     }
 
-    /* access modifiers changed from: private */
-    public void startRetractAnimation() {
+    private void startRetractAnimation() {
         if (isAttachedToWindow()) {
-            AnimatorSet animatorSet = this.mGestureAnimatorSet;
-            if (animatorSet != null) {
-                animatorSet.removeAllListeners();
-                this.mGestureAnimatorSet.cancel();
+            if (mGestureAnimatorSet != null) {
+                mGestureAnimatorSet.removeAllListeners();
+                mGestureAnimatorSet.cancel();
             }
-            this.mCurrentAnimators.clear();
-            this.mCurrentAnimators.addAll((ArraySet) getRetractAnimatorSet());
-            startAll(this.mCurrentAnimators);
-            this.mGestureState = 4;
+            mCurrentAnimators.clear();
+            mCurrentAnimators.addAll(getRetractAnimatorSet());
+            startAll(mCurrentAnimators);
+            mGestureState = 4;
             return;
         }
         skipToStartingValue();
     }
 
-    /* access modifiers changed from: private */
-    public void startCollapseAnimation() {
+    private void startCollapseAnimation() {
         if (isAttachedToWindow()) {
-            this.mCurrentAnimators.clear();
-            this.mCurrentAnimators.addAll((ArraySet) getCollapseAnimatorSet());
-            startAll(this.mCurrentAnimators);
-            this.mGestureState = 2;
+            mCurrentAnimators.clear();
+            mCurrentAnimators.addAll(getCollapseAnimatorSet());
+            startAll(mCurrentAnimators);
+            mGestureState = 2;
             return;
         }
         skipToStartingValue();
@@ -124,18 +116,16 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
 
     private ArraySet<Animator> getRetractAnimatorSet() {
         ArraySet<Animator> arraySet = new ArraySet<>();
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mRed, OpaUtils.INTERPOLATOR_40_OUT, 190));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_OUT, 190));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_OUT, 190));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_OUT, 190));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mRed, OpaUtils.INTERPOLATOR_40_OUT, 190));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mBlue, OpaUtils.INTERPOLATOR_40_OUT, 190));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mGreen, OpaUtils.INTERPOLATOR_40_OUT, 190));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mYellow, OpaUtils.INTERPOLATOR_40_OUT, 190));
         OpaUtils.getLongestAnim(arraySet).addListener(new AnimatorListenerAdapter() {
-            /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15442 */
-
             public void onAnimationEnd(Animator animator) {
                 mCurrentAnimators.clear();
                 skipToStartingValue();
-                int unused = mGestureState = 0;
-                AnimatorSet unused2 = mGestureAnimatorSet = null;
+                mGestureState = 0;
+                mGestureAnimatorSet = null;
             }
         });
         return arraySet;
@@ -143,105 +133,83 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
 
     private ArraySet<Animator> getCollapseAnimatorSet() {
         ArraySet<Animator> arraySet = new ArraySet<>();
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mRed, OpaUtils.INTERPOLATOR_40_OUT, 133));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_OUT, 150));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_OUT, 133));
-        arraySet.add(OpaUtils.getTranslationAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_OUT, 150));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mRed, OpaUtils.INTERPOLATOR_40_OUT, 133));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mBlue, OpaUtils.INTERPOLATOR_40_OUT, 150));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mYellow, OpaUtils.INTERPOLATOR_40_OUT, 133));
+        arraySet.add(OpaUtils.getTranslationAnimatorX(mGreen, OpaUtils.INTERPOLATOR_40_OUT, 150));
         OpaUtils.getLongestAnim(arraySet).addListener(new AnimatorListenerAdapter() {
-            /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15453 */
-
             public void onAnimationEnd(Animator animator) {
                 mCurrentAnimators.clear();
-                AnimatorSet unused = mGestureAnimatorSet = null;
-                int unused2 = mGestureState = 0;
+                mGestureAnimatorSet = null;
+                mGestureState = 0;
                 skipToStartingValue();
             }
         });
         return arraySet;
     }
 
-    /* access modifiers changed from: private */
-    public void skipToStartingValue() {
-        int size = this.mAnimatedViews.size();
-        for (int i = 0; i < size; i++) {
-            View view = this.mAnimatedViews.get(i);
+    private void skipToStartingValue() {
+        for (int i = 0; i < mAnimatedViews.size(); i++) {
+            View view = mAnimatedViews.get(i);
             view.setAlpha(0.0f);
             view.setTranslationX(0.0f);
         }
     }
 
     public void onRelease() {
-        int i = this.mGestureState;
-        if (i != 2 && i != 4) {
-            if (i == 3) {
-                if (this.mGestureAnimatorSet.isRunning()) {
-                    this.mGestureAnimatorSet.removeAllListeners();
-                    this.mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
-                        /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15464 */
-
+        if (mGestureState != 2 && mGestureState != 4) {
+            if (mGestureState == 3) {
+                if (mGestureAnimatorSet.isRunning()) {
+                    mGestureAnimatorSet.removeAllListeners();
+                    mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
                         public void onAnimationEnd(Animator animator) {
                             startRetractAnimation();
                         }
                     });
                     return;
                 }
-                this.mGestureState = 4;
+                mGestureState = 4;
                 startRetractAnimation();
-            } else if (i == 1) {
+            } else if (mGestureState == 1) {
                 startRetractAnimation();
             }
         }
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{java.lang.Math.max(long, long):long}
-     arg types: [int, long]
-     candidates:
-      ClspMth{java.lang.Math.max(double, double):double}
-      ClspMth{java.lang.Math.max(int, int):int}
-      ClspMth{java.lang.Math.max(float, float):float}
-      ClspMth{java.lang.Math.max(long, long):long} */
     public void onProgress(float f, int i) {
-        int i2 = this.mGestureState;
-        if (i2 != 2) {
-            if (i2 == 4) {
+        if (mGestureState != 2) {
+            if (mGestureState == 4) {
                 endCurrentAnimation();
             }
             if (f == 0.0f) {
-                this.mGestureState = 0;
+                mGestureState = 0;
                 return;
             }
             long max = Math.max(0L, ((long) (f * 533.0f)) - 167);
-            int i3 = this.mGestureState;
-            if (i3 == 0) {
+            if (mGestureState == 0) {
                 startCannedAnimation();
-            } else if (i3 == 1) {
-                this.mGestureAnimatorSet.setCurrentPlayTime(max);
-            } else if (i3 == 3 && max >= 167) {
-                this.mGestureAnimatorSet.end();
-                if (this.mGestureState == 1) {
-                    this.mGestureAnimatorSet.setCurrentPlayTime(max);
+            } else if (mGestureState == 1) {
+                mGestureAnimatorSet.setCurrentPlayTime(max);
+            } else if (mGestureState == 3 && max >= 167) {
+                mGestureAnimatorSet.end();
+                if (mGestureState == 1) {
+                    mGestureAnimatorSet.setCurrentPlayTime(max);
                 }
             }
         }
     }
 
     public void onResolve(GestureSensor.DetectionProperties detectionProperties) {
-        int i = this.mGestureState;
-        if (i != 4 && i != 2) {
-            if (i == 3) {
-                this.mGestureState = 2;
-                this.mGestureAnimatorSet.removeAllListeners();
-                this.mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
-                    /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15475 */
-
+        if (mGestureState != 4 && mGestureState != 2) {
+            if (mGestureState == 3) {
+                mGestureState = 2;
+                mGestureAnimatorSet.removeAllListeners();
+                mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
                     public void onAnimationEnd(Animator animator) {
                         LockscreenOpaLayout lockscreenOpaLayout = LockscreenOpaLayout.this;
-                        AnimatorSet unused = lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
+                        lockscreenOpaLayout.mGestureAnimatorSet = lockscreenOpaLayout.getLineAnimatorSet();
                         mGestureAnimatorSet.removeAllListeners();
                         mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
-                            /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15475.C15481 */
-
                             public void onAnimationEnd(Animator animator) {
                                 startCollapseAnimation();
                             }
@@ -251,62 +219,71 @@ public class LockscreenOpaLayout extends FrameLayout implements FeedbackEffect {
                 });
                 return;
             }
-            AnimatorSet animatorSet = this.mGestureAnimatorSet;
-            if (animatorSet != null) {
-                this.mGestureState = 2;
-                animatorSet.removeAllListeners();
-                this.mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
-                    /* class com.google.android.systemui.assist.LockscreenOpaLayout.C15496 */
-
+            if (mGestureAnimatorSet != null) {
+                mGestureState = 2;
+                mGestureAnimatorSet.removeAllListeners();
+                mGestureAnimatorSet.addListener(new AnimatorListenerAdapter() {
                     public void onAnimationEnd(Animator animator) {
                         startCollapseAnimation();
                     }
                 });
-                if (!this.mGestureAnimatorSet.isStarted()) {
-                    this.mGestureAnimatorSet.start();
+                if (!mGestureAnimatorSet.isStarted()) {
+                    mGestureAnimatorSet.start();
                 }
             }
         }
     }
 
     private AnimatorSet getCannedAnimatorSet() {
-        AnimatorSet animatorSet = this.mCannedAnimatorSet;
-        if (animatorSet != null) {
-            animatorSet.removeAllListeners();
-            this.mCannedAnimatorSet.cancel();
-            return this.mCannedAnimatorSet;
+        if (mCannedAnimatorSet != null) {
+            mCannedAnimatorSet.removeAllListeners();
+            mCannedAnimatorSet.cancel();
+            return mCannedAnimatorSet;
         }
-        this.mCannedAnimatorSet = new AnimatorSet();
-        ObjectAnimator translationObjectAnimatorX = OpaUtils.getTranslationObjectAnimatorX(this.mRed, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_ry), this.mRed.getX(), 83);
+        mCannedAnimatorSet = new AnimatorSet();
+        ObjectAnimator translationObjectAnimatorX = OpaUtils.getTranslationObjectAnimatorX(mRed, OpaUtils.INTERPOLATOR_40_40,
+                -OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_canned_ry), mRed.getX(), 83);
         translationObjectAnimatorX.setStartDelay(17);
-        ObjectAnimator translationObjectAnimatorX2 = OpaUtils.getTranslationObjectAnimatorX(this.mYellow, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_ry), this.mYellow.getX(), 83);
+        ObjectAnimator translationObjectAnimatorX2 = OpaUtils.getTranslationObjectAnimatorX(mYellow, OpaUtils.INTERPOLATOR_40_40,
+                OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_canned_ry), mYellow.getX(), 83);
         translationObjectAnimatorX2.setStartDelay(17);
-        this.mCannedAnimatorSet.play(translationObjectAnimatorX).with(translationObjectAnimatorX2).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, OpaUtils.INTERPOLATOR_40_40, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_bg), this.mBlue.getX(), 167)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, OpaUtils.INTERPOLATOR_40_40, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_canned_bg), this.mGreen.getX(), 167)).with(OpaUtils.getAlphaObjectAnimator(this.mRed, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mYellow, 1.0f, 50, 130, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mBlue, 1.0f, 50, 113, Interpolators.LINEAR)).with(OpaUtils.getAlphaObjectAnimator(this.mGreen, 1.0f, 50, 113, Interpolators.LINEAR));
-        return this.mCannedAnimatorSet;
+        mCannedAnimatorSet.play(translationObjectAnimatorX).with(translationObjectAnimatorX2)
+                .with(OpaUtils.getTranslationObjectAnimatorX(mBlue, OpaUtils.INTERPOLATOR_40_40,
+                -OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_canned_bg), mBlue.getX(), 167))
+                .with(OpaUtils.getTranslationObjectAnimatorX(mGreen, OpaUtils.INTERPOLATOR_40_40,
+                OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_canned_bg), mGreen.getX(), 167))
+                .with(OpaUtils.getAlphaObjectAnimator(mRed, 1.0f, 50, 130, Interpolators.LINEAR))
+                .with(OpaUtils.getAlphaObjectAnimator(mYellow, 1.0f, 50, 130, Interpolators.LINEAR))
+                .with(OpaUtils.getAlphaObjectAnimator(mBlue, 1.0f, 50, 113, Interpolators.LINEAR))
+                .with(OpaUtils.getAlphaObjectAnimator(mGreen, 1.0f, 50, 113, Interpolators.LINEAR));
+        return mCannedAnimatorSet;
     }
 
-    /* access modifiers changed from: private */
-    public AnimatorSet getLineAnimatorSet() {
-        AnimatorSet animatorSet = this.mLineAnimatorSet;
-        if (animatorSet != null) {
-            animatorSet.removeAllListeners();
-            this.mLineAnimatorSet.cancel();
-            return this.mLineAnimatorSet;
+    private AnimatorSet getLineAnimatorSet() {
+        if (mLineAnimatorSet != null) {
+            mLineAnimatorSet.removeAllListeners();
+            mLineAnimatorSet.cancel();
+            return mLineAnimatorSet;
         }
-        this.mLineAnimatorSet = new AnimatorSet();
-        this.mLineAnimatorSet.play(OpaUtils.getTranslationObjectAnimatorX(this.mRed, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_ry), this.mRed.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mYellow, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_ry), this.mYellow.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mGreen, this.INTERPOLATOR_5_100, OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_bg), this.mGreen.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(this.mBlue, this.INTERPOLATOR_5_100, -OpaUtils.getPxVal(this.mResources, R.dimen.opa_lockscreen_translation_bg), this.mBlue.getX(), 366));
-        return this.mLineAnimatorSet;
+        mLineAnimatorSet = new AnimatorSet();
+        mLineAnimatorSet.play(OpaUtils.getTranslationObjectAnimatorX(mRed, INTERPOLATOR_5_100, -OpaUtils.getPxVal(mResources,
+                R.dimen.opa_lockscreen_translation_ry), mRed.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(mYellow,
+                INTERPOLATOR_5_100, OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_translation_ry), mYellow.getX(), 366))
+                .with(OpaUtils.getTranslationObjectAnimatorX(mGreen, INTERPOLATOR_5_100, OpaUtils.getPxVal(mResources,
+                R.dimen.opa_lockscreen_translation_bg), mGreen.getX(), 366)).with(OpaUtils.getTranslationObjectAnimatorX(mBlue,
+                INTERPOLATOR_5_100, -OpaUtils.getPxVal(mResources, R.dimen.opa_lockscreen_translation_bg), mBlue.getX(), 366));
+        return mLineAnimatorSet;
     }
 
     private void endCurrentAnimation() {
-        if (!this.mCurrentAnimators.isEmpty()) {
-            for (int size = this.mCurrentAnimators.size() - 1; size >= 0; size--) {
-                Animator valueAt = this.mCurrentAnimators.valueAt(size);
+        if (!mCurrentAnimators.isEmpty()) {
+            for (int size = mCurrentAnimators.size() - 1; size >= 0; size--) {
+                Animator valueAt = mCurrentAnimators.valueAt(size);
                 valueAt.removeAllListeners();
                 valueAt.end();
             }
-            this.mCurrentAnimators.clear();
+            mCurrentAnimators.clear();
         }
-        this.mGestureState = 0;
+        mGestureState = 0;
     }
 }

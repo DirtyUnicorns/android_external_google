@@ -18,6 +18,7 @@ import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.systemui.Dependency;
 import com.android.systemui.assist.AssistHandleBehaviorController;
 import com.android.systemui.assist.AssistManager;
+import com.android.systemui.assist.AssistManager.UiController;
 import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.NavigationModeController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
@@ -27,64 +28,54 @@ import com.google.android.systemui.assist.uihints.NgaUiController;
 import java.util.Objects;
 
 public class AssistManagerGoogle extends AssistManager {
-    private boolean mCheckAssistantStatus = true;
+    private boolean mCheckAssistantStatus;
     private final GoogleDefaultUiController mDefaultUiController;
-    private boolean mIsGoogleAssistant = false;
+    private boolean mIsGoogleAssistant;
     private int mNavigationMode;
-    private DeviceProvisionedController mDeviceProvisionedController;
-
-    /* access modifiers changed from: private */
-    public boolean mNgaPresent = false;
-    /* access modifiers changed from: private */
-    public final NgaUiController mNgaUiController;
-    private final OpaEnabledDispatcher mOpaEnabledDispatcher = new OpaEnabledDispatcher();
-    /* access modifiers changed from: private */
-    public final OpaEnabledReceiver mOpaEnabledReceiver = new OpaEnabledReceiver(super.mContext);
-    private boolean mSqueezeSetUp = false;
-    /* access modifiers changed from: private */
-    public AssistManager.UiController mUiController;
-    private Handler mUiHandler = new Handler(Looper.getMainLooper());
+    private boolean mNgaPresent;
+    private final NgaUiController mNgaUiController;
+    private final OpaEnabledDispatcher mOpaEnabledDispatcher;
+    private final OpaEnabledReceiver mOpaEnabledReceiver;
+    private boolean mSqueezeSetUp;
+    private UiController mUiController;
+    private Handler mUiHandler;
     private final KeyguardUpdateMonitorCallback mUserSwitchCallback = new KeyguardUpdateMonitorCallback() {
-        /* class com.google.android.systemui.assist.AssistManagerGoogle.C15411 */
-
+        @Override
         public void onUserSwitching(int i) {
             mOpaEnabledReceiver.onUserSwitching(i);
         }
     };
 
-    public boolean shouldShowOrb() {
-        return false;
-    }
-
     public AssistManagerGoogle(DeviceProvisionedController deviceProvisionedController, Context context,
                                AssistUtils assistUtils, AssistHandleBehaviorController assistHandleBehaviorController) {
         super(deviceProvisionedController, context, assistUtils, assistHandleBehaviorController);
-        addOpaEnabledListener(this.mOpaEnabledDispatcher);
-        KeyguardUpdateMonitor.getInstance(super.mContext).registerCallback(this.mUserSwitchCallback);
-        this.mNgaUiController = new NgaUiController(context);
-        this.mDefaultUiController = new GoogleDefaultUiController(context);
-        this.mUiController = this.mDefaultUiController;
-        this.mNavigationMode = ((NavigationModeController) Dependency.get(NavigationModeController.class)).addListener(new NavigationModeController.ModeChangedListener() {
-            /* class com.google.android.systemui.assist.$$Lambda$AssistManagerGoogle$k2PE_qPUIsmOHQ2_0jIJz3IebA */
-
+        mCheckAssistantStatus = true;
+        mIsGoogleAssistant = false;
+        mNgaPresent = false;
+        mSqueezeSetUp = false;
+        mUiHandler = new Handler(Looper.getMainLooper());
+        mOpaEnabledReceiver = new OpaEnabledReceiver(mContext);
+        mOpaEnabledDispatcher = new OpaEnabledDispatcher();
+        addOpaEnabledListener(mOpaEnabledDispatcher);
+        KeyguardUpdateMonitor.getInstance(mContext).registerCallback(mUserSwitchCallback);
+        mNgaUiController = new NgaUiController(context);
+        mDefaultUiController = new GoogleDefaultUiController(context);
+        mUiController = mDefaultUiController;
+        mNavigationMode = ((NavigationModeController) Dependency.get(NavigationModeController.class)).addListener(
+                new NavigationModeController.ModeChangedListener() {
             public final void onNavigationModeChanged(int i) {
-                lambda$new$0$AssistManagerGoogle(i);
+                mNavigationMode = i;
             }
         });
     }
 
-    public /* synthetic */ void lambda$new$0$AssistManagerGoogle(int i) {
-        this.mNavigationMode = i;
-    }
-
     public boolean shouldUseHomeButtonAnimations() {
-        return !QuickStepContract.isGesturalMode(this.mNavigationMode);
+        return !QuickStepContract.isGesturalMode(mNavigationMode);
     }
 
-    /* access modifiers changed from: protected */
-    public void registerVoiceInteractionSessionListener() {
-        super.mAssistUtils.registerVoiceInteractionSessionListener(new IVoiceInteractionSessionListener.Stub() {
-            /* class com.google.android.systemui.assist.AssistManagerGoogle.C15422 */
+    @Override
+    protected void registerVoiceInteractionSessionListener() {
+        mAssistUtils.registerVoiceInteractionSessionListener(new IVoiceInteractionSessionListener.Stub() {
 
             public void onVoiceSessionHidden() throws RemoteException {
             }
@@ -107,83 +98,78 @@ public class AssistManagerGoogle extends AssistManager {
 
     public void onInvocationProgress(int i, float f) {
         if (f == 0.0f || f == 1.0f) {
-            this.mCheckAssistantStatus = true;
+            mCheckAssistantStatus = true;
             if (i == 2) {
                 checkSqueezeGestureStatus();
             }
         }
-        if (this.mCheckAssistantStatus) {
+        if (mCheckAssistantStatus) {
             checkAssistantStatus(null);
         }
-        if (i != 2 || this.mSqueezeSetUp) {
-            this.mUiController.onInvocationProgress(i, f);
+        if (i != 2 || mSqueezeSetUp) {
+            mUiController.onInvocationProgress(i, f);
         }
     }
 
     public void onGestureCompletion(float f) {
-        this.mCheckAssistantStatus = true;
-        this.mUiController.onGestureCompletion(f / super.mContext.getResources().getDisplayMetrics().density);
+        mCheckAssistantStatus = true;
+        mUiController.onGestureCompletion(f / mContext.getResources().getDisplayMetrics().density);
     }
 
     public void logStartAssist(int i, int i2) {
         checkAssistantStatus(null);
-        MetricsLogger.action(new LogMaker(1716).setType(1).setSubtype((((!this.mNgaPresent || !this.mIsGoogleAssistant) ? 0 : 1) << 8) | toLoggingSubType(i, i2)));
+        MetricsLogger.action(new LogMaker(1716).setType(1).setSubtype((((!mNgaPresent || !mIsGoogleAssistant) ? 0 : 1) << 8) | toLoggingSubType(i, i2)));
     }
 
     public void addOpaEnabledListener(OpaEnabledListener opaEnabledListener) {
-        this.mOpaEnabledReceiver.addOpaEnabledListener(opaEnabledListener);
+        mOpaEnabledReceiver.addOpaEnabledListener(opaEnabledListener);
     }
 
     public boolean isActiveAssistantNga() {
-        return this.mNgaPresent;
+        return mNgaPresent;
     }
 
     public void dispatchOpaEnabledState() {
-        this.mOpaEnabledReceiver.dispatchOpaEnabledState();
+        mOpaEnabledReceiver.dispatchOpaEnabledState();
     }
 
-    /* access modifiers changed from: private */
-    public void checkAssistantStatus(Bundle bundle) {
-        ComponentName assistComponentForUser = super.mAssistUtils.getAssistComponentForUser(-2);
-        boolean z = assistComponentForUser != null && "com.google.android.googlequicksearchbox/com.google.android.voiceinteraction.GsaVoiceInteractionService".equals(assistComponentForUser.flattenToString());
-        boolean extractNga = bundle == null ? this.mNgaPresent : this.mNgaUiController.extractNga(bundle);
-        if (!(z == this.mIsGoogleAssistant && extractNga == this.mNgaPresent)) {
-            if (!z || !extractNga) {
-                if (z) {
-                    // FIXME: Decompiler code smell?
-                    Objects.requireNonNull(mUiHandler);
+    private void checkAssistantStatus(Bundle bundle) {
+        ComponentName assistComponentForUser = mAssistUtils.getAssistComponentForUser(-2);
+        boolean isGoogleAssistant = assistComponentForUser != null && "com.google.android.googlequicksearchbox/com.google.android.voiceinteraction.GsaVoiceInteractionService".equals(assistComponentForUser.flattenToString());
+        boolean ngaPresent = bundle == null ? mNgaPresent : mNgaUiController.extractNga(bundle);
+        if (isGoogleAssistant != mIsGoogleAssistant || ngaPresent != mNgaPresent) {
+            if (isGoogleAssistant && ngaPresent) {
+                if (mUiController.equals(mDefaultUiController)) {
+                    Objects.requireNonNull(mUiController);
                     mUiHandler.post(() -> mUiController.hide());
-
-                    GoogleDefaultUiController googleDefaultUiController = this.mDefaultUiController;
-                    this.mUiController = googleDefaultUiController;
-                    googleDefaultUiController.setGoogleAssistant(true);
-                } else {
-                    // FIXME: Decompiler code smell?
-                    Objects.requireNonNull(mUiHandler);
-                    mUiHandler.post(() -> mUiController.hide());
-
-                    GoogleDefaultUiController googleDefaultUiController2 = this.mDefaultUiController;
-                    this.mUiController = googleDefaultUiController2;
-                    googleDefaultUiController2.setGoogleAssistant(false);
+                    mUiController = mNgaUiController;
                 }
-            } else if (this.mUiController.equals(this.mDefaultUiController)) {
-                // FIXME: Decompiler code smell?
-                Objects.requireNonNull(mUiHandler);
+            } else if (isGoogleAssistant) {
+                Objects.requireNonNull(mUiController);
                 mUiHandler.post(() -> mUiController.hide());
-
-                this.mUiController = this.mNgaUiController;
+                mUiController = mDefaultUiController;
+                mDefaultUiController.setGoogleAssistant(true);
+            } else {
+                Objects.requireNonNull(mUiController);
+                mUiHandler.post(() -> mUiController.hide());
+                mUiController = mDefaultUiController;
+                mDefaultUiController.setGoogleAssistant(false);
             }
-            this.mNgaPresent = extractNga;
-            this.mIsGoogleAssistant = z;
+            mNgaPresent = ngaPresent;
+            mIsGoogleAssistant = isGoogleAssistant;
         }
-        this.mCheckAssistantStatus = false;
+        mCheckAssistantStatus = false;
+    }
+
+    public boolean shouldShowOrb() {
+        return false;
     }
 
     private void checkSqueezeGestureStatus() {
         boolean z = false;
-        if (Settings.Secure.getInt(super.mContext.getContentResolver(), "assist_gesture_setup_complete", 0) == 1) {
+        if (Settings.Secure.getInt(mContext.getContentResolver(), "assist_gesture_setup_complete", 0) == 1) {
             z = true;
         }
-        this.mSqueezeSetUp = z;
+        mSqueezeSetUp = z;
     }
 }

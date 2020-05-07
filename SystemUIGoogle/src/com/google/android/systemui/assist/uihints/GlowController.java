@@ -26,21 +26,49 @@ import com.google.android.systemui.assist.uihints.edgelights.mode.Gone;
 import com.google.android.systemui.assist.uihints.edgelights.mode.HalfListening;
 
 public final class GlowController implements EdgeLightsListener {
-    /* access modifiers changed from: private */
-    public ValueAnimator mAnimator = null;
-    private boolean mCardVisible = false;
+    private ValueAnimator mAnimator;
+    private boolean mCardVisible;
     private final Context mContext;
-    private EdgeLight[] mEdgeLights = null;
-    private EdgeLightsView.Mode mEdgeLightsMode = null;
+    private EdgeLight[] mEdgeLights;
+    private EdgeLightsView.Mode mEdgeLightsMode;
     private final GlowView mGlowView;
-    private int mGlowsY = 0;
-    private int mGlowsYDestination = 0;
-    private boolean mInvocationCompleting = false;
+    private int mGlowsY;
+    private int mGlowsYDestination;
+    private boolean mInvocationCompleting;
     private float mMedianLightness;
     private int mNavigationMode;
     private final ScrimController mScrimController;
-    private RollingAverage mSpeechRolling = new RollingAverage(3);
+    private RollingAverage mSpeechRolling;
     private final VisibilityListener mVisibilityListener;
+
+    public GlowController(Context context, ViewGroup viewGroup, LightnessProvider lightnessProvider,
+            VisibilityListener visibilityListener, Runnable runnable) {
+        mContext = context;
+        mAnimator = null;
+        mGlowsYDestination = 0;
+        mCardVisible = false;
+        mEdgeLights = null;
+        mEdgeLightsMode = null;
+        mGlowsY = 0;
+        mGlowsYDestination = 0;
+        mInvocationCompleting = false;
+        mSpeechRolling = new RollingAverage(3);
+        mVisibilityListener = visibilityListener;
+        mNavigationMode = ((NavigationModeController) Dependency.get(NavigationModeController.class))
+                .addListener(new NavigationModeController.ModeChangedListener() {
+            public final void onNavigationModeChanged(int i) {
+                mNavigationMode = i;
+            }
+        });
+        mGlowView = (GlowView) LayoutInflater.from(context).inflate(R.layout.glow_view, viewGroup, false);
+        mGlowView.setGlowsY(mGlowsY, mGlowsY, null);
+        mScrimController = new ScrimController(context, viewGroup, lightnessProvider, visibilityListener, runnable);
+        viewGroup.addView(mGlowView);
+
+        mGlowView.setOnClickListener(l -> runnable.run());
+        mGlowView.setGlowsY(getMinTranslationY(), getMinTranslationY(), null);
+        mGlowView.setGlowWidthRatio(getGlowWidthToViewWidth());
+    }
 
     private enum GlowState {
         SHORT_DARK_BACKGROUND,
@@ -58,58 +86,26 @@ public final class GlowController implements EdgeLightsListener {
         return 400;
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View}
-     arg types: [int, android.view.ViewGroup, int]
-     candidates:
-      ClspMth{android.view.LayoutInflater.inflate(org.xmlpull.v1.XmlPullParser, android.view.ViewGroup, boolean):android.view.View}
-      ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
-    public GlowController(Context context, ViewGroup viewGroup, LightnessProvider lightnessProvider, VisibilityListener visibilityListener, Runnable runnable) {
-        this.mContext = context;
-        this.mVisibilityListener = visibilityListener;
-        this.mNavigationMode = ((NavigationModeController) Dependency.get(NavigationModeController.class)).addListener(new NavigationModeController.ModeChangedListener() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$pRUOKgBpKNbCOCs2BtGayinrRI */
-
-            public final void onNavigationModeChanged(int i) {
-                lambda$new$0$GlowController(i);
-            }
-        });
-        this.mGlowView = (GlowView) LayoutInflater.from(context).inflate(R.layout.glow_view, viewGroup, false);
-        GlowView glowView = this.mGlowView;
-        int i = this.mGlowsY;
-        glowView.setGlowsY(i, i, null);
-        this.mScrimController = new ScrimController(context, viewGroup, lightnessProvider, visibilityListener, runnable);
-        viewGroup.addView(this.mGlowView);
-
-        mGlowView.setOnClickListener(l -> runnable.run());
-        this.mGlowView.setGlowsY(getMinTranslationY(), getMinTranslationY(), null);
-        this.mGlowView.setGlowWidthRatio(getGlowWidthToViewWidth());
-    }
-
-    public /* synthetic */ void lambda$new$0$GlowController(int i) {
-        this.mNavigationMode = i;
-    }
-
     public void setInvocationProgress(float f) {
-        if (this.mEdgeLightsMode instanceof Gone) {
+        if (mEdgeLightsMode instanceof Gone) {
             setVisibility(f > 0.0f ? 0 : 8);
-            this.mGlowView.setBlurRadius(getInvocationBlurRadius(f));
-            this.mGlowsY = getInvocationTranslationY(f);
-            int i = this.mGlowsY;
-            this.mGlowsYDestination = i;
-            this.mGlowView.setGlowsY(i, i, null);
-            this.mGlowView.distributeEvenly();
+            mGlowView.setBlurRadius(getInvocationBlurRadius(f));
+            mGlowsY = getInvocationTranslationY(f);
+            int i = mGlowsY;
+            mGlowsYDestination = i;
+            mGlowView.setGlowsY(i, i, null);
+            mGlowView.distributeEvenly();
         }
     }
 
     public void setCardVisible(boolean z) {
-        this.mCardVisible = z;
+        mCardVisible = z;
     }
 
     public void setHasMedianLightness(float f) {
-        this.mScrimController.setMedianLightness(f);
-        this.mGlowView.setGlowsBlendMode(f <= NgaUiController.getDarkUiThreshold() ? PorterDuff.Mode.LIGHTEN : PorterDuff.Mode.SRC_OVER);
-        this.mMedianLightness = f;
+        mScrimController.setMedianLightness(f);
+        mGlowView.setGlowsBlendMode(f <= NgaUiController.getDarkUiThreshold() ? PorterDuff.Mode.LIGHTEN : PorterDuff.Mode.SRC_OVER);
+        mMedianLightness = f;
     }
 
     public boolean isVisible() {
@@ -117,160 +113,148 @@ public final class GlowController implements EdgeLightsListener {
     }
 
     private boolean isGlowVisible() {
-        return this.mGlowView.getVisibility() == 0;
+        return mGlowView.getVisibility() == 0;
     }
 
     public boolean isScrimVisible() {
-        return this.mScrimController.isVisible();
+        return mScrimController.isVisible();
     }
 
     public ScrimController getScrimController() {
-        return this.mScrimController;
+        return mScrimController;
     }
 
     public void onAudioLevelUpdate(float f, float f2) {
-        this.mSpeechRolling.add(f);
+        mSpeechRolling.add(f);
         maybeAnimateForSpeechConfidence();
     }
 
     public IBinder getScrimSurfaceControllerHandle() {
-        return this.mScrimController.getSurfaceControllerHandle();
+        return mScrimController.getSurfaceControllerHandle();
     }
 
     private boolean shouldAnimateForSpeechConfidence() {
-        EdgeLightsView.Mode mode = this.mEdgeLightsMode;
-        if (!(mode instanceof HalfListening) && !(mode instanceof FullListening) && !(mode instanceof FulfillBottom)) {
+        if (!(mEdgeLightsMode instanceof HalfListening) && !(mEdgeLightsMode instanceof FullListening)
+                 && !(mEdgeLightsMode instanceof FulfillBottom)) {
             return false;
         }
-        if (this.mSpeechRolling.getAverage() >= 0.30000001192092896d || this.mGlowsYDestination > getMinTranslationY()) {
-            return true;
-        }
-        return false;
+        return mSpeechRolling.getAverage() >= 0.30000001192092896d || mGlowsYDestination > getMinTranslationY();
     }
 
     public void maybeAnimateForSpeechConfidence() {
         if (shouldAnimateForSpeechConfidence()) {
-            animateGlowTranslationY((int) MathUtils.lerp((float) getMinTranslationY(), (float) getMaxTranslationY(), (float) this.mSpeechRolling.getAverage()));
+            animateGlowTranslationY((int) MathUtils.lerp((float) getMinTranslationY(),
+                    (float) getMaxTranslationY(), (float) mSpeechRolling.getAverage()));
         }
     }
 
     public Rect getTouchableRegion() {
         if (isScrimVisible()) {
-            return this.mScrimController.getTouchableRegion();
+            return mScrimController.getTouchableRegion();
         }
-        if (this.mGlowView.getVisibility() != 0 || !QuickStepContract.isGesturalMode(this.mNavigationMode)) {
+        if (mGlowView.getVisibility() != 0 || !QuickStepContract.isGesturalMode(mNavigationMode)) {
             return null;
         }
         Rect rect = new Rect();
-        this.mGlowView.getBoundsOnScreen(rect);
+        mGlowView.getBoundsOnScreen(rect);
         rect.top = rect.bottom - getMaxTranslationY();
         return rect;
     }
 
-    /* access modifiers changed from: private */
-    public GlowState getState() {
-        boolean z;
-        EdgeLightsView.Mode mode = this.mEdgeLightsMode;
-        boolean z2 = (mode instanceof FulfillBottom) && !((FulfillBottom) mode).isListening();
-        EdgeLightsView.Mode mode2 = this.mEdgeLightsMode;
-        if ((mode2 instanceof Gone) || mode2 == null || z2) {
+    private GlowState getState() {
+        boolean state;
+        if ((mEdgeLightsMode instanceof Gone) || mEdgeLightsMode == null || (mEdgeLightsMode instanceof FulfillBottom)
+                && !((FulfillBottom) mEdgeLightsMode).isListening()) {
             return GlowState.GONE;
         }
-        boolean z3 = !this.mCardVisible && (mode2 instanceof HalfListening);
         if (isScrimVisible()) {
-            z = this.mScrimController.isDark();
+            state = mScrimController.isDark();
         } else {
-            z = this.mMedianLightness < NgaUiController.getDarkUiThreshold();
+            state = mMedianLightness < NgaUiController.getDarkUiThreshold();
         }
-        if (z3) {
-            if (z) {
+        if (!mCardVisible && (mEdgeLightsMode instanceof HalfListening)) {
+            if (state) {
                 return GlowState.SHORT_DARK_BACKGROUND;
             }
             return GlowState.SHORT_LIGHT_BACKGROUND;
-        } else if (z) {
+        } else if (state) {
             return GlowState.TALL_DARK_BACKGROUND;
         } else {
             return GlowState.TALL_LIGHT_BACKGROUND;
         }
     }
 
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{java.lang.Math.min(float, float):float}
-     arg types: [int, float]
-     candidates:
-      ClspMth{java.lang.Math.min(double, double):double}
-      ClspMth{java.lang.Math.min(long, long):long}
-      ClspMth{java.lang.Math.min(int, int):int}
-      ClspMth{java.lang.Math.min(float, float):float} */
     private int getInvocationBlurRadius(float f) {
-        return (int) MathUtils.lerp((float) getBlurRadius(), (float) this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_blur), Math.min(1.0f, f * 5.0f));
+        return (int) MathUtils.lerp((float) getBlurRadius(), (float) mContext.getResources()
+                .getDimensionPixelSize(R.dimen.glow_tall_blur), Math.min(1.0f, f * 5.0f));
     }
 
     private int getInvocationTranslationY(float f) {
-        return (int) MathUtils.min((int) MathUtils.lerp((float) getMinTranslationY(), (float) this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_min_y), f), this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_invocation_max));
+        return (int) MathUtils.min((int) MathUtils.lerp((float) getMinTranslationY(), (float) mContext.getResources()
+                .getDimensionPixelSize(R.dimen.glow_tall_min_y), f),
+                mContext.getResources().getDimensionPixelSize(R.dimen.glow_invocation_max));
     }
 
     private int getBlurRadius() {
         if (getState() == GlowState.GONE) {
-            return this.mGlowView.getBlurRadius();
+            return mGlowView.getBlurRadius();
         }
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_blur);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_blur);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_blur);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_blur);
         }
         return 0;
     }
 
     private int getMinTranslationY() {
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_min_y);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_min_y);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_min_y);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_min_y);
         }
-        return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_min_y);
+        return mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_min_y);
     }
 
     private int getMaxTranslationY() {
         if (getState() == GlowState.SHORT_DARK_BACKGROUND || getState() == GlowState.SHORT_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_max_y);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_short_max_y);
         }
         if (getState() == GlowState.TALL_DARK_BACKGROUND || getState() == GlowState.TALL_LIGHT_BACKGROUND) {
-            return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_max_y);
+            return mContext.getResources().getDimensionPixelSize(R.dimen.glow_tall_max_y);
         }
-        return this.mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_max_y);
+        return mContext.getResources().getDimensionPixelSize(R.dimen.glow_gone_max_y);
     }
 
     public void onModeStarted(EdgeLightsView.Mode mode) {
-        boolean z = mode instanceof Gone;
-        if (!z || this.mEdgeLightsMode != null) {
-            this.mInvocationCompleting = !z;
-            this.mEdgeLightsMode = mode;
-            if (z) {
-                this.mSpeechRolling = new RollingAverage(3);
+        if (!(mode instanceof Gone) || mEdgeLightsMode != null) {
+            mInvocationCompleting = !(mode instanceof Gone);
+            mEdgeLightsMode = mode;
+            if (mode instanceof Gone) {
+                mSpeechRolling = new RollingAverage(3);
             }
-            this.mScrimController.setInFullListening(mode instanceof FullListening);
+            mScrimController.setInFullListening(mode instanceof FullListening);
             animateGlowTranslationY(getMinTranslationY());
-            if (this.mEdgeLightsMode instanceof HalfListening) {
-                this.mGlowView.sendAccessibilityEvent(8);
+            if (mEdgeLightsMode instanceof HalfListening) {
+                mGlowView.sendAccessibilityEvent(8);
                 return;
             }
             return;
         }
-        this.mEdgeLightsMode = mode;
+        mEdgeLightsMode = mode;
     }
 
     public void onAssistLightsUpdated(EdgeLightsView.Mode mode, EdgeLight[] edgeLightArr) {
         int i;
         if (!getTranslationYProportionalToEdgeLights()) {
-            this.mEdgeLights = null;
-            this.mGlowView.distributeEvenly();
+            mEdgeLights = null;
+            mGlowView.distributeEvenly();
             return;
         }
-        this.mEdgeLights = edgeLightArr;
-        if ((this.mInvocationCompleting && (mode instanceof Gone)) || !(mode instanceof FullListening)) {
+        mEdgeLights = edgeLightArr;
+        if (!(mode instanceof FullListening)) {
             return;
         }
         if (edgeLightArr == null || edgeLightArr.length != 4) {
@@ -289,40 +273,35 @@ public final class GlowController implements EdgeLightsListener {
     }
 
     private boolean getTranslationYProportionalToEdgeLights() {
-        return this.mEdgeLightsMode instanceof FullListening;
+        return mEdgeLightsMode instanceof FullListening;
     }
 
     private long getYAnimationDuration(float f) {
-        return (long) Math.min((float) getMaxYAnimationDuration(), Math.abs(f) / ((float) (((long) Math.abs(getMaxTranslationY() - getMinTranslationY())) / getMaxYAnimationDuration())));
+        return (long) Math.min((float) getMaxYAnimationDuration(), Math.abs(f) /
+                ((float) (((long) Math.abs(getMaxTranslationY() - getMinTranslationY())) / getMaxYAnimationDuration())));
     }
 
     private void animateGlowTranslationY(int i) {
-        animateGlowTranslationY(i, getYAnimationDuration((float) (i - this.mGlowsY)));
+        animateGlowTranslationY(i, getYAnimationDuration((float) (i - mGlowsY)));
     }
 
     private void animateGlowTranslationY(int i, long j) {
-        if (i == this.mGlowsYDestination) {
-            this.mGlowView.setGlowsY(this.mGlowsY, getMinTranslationY(), getTranslationYProportionalToEdgeLights() ? this.mEdgeLights : null);
+        if (i == mGlowsYDestination) {
+            mGlowView.setGlowsY(mGlowsY, getMinTranslationY(), getTranslationYProportionalToEdgeLights() ? mEdgeLights : null);
             return;
         }
-        this.mGlowsYDestination = i;
-        ValueAnimator valueAnimator = this.mAnimator;
-        if (valueAnimator != null) {
-            valueAnimator.cancel();
+        mGlowsYDestination = i;
+        if (mAnimator != null) {
+            mAnimator.cancel();
         }
-        this.mAnimator = ValueAnimator.ofInt(this.mGlowsY, i);
-        this.mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            /* class com.google.android.systemui.assist.uihints.$$Lambda$GlowController$KJ4xLkdL203Fm1c4oyb2UQ5GB5Y */
-
-            public final void onAnimationUpdate(ValueAnimator valueAnimator) {
-                lambda$animateGlowTranslationY$2$GlowController(valueAnimator);
-            }
+        mAnimator = ValueAnimator.ofInt(mGlowsY, i);
+        mAnimator.addUpdateListener(valueAnimator -> {
+            mGlowsY = (Integer) valueAnimator.getAnimatedValue();
+            mGlowView.setGlowsY(mGlowsY, getMinTranslationY(), getTranslationYProportionalToEdgeLights() ? mEdgeLights : null);
         });
-        this.mAnimator.addListener(new AnimatorListenerAdapter() {
-            /* class com.google.android.systemui.assist.uihints.GlowController.C15621 */
-
+        mAnimator.addListener(new AnimatorListenerAdapter() {
             public void onAnimationEnd(Animator animator) {
-                ValueAnimator unused = mAnimator = null;
+                mAnimator = null;
                 if (GlowState.GONE.equals(getState())) {
                     removeGlow();
                 } else {
@@ -330,43 +309,37 @@ public final class GlowController implements EdgeLightsListener {
                 }
             }
         });
-        this.mAnimator.setInterpolator(new LinearInterpolator());
-        this.mAnimator.setDuration(j);
+        mAnimator.setInterpolator(new LinearInterpolator());
+        mAnimator.setDuration(j);
         mAnimator.addUpdateListener(valueAnim -> lambda$animateGlowTranslationY$3$GlowController(mGlowView.getBlurRadius(), getBlurRadius(), valueAnim));
 
-        float glowWidthRatio = this.mGlowView.getGlowWidthRatio();
-        this.mGlowView.setGlowWidthRatio(glowWidthRatio + ((getGlowWidthToViewWidth() - glowWidthRatio) * 1.0f));
-        if (this.mGlowView.getVisibility() != 0) {
+        float glowWidthRatio = mGlowView.getGlowWidthRatio();
+        mGlowView.setGlowWidthRatio(glowWidthRatio + ((getGlowWidthToViewWidth() - glowWidthRatio) * 1.0f));
+        if (mGlowView.getVisibility() != 0) {
             setVisibility(0);
         }
-        this.mAnimator.start();
+        mAnimator.start();
     }
 
-    public /* synthetic */ void lambda$animateGlowTranslationY$2$GlowController(ValueAnimator valueAnimator) {
-        this.mGlowsY = ((Integer) valueAnimator.getAnimatedValue()).intValue();
-        this.mGlowView.setGlowsY(this.mGlowsY, getMinTranslationY(), getTranslationYProportionalToEdgeLights() ? this.mEdgeLights : null);
-    }
-
-    public /* synthetic */ void lambda$animateGlowTranslationY$3$GlowController(int i, int i2, ValueAnimator valueAnimator) {
-        this.mGlowView.setBlurRadius((int) MathUtils.lerp((float) i, (float) i2, valueAnimator.getAnimatedFraction()));
+    private /* synthetic */ void lambda$animateGlowTranslationY$3$GlowController(int i, int i2, ValueAnimator valueAnimator) {
+        mGlowView.setBlurRadius((int) MathUtils.lerp((float) i, (float) i2, valueAnimator.getAnimatedFraction()));
     }
 
     private void setVisibility(int i) {
-        this.mGlowView.setVisibility(i);
+        mGlowView.setVisibility(i);
         if ((i == 0) != isVisible()) {
-            this.mVisibilityListener.onVisibilityChanged(i);
+            mVisibilityListener.onVisibilityChanged(i);
             if (!isGlowVisible()) {
                 onGlowRemoved();
             }
         }
     }
 
-    /* access modifiers changed from: private */
-    public void removeGlow() {
+    private void removeGlow() {
         setVisibility(8);
     }
 
     private void onGlowRemoved() {
-        this.mGlowView.clearCaches();
+        mGlowView.clearCaches();
     }
 }

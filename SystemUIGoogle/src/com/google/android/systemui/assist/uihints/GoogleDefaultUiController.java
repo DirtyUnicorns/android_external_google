@@ -7,21 +7,16 @@ import com.android.systemui.R;
 import com.android.systemui.assist.ui.DefaultUiController;
 
 public class GoogleDefaultUiController extends DefaultUiController {
-    /* JADX DEBUG: Failed to find minimal casts for resolve overloaded methods, cast all args instead
-     method: ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View}
-     arg types: [int, android.widget.FrameLayout, int]
-     candidates:
-      ClspMth{android.view.LayoutInflater.inflate(org.xmlpull.v1.XmlPullParser, android.view.ViewGroup, boolean):android.view.View}
-      ClspMth{android.view.LayoutInflater.inflate(int, android.view.ViewGroup, boolean):android.view.View} */
+
     public GoogleDefaultUiController(Context context) {
         super(context);
         context.getResources();
         setGoogleAssistant(false);
-        super.mInvocationLightsView = (AssistantInvocationLightsView) LayoutInflater.from(context).inflate(R.layout.invocation_lights, (ViewGroup) super.mRoot, false);
-        super.mRoot.addView(super.mInvocationLightsView);
+        mInvocationLightsView = (AssistantInvocationLightsView) LayoutInflater.from(context).inflate(R.layout.invocation_lights, (ViewGroup) mRoot, false);
+        mRoot.addView(mInvocationLightsView);
     }
 
     public void setGoogleAssistant(boolean z) {
-        ((AssistantInvocationLightsView) super.mInvocationLightsView).setGoogleAssistant(z);
+        ((AssistantInvocationLightsView) mInvocationLightsView).setGoogleAssistant(z);
     }
 }

@@ -14,37 +14,42 @@ import com.google.android.systemui.assist.uihints.edgelights.EdgeLightUpdateList
 import com.google.android.systemui.assist.uihints.edgelights.EdgeLightsView;
 
 public final class HalfListening implements EdgeLightsView.Mode {
-    private static final PathInterpolator INTERPOLATOR = new PathInterpolator(0.02f, 0.0f, 0.02f, 1.0f);
+    private static final PathInterpolator INTERPOLATOR;
     private AnimatorSet mAnimatorSet;
     private PerimeterPathGuide mGuide;
     private int mLightLengthPx;
-    private final EdgeLight[] mLights = {new EdgeLight(0, 0.0f, 0.0f), new EdgeLight(0, 0.0f, 0.0f), new EdgeLight(0, 0.0f, 0.0f), new EdgeLight(0, 0.0f, 0.0f)};
+    private final EdgeLight[] mLights;
     private final long mTimeoutMs;
     private final long mTimeoutTimestampMs;
 
+    static {
+        INTERPOLATOR = new PathInterpolator(0.02f, 0.0f, 0.02f, 1.0f);
+    }
+
+    public HalfListening(Context context, long j) {
+        mLights = new EdgeLight[] {new EdgeLight(0, 0.0f, 0.0f), new EdgeLight(0, 0.0f, 0.0f),
+                new EdgeLight(0, 0.0f, 0.0f), new EdgeLight(0, 0.0f, 0.0f)};
+        mLightLengthPx = context.getResources().getDimensionPixelSize(R.dimen.navigation_home_handle_width) / mLights.length;
+        mTimeoutMs = j;
+        mTimeoutTimestampMs = mTimeoutMs > 0 ? SystemClock.uptimeMillis() + mTimeoutMs : -1;
+    }
+
+    @Override
     public int getSubType() {
         return 2;
     }
 
-    public HalfListening(Context context, long j) {
-        this.mLightLengthPx = context.getResources().getDimensionPixelSize(R.dimen.navigation_home_handle_width) / this.mLights.length;
-        this.mTimeoutMs = j;
-        this.mTimeoutTimestampMs = this.mTimeoutMs > 0 ? SystemClock.uptimeMillis() + this.mTimeoutMs : -1;
-    }
-
+    @Override
     public void onNewModeRequest(final EdgeLightsView edgeLightsView, final EdgeLightsView.Mode mode) {
-        AnimatorSet animatorSet = this.mAnimatorSet;
-        if (animatorSet != null) {
-            animatorSet.cancel();
+        if (mAnimatorSet != null) {
+            mAnimatorSet.cancel();
         }
         if (mode instanceof Gone) {
             ValueAnimator ofFloat = ValueAnimator.ofFloat(0.0f, 1.0f);
             ofFloat.setDuration(300L);
             ofFloat.setInterpolator(INTERPOLATOR);
-            ofFloat.addUpdateListener(new EdgeLightUpdateListener(getFinalLights(), getInitialLights(), this.mLights, edgeLightsView));
+            ofFloat.addUpdateListener(new EdgeLightUpdateListener(getFinalLights(), getInitialLights(), mLights, edgeLightsView));
             ofFloat.addListener(new AnimatorListenerAdapter() {
-                /* class com.google.android.systemui.assist.uihints.edgelights.mode.HalfListening.C15771 */
-
                 public void onAnimationEnd(Animator animator) {
                     super.onAnimationEnd(animator);
                     if (edgeLightsView.getMode() == HalfListening.this) {
@@ -58,31 +63,29 @@ public final class HalfListening implements EdgeLightsView.Mode {
         edgeLightsView.commitModeTransition(mode);
     }
 
+    @Override
     public void start(EdgeLightsView edgeLightsView, PerimeterPathGuide perimeterPathGuide, EdgeLightsView.Mode mode) {
-        this.mGuide = perimeterPathGuide;
+        mGuide = perimeterPathGuide;
         if (!(mode instanceof FulfillBottom)) {
             edgeLightsView.setVisibility(0);
             AnimatorSet animatorSet = new AnimatorSet();
             ValueAnimator ofFloat = ValueAnimator.ofFloat(0.0f, 1.0f);
-            long j = this.mTimeoutMs;
-            if (j <= 0) {
-                j = 300;
-            }
+            long j = mTimeoutMs <= 0 ? 300 : mTimeoutMs;
             ofFloat.setDuration(j);
             ofFloat.setInterpolator(INTERPOLATOR);
-            ofFloat.addUpdateListener(new EdgeLightUpdateListener(getInitialLights(), getFinalLights(), this.mLights, edgeLightsView));
+            ofFloat.addUpdateListener(new EdgeLightUpdateListener(getInitialLights(), getFinalLights(), mLights, edgeLightsView));
             animatorSet.play(ofFloat);
             animatorSet.start();
-            this.mAnimatorSet = animatorSet;
+            mAnimatorSet = animatorSet;
         }
     }
 
     private EdgeLight[] getInitialLights() {
-        EdgeLight[] copy = EdgeLight.copy(this.mLights);
-        float regionWidth = this.mTimeoutMs <= 0 ? 0.0f : this.mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM) / ((float) copy.length);
-        int i = -(this.mLights.length / 2);
+        EdgeLight[] copy = EdgeLight.copy(mLights);
+        float regionWidth = mTimeoutMs <= 0 ? 0.0f : mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM) / ((float) copy.length);
+        int i = -(mLights.length / 2);
         for (EdgeLight edgeLight : copy) {
-            edgeLight.setOffset(this.mGuide.getRegionCenter(PerimeterPathGuide.Region.BOTTOM) + (((float) i) * regionWidth));
+            edgeLight.setOffset(mGuide.getRegionCenter(PerimeterPathGuide.Region.BOTTOM) + (((float) i) * regionWidth));
             i++;
             edgeLight.setLength(regionWidth);
         }
@@ -90,28 +93,24 @@ public final class HalfListening implements EdgeLightsView.Mode {
     }
 
     private EdgeLight[] getFinalLights() {
-        EdgeLight[] copy = EdgeLight.copy(this.mLights);
-        float perimeterPx = ((float) this.mLightLengthPx) / this.mGuide.getPerimeterPx();
-        for (int i = 0; i < this.mLights.length; i++) {
+        EdgeLight[] copy = EdgeLight.copy(mLights);
+        float perimeterPx = ((float) mLightLengthPx) / mGuide.getPerimeterPx();
+        for (int i = 0; i < mLights.length; i++) {
             copy[i].setLength(perimeterPx);
-            copy[i].setOffset(getLightOffset(i, this.mGuide));
+            copy[i].setOffset(getLightOffset(i, mGuide));
         }
         return copy;
     }
 
     private float getLightOffset(int i, PerimeterPathGuide perimeterPathGuide) {
-        return (((float) ((i - (this.mLights.length / 2)) * this.mLightLengthPx)) / perimeterPathGuide.getPerimeterPx()) + this.mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM);
+        return (((float) ((i - (mLights.length / 2)) * mLightLengthPx)) / perimeterPathGuide.getPerimeterPx()) + mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM);
     }
 
     @Override
     public void onAudioLevelUpdate(float f, float f2) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onConfigurationChanged() {
-        // TODO Auto-generated method stub
-
     }
 }

@@ -10,7 +10,8 @@ import com.android.systemui.Dependency;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.google.android.systemui.assist.uihints.OverlayUiHost;
 
-public class PromptView extends TextView implements ConfigurationController.ConfigurationListener, OverlayUiHost.BottomMarginListener {
+public class PromptView extends TextView implements ConfigurationController.ConfigurationListener,
+        OverlayUiHost.BottomMarginListener {
     private final DecelerateInterpolator mDecelerateInterpolator;
     private boolean mEnabled;
     private final String mHandleString;
@@ -36,43 +37,45 @@ public class PromptView extends TextView implements ConfigurationController.Conf
 
     public PromptView(Context context, AttributeSet attributeSet, int i, int i2) {
         super(context, attributeSet, i, i2);
-        this.mDecelerateInterpolator = new DecelerateInterpolator(2.0f);
-        this.mHasDarkBackground = false;
-        this.mEnabled = false;
-        this.mLastInvocationType = 0;
-        this.mTextColorDark = getResources().getColor(R.color.transcription_text_dark);
-        this.mTextColorLight = getResources().getColor(R.color.transcription_text_light);
-        this.mRiseDistance = getResources().getDimension(R.dimen.assist_prompt_rise_distance);
-        this.mHandleString = getResources().getString(R.string.handle_invocation_prompt);
-        this.mSqueezeString = getResources().getString(R.string.squeeze_invocation_prompt);
-        this.mMargin = getResources().getDimensionPixelSize(R.dimen.assist_prompt_start_height);
-        ((ConfigurationController) Dependency.get(ConfigurationController.class)).addCallback(this);
-        setHasDarkBackground(!this.mHasDarkBackground);
+        mDecelerateInterpolator = new DecelerateInterpolator(2.0f);
+        mHasDarkBackground = false;
+        mEnabled = false;
+        mLastInvocationType = 0;
+        mTextColorDark = getResources().getColor(R.color.transcription_text_dark);
+        mTextColorLight = getResources().getColor(R.color.transcription_text_light);
+        mRiseDistance = getResources().getDimension(R.dimen.assist_prompt_rise_distance);
+        mHandleString = getResources().getString(R.string.handle_invocation_prompt);
+        mSqueezeString = getResources().getString(R.string.squeeze_invocation_prompt);
+        mMargin = getResources().getDimensionPixelSize(R.dimen.assist_prompt_start_height);
+        Dependency.get(ConfigurationController.class).addCallback(this);
+        setHasDarkBackground(!mHasDarkBackground);
     }
 
+    @Override
     public void onDensityOrFontScaleChanged() {
-        setTextSize(0, super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
+        setTextSize(0, mContext.getResources().getDimension(R.dimen.transcription_text_size));
         updateViewHeight();
     }
 
-    /* access modifiers changed from: protected */
-    public void onFinishInflate() {
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
         updateViewHeight();
     }
 
     public void setHasDarkBackground(boolean z) {
-        if (z != this.mHasDarkBackground) {
-            setTextColor(z ? this.mTextColorDark : this.mTextColorLight);
-            this.mHasDarkBackground = z;
+        if (z != mHasDarkBackground) {
+            setTextColor(z ? mTextColorDark : mTextColorLight);
+            mHasDarkBackground = z;
         }
     }
 
     public void enable() {
-        this.mEnabled = true;
+        mEnabled = true;
     }
 
     public void disable() {
-        this.mEnabled = false;
+        mEnabled = false;
         setVisibility(8);
     }
 
@@ -82,21 +85,21 @@ public class PromptView extends TextView implements ConfigurationController.Conf
                 setVisibility(8);
                 setAlpha(0.0f);
                 setTranslationY(0.0f);
-                this.mLastInvocationType = 0;
-            } else if (this.mEnabled) {
+                mLastInvocationType = 0;
+            } else if (mEnabled) {
                 if (i != 1) {
                     if (i != 2) {
-                        this.mLastInvocationType = 0;
+                        mLastInvocationType = 0;
                         setText("");
-                    } else if (this.mLastInvocationType != i) {
-                        this.mLastInvocationType = i;
-                        setText(this.mSqueezeString);
-                        announceForAccessibility(this.mSqueezeString);
+                    } else if (mLastInvocationType != i) {
+                        mLastInvocationType = i;
+                        setText(mSqueezeString);
+                        announceForAccessibility(mSqueezeString);
                     }
-                } else if (this.mLastInvocationType != i) {
-                    this.mLastInvocationType = i;
-                    setText(this.mHandleString);
-                    announceForAccessibility(this.mHandleString);
+                } else if (mLastInvocationType != i) {
+                    mLastInvocationType = i;
+                    setText(mHandleString);
+                    announceForAccessibility(mHandleString);
                 }
                 setVisibility(0);
                 setTranslationYProgress(f);
@@ -106,7 +109,7 @@ public class PromptView extends TextView implements ConfigurationController.Conf
     }
 
     private void setTranslationYProgress(float f) {
-        setTranslationY((-this.mRiseDistance) * f);
+        setTranslationY((-mRiseDistance) * f);
     }
 
     private void setAlphaProgress(int i, float f) {
@@ -115,20 +118,21 @@ public class PromptView extends TextView implements ConfigurationController.Conf
         } else if (f > 0.32000002f) {
             setAlpha(1.0f);
         } else {
-            setAlpha(this.mDecelerateInterpolator.getInterpolation(f / 0.32000002f));
+            setAlpha(mDecelerateInterpolator.getInterpolation(f / 0.32000002f));
         }
     }
 
     private void updateViewHeight() {
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (layoutParams != null) {
-            layoutParams.height = (int) (getResources().getDimension(R.dimen.assist_prompt_start_height) + this.mRiseDistance + super.mContext.getResources().getDimension(R.dimen.transcription_text_size));
+            layoutParams.height = (int) (getResources().getDimension(R.dimen.assist_prompt_start_height)
+                    + mRiseDistance + mContext.getResources().getDimension(R.dimen.transcription_text_size));
         }
         requestLayout();
     }
 
     public void onBottomMarginChanged(int i) {
-        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = i + this.mMargin;
+        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = i + mMargin;
         requestLayout();
     }
 }

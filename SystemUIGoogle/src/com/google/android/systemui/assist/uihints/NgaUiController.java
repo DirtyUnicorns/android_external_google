@@ -51,7 +51,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class NgaUiController implements AssistManager.UiController, ViewTreeObserver.OnComputeInternalInsetsListener, StatusBarStateController.StateListener, ConfigurationController.ConfigurationListener {
+public class NgaUiController implements AssistManager.UiController, ViewTreeObserver.OnComputeInternalInsetsListener,
+        StatusBarStateController.StateListener, ConfigurationController.ConfigurationListener {
+
+    private static final String TAG = "NgaUiController";
 
     private static final long INVOCATION_TIMEOUT_MS;
     private static final long SESSION_TIMEOUT_MS;
@@ -95,9 +98,10 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     private ZeroStateIconView mZeroStateIcon;
     private PendingIntent mZeroStateIntent;
     private boolean mZeroStateRequested;
-    
+
     static {
-        VERBOSE = (Build.TYPE.toLowerCase(Locale.ROOT).contains("debug") || Build.TYPE.toLowerCase(Locale.ROOT).equals("eng"));
+        VERBOSE = (Build.TYPE.toLowerCase(Locale.ROOT).contains("debug")
+                || Build.TYPE.toLowerCase(Locale.ROOT).equals("eng"));
         SESSION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10L);
         INVOCATION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(3L);
         mProgressInterpolator = new PathInterpolator(0.83f, 0.0f, 0.84f, 1.0f);
@@ -105,6 +109,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     @SuppressLint("InvalidWakeLockTag")
     public NgaUiController(Context context) {
+        mContext = context;
         mUiHandler = new Handler(Looper.getMainLooper());
         mDidSetParent = false;
         mNgaPresent = false;
@@ -121,13 +126,11 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         mFlingVelocity = 0.0f;
         mPendingEdgeLightsBundle = null;
         mColorMonitoringStart = 0;
-        mSessionTimeout = new Runnable() {
-            public final void run() {
-                if (mShowingAssistUi) {
-                    Log.e("NgaUiController", "Timed out");
-                    closeNgaUi();
-                    MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(4));
-                }
+        mSessionTimeout = () -> {
+            if (mShowingAssistUi) {
+                Log.e(TAG, "Timed out");
+                closeNgaUi();
+                MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(4));
             }
         };
         mLightnessProvider = new LightnessProvider(new LightnessListener() {
@@ -135,14 +138,13 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 if (mColorMonitoringStart > 0) {
                     long elapsedRealtime = SystemClock.elapsedRealtime() - mColorMonitoringStart;
                     if (VERBOSE) {
-                        Log.d("NgaUiController", "Got lightness update (" + f + ") after " + elapsedRealtime + " ms");
+                        Log.d(TAG, "Got lightness update (" + f + ") after " + elapsedRealtime + " ms");
                     }
                     mColorMonitoringStart = 0;
                 }
                 mHaveAccurateLuma = true;
                 mGlowController.setHasMedianLightness(f);
                 mTranscriptionController.setHasAccurateBackground(true);
-                NgaUiController ngaUiController = NgaUiController.this;
                 setHasDarkBackground(!(f > getDarkUiThreshold()));
                 refresh();
             }
@@ -153,7 +155,6 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         mZeroStateIntent = null;
         mNavBarDestinationAlpha = -1.0f;
         mTaskStackNotifier = new TaskStackNotifier();
-        mContext = context;
         mUiHost = new OverlayUiHost(context, () -> {
             closeNgaUi();
             MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(3));
@@ -162,7 +163,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 try {
                     mTouchOutsidePendingIntent.send();
                 } catch (PendingIntent.CanceledException unused) {
-                    Log.w("NgaUiController", "Touch outside PendingIntent canceled");
+                    Log.w(TAG, "Touch outside PendingIntent canceled");
                 }
             }
         });
@@ -185,7 +186,6 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             mUiHandler.post(() -> processBundle(bundle));
             return;
         }
-
         mUiHandler.postDelayed(mSessionTimeout, SESSION_TIMEOUT_MS);
         setViewParent();
         logBundle(bundle);
@@ -327,7 +327,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 mTranscriptionController.setTranscriptionColor(bundle.getInt("text_color", 0));
                 break;
             case 6:
-                mTranscriptionController.setGreeting(bundle.getString("text"), mFlingVelocity, bundle.getParcelable("tap_action"));
+                mTranscriptionController.setGreeting(bundle.getString("text"), mFlingVelocity,
+                        bundle.getParcelable("tap_action"));
                 break;
             case 7:
                 mTranscriptionController.setChips(bundle.getParcelableArrayList("chips"));
@@ -338,10 +339,11 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             case 9:
                 Intent intent = bundle.getParcelable("intent");
                 if (intent != null) {
-                    ((SystemUIApplication) mContext.getApplicationContext()).getComponent(StatusBar.class).startActivity(intent, bundle.getBoolean("dismiss_shade"));
+                    ((SystemUIApplication) mContext.getApplicationContext()).getComponent(StatusBar.class)
+                            .startActivity(intent, bundle.getBoolean("dismiss_shade"));
                     break;
                 } else {
-                    Log.e("NgaUiController", "Null intent; cannot start activity");
+                    Log.e(TAG, "Null intent; cannot start activity");
                     return;
                 }
             case 10:
@@ -365,7 +367,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 refresh();
                 break;
             default:
-                Log.w("NgaUiController", String.format("Unknown action \"%s\"; cannot process RPC", string));
+                Log.w(TAG, String.format("Unknown action \"%s\"; cannot process RPC", string));
                 break;
         }
         if (!"config".equals(string)) {
@@ -376,9 +378,10 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     public boolean extractNga(Bundle bundle) {
         logBundle(bundle);
-        return !"config".equals(bundle.getString("action")) || bundle.getBoolean("is_available", false);
+        return !"config".equals(bundle.getString("action"))
+                || bundle.getBoolean("is_available", false);
     }
-    
+
     public void refresh() {
         if (!mDidSetParent) {
             return;
@@ -407,7 +410,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     private void logBundle(Bundle bundle) {
         if (bundle == null) {
-            Log.w("NgaUiController", "Received null bundle!");
+            Log.w(TAG, "Received null bundle!");
             return;
         }
         if (VERBOSE) {
@@ -437,15 +440,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 }
                 sb.append("</UiHintsBundle>");
                 if ("transcription".equals(bundle.get("action")) && mTranscriptionController.isTranscribing()) {
-                    Log.v("NgaUiController", sb.toString());
-                }
-                else {
-                    Log.i("NgaUiController", sb.toString());
+                    Log.v(TAG, sb.toString());
+                } else {
+                    Log.i(TAG, sb.toString());
                 }
             }
         }
     }
-    
+
     public void setHasDarkBackground(boolean z) {
         String str = "dark";
         if (mHasDarkBackground != z) {
@@ -457,7 +459,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                     str = "light";
                 }
                 sb.append(str);
-                Log.v("NgaUiController", sb.toString());
+                Log.v(TAG, sb.toString());
             }
             dispatchHasDarkBackground();
         } else if (VERBOSE) {
@@ -467,7 +469,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 str = "light";
             }
             sb2.append(str);
-            Log.v("NgaUiController", sb2.toString());
+            Log.v(TAG, sb2.toString());
         }
     }
 
@@ -486,12 +488,9 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
         ViewGroup parent = mUiHost.getParent();
         if (parent == null) {
-            Log.e("NgaUiController", "Status bar view unavailable!");
+            Log.e(TAG, "Status bar view unavailable!");
             return;
         }
-        // TODO: Investigate whether we need to create a specific class for or not.
-        Runnable r8 = () -> sendTouchInsidePendingIntent();
-
         LayoutInflater from = LayoutInflater.from(mContext);
         mGlowController = new GlowController(mContext, parent, mLightnessProvider, i -> {
             boolean isScrimVisible = mGlowController.isScrimVisible();
@@ -524,7 +523,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         mDidSetParent = true;
         dispatchHasDarkBackground();
         if (VERBOSE) {
-            Log.v("NgaUiController", "Added UI");
+            Log.v(TAG, "Added UI");
         }
     }
 
@@ -533,7 +532,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             try {
                 mTouchInsidePendingIntent.send();
             } catch (PendingIntent.CanceledException unused) {
-                Log.w("NgaUiController", "Touch outside PendingIntent canceled");
+                Log.w(TAG, "Touch outside PendingIntent canceled");
                 closeNgaUi();
             }
         } else {
@@ -566,12 +565,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (!z || mGlowController.getScrimSurfaceControllerHandle() != null) {
                 mIsMonitoringColor = z;
                 if (mIsMonitoringColor) {
-                    int rotatedHeight = (DisplayUtils.getRotatedHeight(mContext) -
-                            ((int) mContext.getResources().getDimension(R.dimen.transcription_space_bottom_margin))) -
-                            DisplayUtils.convertSpToPx(20.0f, mContext);
-                    Rect rect = new Rect(0, rotatedHeight - DisplayUtils.convertDpToPx(160.0f, mContext), DisplayUtils.getRotatedWidth(mContext), rotatedHeight);
+                    int rotatedHeight = (DisplayUtils.getRotatedHeight(mContext)
+                            - ((int) mContext.getResources().getDimension(R.dimen.transcription_space_bottom_margin)))
+                            - DisplayUtils.convertSpToPx(20.0f, mContext);
+                    Rect rect = new Rect(0, rotatedHeight - DisplayUtils.convertDpToPx(160.0f, mContext),
+                            DisplayUtils.getRotatedWidth(mContext), rotatedHeight);
                     mColorMonitoringStart = SystemClock.elapsedRealtime();
-                    mLightnessProvider.enableColorMonitoring(true, rect, mGlowController.getScrimSurfaceControllerHandle());
+                    mLightnessProvider.enableColorMonitoring(true, rect,
+                            mGlowController.getScrimSurfaceControllerHandle());
                     return;
                 }
                 mLightnessProvider.enableColorMonitoring(false, null, null);
@@ -584,19 +585,20 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
 
     private void updateShowingAssistUi() {
         boolean z = !(mEdgeLightsController.getMode() instanceof Gone) || mGlowController.isVisible()
-                || mInvocationInProgress || mKeyboardIcon.getVisibility() == 0 || mZeroStateIcon.getVisibility() == 0;
+                || mInvocationInProgress || mKeyboardIcon.getVisibility() == View.VISIBLE
+                || mZeroStateIcon.getVisibility() == View.VISIBLE;
         setColorMonitoringState(z);
         if (mShowingAssistUi != z) {
             mShowingAssistUi = z;
-            ((SystemUIApplication) mContext.getApplicationContext()).getComponent(ScreenDecorations.class).setAssistHintBlocked(z);
+            ((SystemUIApplication) mContext.getApplicationContext()).getComponent(ScreenDecorations.class)
+                    .setAssistHintBlocked(z);
             if (mShowingAssistUi) {
                 mWakeLock.acquire();
                 mUiHost.getParent().getViewTreeObserver().addOnComputeInternalInsetsListener(this);
             } else {
                 mWakeLock.release();
                 mUiHost.getParent().getViewTreeObserver().removeOnComputeInternalInsetsListener(this);
-                ValueAnimator valueAnimator = mInvocationAnimator;
-                if (valueAnimator != null && valueAnimator.isStarted()) {
+                if (mInvocationAnimator != null && mInvocationAnimator.isStarted()) {
                     mInvocationAnimator.cancel();
                 }
             }
@@ -608,7 +610,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         EdgeLightsView.Mode mode = mEdgeLightsController.getMode();
         boolean z = !mInvocationInProgress && ((mode instanceof Gone) || (mode instanceof HalfListening));
         float f = z ? 1.0f : 0.0f;
-        NavigationBarView defaultNavigationBarView = Dependency.get(NavigationBarController.class).getDefaultNavigationBarView();
+        NavigationBarView defaultNavigationBarView = Dependency.get(NavigationBarController.class)
+                .getDefaultNavigationBarView();
         if (defaultNavigationBarView != null) {
             float alpha = defaultNavigationBarView.getAlpha();
             if (f != alpha && f != mNavBarDestinationAlpha) {
@@ -616,7 +619,8 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
                 if (mNavBarAlphaAnimator != null) {
                     mNavBarAlphaAnimator.cancel();
                 }
-                mNavBarAlphaAnimator = ObjectAnimator.ofFloat(defaultNavigationBarView, View.ALPHA, alpha, f).setDuration((long) Math.abs((f - alpha) * 80.0f));
+                mNavBarAlphaAnimator = ObjectAnimator.ofFloat(defaultNavigationBarView, View.ALPHA, alpha, f)
+                        .setDuration((long) Math.abs((f - alpha) * 80.0f));
                 if (z) {
                     mNavBarAlphaAnimator.setStartDelay(80);
                 }
@@ -625,14 +629,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         }
     }
 
-    private float getAnimationProgress(int i, float f) {
-        return i == 2 ? f * 0.95f : mProgressInterpolator.getInterpolation(f * 0.8f);
+    private float getAnimationProgress(int type, float progress) {
+        return type == 2 ? progress * 0.95f : mProgressInterpolator.getInterpolation(progress * 0.8f);
     }
 
     @Override
     public void onInvocationProgress(int type, float progress) {
         if (mInvocationAnimator != null && mInvocationAnimator.isStarted()) {
-            Log.w("NgaUiController", "Already animating; ignoring invocation progress");
+            Log.w(TAG, "Already animating; ignoring invocation progress");
             return;
         }
         setViewParent();
@@ -643,7 +647,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (VERBOSE) {
                 String sb = "ignoring invocation; mode is " +
                         mEdgeLightsController.getMode().getClass().getSimpleName();
-                Log.v("NgaUiController", sb);
+                Log.v(TAG, sb);
             }
             return;
         }
@@ -653,15 +657,14 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (!mInvocationInProgress && progress > 0.0f) {
                 mLastInvocationStartTime = SystemClock.uptimeMillis();
             }
-            if (!(mInvocationInProgress = (progress > 0.0f && n2 < 0))) {
+            mInvocationInProgress = progress > 0.0f && n2 < 0;
+            if (!mInvocationInProgress) {
                 mPromptView.disable();
-            }
-            else if (progress < 0.9f && SystemClock.uptimeMillis() - mLastInvocationStartTime > 200) {
+            } else if (progress < 0.9f && SystemClock.uptimeMillis() - mLastInvocationStartTime > 200) {
                 mPromptView.enable();
             }
             setProgress(type, getAnimationProgress(type, progress));
-        }
-        else {
+        } else {
             if (mInvocationAnimator == null || !mInvocationAnimator.isStarted()) {
                 mFlingVelocity = 0.0f;
                 completeInvocation(type);
@@ -670,11 +673,12 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         logInvocationProgressMetrics(type, progress, mInvocationInProgress);
     }
 
-    private static void logInvocationProgressMetrics(int i, float f, boolean z) {
-        if (!z && f > 0.0f) {
-            MetricsLogger.action(new LogMaker(1716).setType(4).setSubtype(Dependency.get(AssistManager.class).toLoggingSubType(i)));
+    private static void logInvocationProgressMetrics(int type, float progress, boolean inProgress) {
+        if (!inProgress && progress > 0.0f) {
+            MetricsLogger.action(new LogMaker(1716).setType(4)
+                    .setSubtype(Dependency.get(AssistManager.class).toLoggingSubType(type)));
         }
-        if (z && f == 0.0f) {
+        if (inProgress && progress == 0.0f) {
             MetricsLogger.action(new LogMaker(1716).setType(5).setSubtype(1));
         }
     }
@@ -688,7 +692,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
             if (VERBOSE) {
                 String sb = "ignoring invocation; mode is " +
                         mEdgeLightsController.getMode().getClass().getSimpleName();
-                Log.v("NgaUiController", sb);
+                Log.v(TAG, sb);
             }
             return;
         }
@@ -705,9 +709,9 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         refresh();
     }
 
-    private void completeInvocation(int i) {
+    private void completeInvocation(int type) {
         if (!mNgaPresent) {
-            setProgress(i, 0.0f);
+            setProgress(type, 0.0f);
             resetInvocationProgress();
             return;
         }
@@ -717,45 +721,25 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         if (mInvocationAnimator != null && mInvocationAnimator.isStarted()) {
             mInvocationAnimator.cancel();
         }
-        float f = mFlingVelocity;
-        float f2 = 3.0f;
-        if (f != 0.0f) {
-            f2 = MathUtils.constrain((-f) / 1.45f, 3.0f, 12.0f);
+        // Setting default tension
+        float tension = 3.0f;
+        if (mFlingVelocity != 0.0f) {
+            tension = MathUtils.constrain((-mFlingVelocity) / 1.45f, 3.0f, 12.0f);
         }
-        OvershootInterpolator overshootInterpolator = new OvershootInterpolator(f2);
+        OvershootInterpolator overshootInterpolator = new OvershootInterpolator(tension);
 
-        ValueAnimator ofFloat = ValueAnimator.ofFloat(approximateInverse(getAnimationProgress(i, mLastInvocationProgress),
-                (v) -> Math.min(1.0f, overshootInterpolator.getInterpolation(v))));
-        ofFloat.setDuration(600);
-        ofFloat.setStartDelay(1);
-        ofFloat.addUpdateListener(listener ->
-            setProgress(i, overshootInterpolator.getInterpolation((Float) mInvocationAnimator.getAnimatedValue())));
-        ofFloat.addListener(new AnimatorListenerAdapter() {
-            private boolean mCancelled = false;
+        mInvocationAnimator = ValueAnimator
+                .ofFloat(approximateInverse(getAnimationProgress(type, mLastInvocationProgress),
+                        (v) -> Math.min(1.0f, overshootInterpolator.getInterpolation(v))), 1.0f);
+        mInvocationAnimator.setDuration(600);
+        mInvocationAnimator.setStartDelay(1);
+        mInvocationAnimator.addUpdateListener(valueAnimator -> setProgress(type,
+                overshootInterpolator.getInterpolation((Float) valueAnimator.getAnimatedValue())));
+        mInvocationAnimator.addListener(new NgaAnimatorListener());
 
-            public void onAnimationCancel(Animator animator) {
-                super.onAnimationCancel(animator);
-                mCancelled = true;
-            }
-
-            public void onAnimationEnd(Animator animator) {
-                super.onAnimationEnd(animator);
-                if (!mCancelled) {
-                    if (mPendingEdgeLightsBundle != null) {
-                        mEdgeLightsController.setState(mPendingEdgeLightsBundle);
-                    } else {
-                        mEdgeLightsController.setState(new FullListening(mContext));
-                    }
-                }
-                mUiHandler.post(() -> resetInvocationProgress());
-            }
-        });
-
-        mInvocationAnimator = ofFloat;
         mInvocationAnimator.start();
     }
 
-    
     public void resetInvocationProgress() {
         mInvocationInProgress = false;
         mInvocationLightsView.hide();
@@ -791,7 +775,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
     }
 
     private float approximateInverse(Float f, Function<Float, Float> function) {
-        ArrayList arrayList = new ArrayList((int) 200.0f);
+        ArrayList<Float> arrayList = new ArrayList<>((int) 200.0f);
         for (float f2 = 0.0f; f2 < 1.0f; f2 += 0.005f) {
             arrayList.add(function.apply(f2));
         }
@@ -818,5 +802,26 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         mKeyboardIcon.onDensityChanged();
         mZeroStateIcon.onDensityChanged();
     }
-}
 
+    // Handles what to do during the animation progresses
+    private class NgaAnimatorListener extends AnimatorListenerAdapter {
+        private boolean mCancelled = false;
+
+        public void onAnimationCancel(Animator animator) {
+            super.onAnimationCancel(animator);
+            mCancelled = true;
+        }
+
+        public void onAnimationEnd(Animator animator) {
+            super.onAnimationEnd(animator);
+            if (!mCancelled) {
+                if (mPendingEdgeLightsBundle != null) {
+                    mEdgeLightsController.setState(mPendingEdgeLightsBundle);
+                } else {
+                    mEdgeLightsController.setState(new FullListening(mContext));
+                }
+            }
+            mUiHandler.post(() -> resetInvocationProgress());
+        }
+    }
+}

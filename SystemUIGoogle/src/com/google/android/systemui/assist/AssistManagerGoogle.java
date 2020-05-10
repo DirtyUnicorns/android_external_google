@@ -18,7 +18,6 @@ import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.systemui.Dependency;
 import com.android.systemui.assist.AssistHandleBehaviorController;
 import com.android.systemui.assist.AssistManager;
-import com.android.systemui.assist.AssistManager.UiController;
 import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.NavigationModeController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
@@ -165,6 +164,7 @@ public class AssistManagerGoogle extends AssistManager {
         return false;
     }
 
+    // FIXME: For animation squeeze integration.
     private void checkSqueezeGestureStatus() {
         boolean z = false;
         if (Settings.Secure.getInt(mContext.getContentResolver(), "assist_gesture_setup_complete", 0) == 1) {

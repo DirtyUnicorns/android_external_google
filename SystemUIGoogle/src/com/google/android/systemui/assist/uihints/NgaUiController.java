@@ -396,7 +396,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         if (!mKeyboardRequested) {
             mKeyboardIcon.hide();
         } else if (mHaveAccurateLuma) {
-            mKeyboardIcon.show(mKeyboardIntent);
+            mKeyboardIcon.show(mKeyboardIntent, mGlowController.isVisible());
         }
     }
 
@@ -404,7 +404,7 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         if (!mZeroStateRequested) {
             mZeroStateIcon.hide();
         } else if (mHaveAccurateLuma) {
-            mZeroStateIcon.show(mZeroStateIntent);
+            mZeroStateIcon.show(mZeroStateIntent, mGlowController.isVisible());
         }
     }
 

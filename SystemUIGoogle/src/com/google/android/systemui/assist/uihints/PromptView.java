@@ -131,8 +131,8 @@ public class PromptView extends TextView implements ConfigurationController.Conf
         requestLayout();
     }
 
-    public void onBottomMarginChanged(int i) {
-        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = i + mMargin;
+    public void onBottomMarginChanged() {
+        ((ViewGroup.MarginLayoutParams) getLayoutParams()).bottomMargin = mMargin;
         requestLayout();
     }
 }

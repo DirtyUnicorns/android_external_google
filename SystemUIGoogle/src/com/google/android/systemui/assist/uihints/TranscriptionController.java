@@ -61,15 +61,16 @@ public class TranscriptionController implements ConfigurationController.Configur
 
     @Override
     public void onDensityOrFontScaleChanged() {
+        setUpViews();
         for (TranscriptionSpaceView onFontSizeChanged : mViewMap.values()) {
             onFontSizeChanged.onFontSizeChanged();
         }
     }
 
-    public void onBottomMarginChanged(int i) {
+    public void onBottomMarginChanged() {
         for (TranscriptionSpaceView transcriptionSpaceView : mViewMap.values()) {
             View view = (View) transcriptionSpaceView;
-            ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).bottomMargin = mMargin + i;
+            ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).bottomMargin = mMargin;
             view.requestLayout();
         }
     }

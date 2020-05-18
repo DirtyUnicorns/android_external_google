@@ -10,7 +10,6 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 
 public class OverlayUiHost {
-    private final int MINIMUM_MARGIN_PX;
     private boolean mAttached;
     private final Context mContext;
     private boolean mFocusable;
@@ -22,7 +21,7 @@ public class OverlayUiHost {
     private final WindowManager mWindowManager;
 
     interface BottomMarginListener {
-        void onBottomMarginChanged(int i);
+        void onBottomMarginChanged();
     }
 
     private static class RootView extends FrameLayout {
@@ -64,7 +63,6 @@ public class OverlayUiHost {
         mPortraitMode = true;
         mRoot = new RootView(context, runnable, runnable2);
         mWindowManager = (WindowManager) context.getSystemService("window");
-        MINIMUM_MARGIN_PX = DisplayUtils.convertDpToPx(16.0f, mContext);
     }
 
     public ViewGroup getParent() {
@@ -92,10 +90,6 @@ public class OverlayUiHost {
 
     void addMarginListener(BottomMarginListener bottomMarginListener) {
         mMarginListeners.add(bottomMarginListener);
-        bottomMarginListener.onBottomMarginChanged(getMargin());
-    }
-
-    private int getMargin() {
-        return MINIMUM_MARGIN_PX;
+        bottomMarginListener.onBottomMarginChanged();
     }
 }

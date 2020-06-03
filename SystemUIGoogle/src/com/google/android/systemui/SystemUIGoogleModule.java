@@ -26,6 +26,7 @@ import com.android.systemui.assist.AssistManager;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.power.EnhancedEstimates;
 import com.android.systemui.power.EnhancedEstimatesImpl;
+import com.android.systemui.recents.OverviewProxyService;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.notification.NotificationEntryManager;
 import com.android.systemui.statusbar.notification.NotificationInterruptionStateProvider;
@@ -33,6 +34,7 @@ import com.android.systemui.statusbar.notification.collection.NotificationData;
 import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
 import com.android.systemui.statusbar.phone.ShadeController;
 import com.android.systemui.statusbar.phone.StatusBar;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.google.android.systemui.assist.AssistManagerGoogle;
 import com.google.android.systemui.dreamliner.DockObserver;
@@ -70,8 +72,11 @@ abstract class SystemUIGoogleModule {
     // TODO: This is WIP.
     @Provides
     static AssistManager provideAssistManager(
-            DeviceProvisionedController deviceProvisionedController, Context context, AssistUtils assistUtils, AssistHandleBehaviorController handleController) {
-        return new AssistManagerGoogle(deviceProvisionedController, context, assistUtils, handleController);
+            DeviceProvisionedController deviceProvisionedController, Context context, AssistUtils assistUtils,
+            AssistHandleBehaviorController handleController, ConfigurationController configurationController,
+            OverviewProxyService overviewProxyService) {
+        return new AssistManagerGoogle(deviceProvisionedController, context, assistUtils, handleController,
+                configurationController, overviewProxyService);
     }
 
     @Binds

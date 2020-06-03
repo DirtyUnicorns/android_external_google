@@ -18,8 +18,10 @@ import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.systemui.Dependency;
 import com.android.systemui.assist.AssistHandleBehaviorController;
 import com.android.systemui.assist.AssistManager;
+import com.android.systemui.recents.OverviewProxyService;
 import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.NavigationModeController;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.google.android.systemui.assist.uihints.GoogleDefaultUiController;
 import com.google.android.systemui.assist.uihints.NgaUiController;
@@ -46,8 +48,9 @@ public class AssistManagerGoogle extends AssistManager {
     };
 
     public AssistManagerGoogle(DeviceProvisionedController deviceProvisionedController, Context context,
-                               AssistUtils assistUtils, AssistHandleBehaviorController assistHandleBehaviorController) {
-        super(deviceProvisionedController, context, assistUtils, assistHandleBehaviorController);
+                               AssistUtils assistUtils, AssistHandleBehaviorController assistHandleBehaviorController,
+                               ConfigurationController configurationController, OverviewProxyService overviewProxyService) {
+        super(deviceProvisionedController, context, assistUtils, assistHandleBehaviorController, configurationController, overviewProxyService);
         mCheckAssistantStatus = true;
         mIsGoogleAssistant = false;
         mNgaPresent = false;
@@ -83,6 +86,15 @@ public class AssistManagerGoogle extends AssistManager {
             }
 
             public void onSetUiHints(Bundle bundle) {
+                final String string = bundle.getString("action");
+                if ("show_assist_handles".equals(string)) {
+                    requestAssistHandles();
+                    return;
+                }
+                if ("set_assist_gesture_constrained".equals(string)) {
+                    mOverviewProxyService.setSystemUiStateFlag(4096, bundle.getBoolean("should_constrain", false), 0);
+                    return;
+                }
                 if (mNgaUiController.extractNga(bundle) != mNgaPresent) {
                     checkAssistantStatus(bundle);
                 }

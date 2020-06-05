@@ -373,7 +373,6 @@ public class NgaUiController implements AssistManager.UiController, ViewTreeObse
         if (!"config".equals(string)) {
             mNgaPresent = true;
         }
-        refresh();
     }
 
     public boolean extractNga(Bundle bundle) {
